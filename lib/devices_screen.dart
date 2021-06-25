@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,16 @@ class _DevicesScreenState extends State<DevicesScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future connectToDevice(device) async {
+    await _subscription?.cancel();
+    flutterReactiveBle.connectToDevice(id: device.id
+    ).listen((connectionState) {
+      print('here');
+    }, onError: (Object error){
+      print('error');
+    });
   }
 
   Future _setSearchingDevicesList() async {
@@ -106,51 +117,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   'Connect',
                   style: TextStyle(color: Colors.white),
                 ),
-                onPressed: () async {
-                  await _subscription?.cancel();
-                  flutterReactiveBle.connectToDevice(id: device.id
-                  ).listen((connectionState) {
-                    print('here');
-                  }, onError: (Object error){
-                    print('error');
-                  });
-                  var res = await flutterReactiveBle.discoverServices(device.id);
-                  print(res);
-                  for (DiscoveredService serv in res) {
-                    for (Uuid q in serv.characteristicIds) {
-                      print('${serv.serviceId}, ${q.toString()}');
-                      QualifiedCharacteristic qchr = QualifiedCharacteristic(
-                          characteristicId: q,
-                          serviceId: serv.serviceId,
-                          deviceId: device.id);
-                      var chr = await flutterReactiveBle.readCharacteristic(qchr);
-                      print(chr);
-                      String strng = '';
-                      for (int s in chr) {
-                        strng += String.fromCharCode(s);
-                      }
-                      print(strng);
-                    }
-                  }
-                }
+                onPressed: () => connectToDevice(device)
               )
-              //     try {
-              //       await device.connect();
-              //     } catch (e) {
-              //       if (e.code != 'already_connected') {
-              //         throw e;
-              //       }
-              //     } finally {
-              //       bluetoothServices = await device.discoverServices();
-              //     }
-              //     setState(() {
-              //       connectedDevice = device;
-              //     });
-              //   },
-              // ),
-            ],
-          ),
-        ),
+            ]
+          )
+        )
       );
     }
 

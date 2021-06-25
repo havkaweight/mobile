@@ -6,6 +6,7 @@ import 'components/chart.dart';
 import 'model/user_product.dart';
 import 'widgets/rounded_button.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'main.dart';
 import 'authorization.dart';
 import 'dart:math';
