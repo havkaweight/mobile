@@ -34,9 +34,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build (BuildContext context) {
-    return !isLoggedIn
+    return /*!isLoggedIn
       ? SignInScreen()
-      : WillPopScope(
+      : */WillPopScope(
       onWillPop: () => SystemNavigator.pop(),
       child: Scaffold (
         bottomNavigationBar: BottomNavigationBar(
@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             BottomNavigationBarItem(
                 icon: Icon(Icons.trending_up),
-                label: 'Charts'
+                label: 'Measure'
             )
           ],
         ),
@@ -86,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
             ChildWidget(screen: AvailableScreen.Profile),
             ChildWidget(screen: AvailableScreen.Fridge),
             ChildWidget(screen: AvailableScreen.Devices),
-            ChildWidget(screen: AvailableScreen.Charts)
+            ChildWidget(screen: AvailableScreen.Measure)
           ]
         )
       ),

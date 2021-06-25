@@ -10,6 +10,10 @@ import 'model/device.dart';
 final MIBFS = '0000181b-0000-1000-8000-00805f9b34fb';
 final serviceUUID2 = Uuid.parse(MIBFS);
 
+Stream stream;
+QualifiedCharacteristic characteristic;
+final flutterReactiveBle = FlutterReactiveBle();
+
 class DevicesScreen extends StatefulWidget {
   @override
   _DevicesScreenState createState() => _DevicesScreenState();
@@ -17,7 +21,6 @@ class DevicesScreen extends StatefulWidget {
 
 class _DevicesScreenState extends State<DevicesScreen> {
 
-  final flutterReactiveBle = FlutterReactiveBle();
   final List<DiscoveredDevice> discDevicesList = [];
   final List<String> devicesListId = [];
   List<Uuid> devicesServiceUUID = [serviceUUID2];
@@ -31,12 +34,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   Future connectToDevice(device) async {
     await _subscription?.cancel();
-    flutterReactiveBle.connectToDevice(id: device.id
-    ).listen((connectionState) {
-      print('here');
-    }, onError: (Object error){
-      print('error');
-    });
+    stream = flutterReactiveBle.connectToDevice(id: device.id);
+    Uuid serviceUuid = Uuid.parse("f5ff08da-50b0-4a3e-b5e8-83509e584475");
+    Uuid characteristicId = Uuid.parse("25dbb242-e59b-452c-9a04-c37bdb92e00a");
+    characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
   }
 
   Future _setSearchingDevicesList() async {

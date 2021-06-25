@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/product_measurement_screen.dart';
 import 'package:health_tracker/profile_screen.dart';
 import 'package:health_tracker/test_screen.dart';
 import 'package:health_tracker/user_devices_screen.dart';
@@ -20,7 +21,7 @@ class ChildWidget extends StatelessWidget {
     } else if (screen == AvailableScreen.Devices) {
       widget = UserDevicesScreen();
     } else {
-      widget = Bubbles();
+      widget = MeasurementScreen();
     }
 
     return SafeArea(
@@ -32,4 +33,4 @@ class ChildWidget extends StatelessWidget {
   }
 }
 
-enum AvailableScreen { Profile, Fridge, Devices, Charts }
+enum AvailableScreen { Profile, Fridge, Devices, Measure }
