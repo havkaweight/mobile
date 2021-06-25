@@ -78,9 +78,9 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
           }, onError: (Object error){
             print('error');
           });
-        return !isLoggedIn
+        return /*!isLoggedIn
         ? SignInScreen()
-        : Scaffold (
+        :*/ Scaffold (
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
         child: Container(
