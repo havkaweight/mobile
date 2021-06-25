@@ -13,6 +13,8 @@ final serviceUUID2 = Uuid.parse(MIBFS);
 Stream stream;
 QualifiedCharacteristic characteristic;
 final flutterReactiveBle = FlutterReactiveBle();
+Uuid serviceUuid = Uuid.parse("f5ff08da-50b0-4a3e-b5e8-83509e584475");
+Uuid characteristicId = Uuid.parse("25dbb242-e59b-452c-9a04-c37bdb92e00a");
 
 class DevicesScreen extends StatefulWidget {
   @override
@@ -35,32 +37,27 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Future connectToDevice(device) async {
     await _subscription?.cancel();
     stream = flutterReactiveBle.connectToDevice(id: device.id);
-    Uuid serviceUuid = Uuid.parse("f5ff08da-50b0-4a3e-b5e8-83509e584475");
-    Uuid characteristicId = Uuid.parse("25dbb242-e59b-452c-9a04-c37bdb92e00a");
     characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
   }
 
   Future _setSearchingDevicesList() async {
-    final token = await storage.read(key: 'jwt');
-    print('Before: $token');
-    final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}/devices/'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token'
-        }
-    );
+    // final token = await storage.read(key: 'jwt');
+    // print('Before: $token');
+    // final http.Response response = await http.get(
+    //     Uri.https(Api.host, '${Api.prefix}/devices/'),
+    //     headers: <String, String>{
+    //       'Content-type': 'application/json',
+    //       'Accept': 'application/json',
+    //       'Authorization': 'Bearer $token'
+    //     }
+    // );
     // print('After: $token');
-    final devices = jsonDecode(response.body);
-    List<Device> devicesList = devices.map<Device>((json) {
-      return Device.fromJson(json);
-    }).toList();
-
-    // print(devicesServiceUUID);
-    for (Device device in devicesList) {
-      devicesServiceUUID.add(Uuid.parse(device.serviceUUID));
-    }
+    // final devices = jsonDecode(response.body);
+    // List<Device> devicesList = devices.map<Device>((json) {
+    //   return Device.fromJson(json);
+    // }).toList();
+    //
+    devicesServiceUUID.add(serviceUuid);
     print(devicesServiceUUID);
 
     _subscription = flutterReactiveBle.scanForDevices(
