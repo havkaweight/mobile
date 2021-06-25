@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:health_tracker/widgets/screen_header.dart';
 import 'package:health_tracker/main_screen.dart';
@@ -12,6 +14,11 @@ import 'main.dart';
 import 'authorization.dart';
 import 'dart:math';
 
+
+var weight;
+StreamSubscription<List<int>> _subScribeToCharacteristic;
+
+
 class MeasurementScreen extends StatefulWidget {
   final UserProduct product;
 
@@ -19,36 +26,57 @@ class MeasurementScreen extends StatefulWidget {
     this.product
   });
 
+
   @override
   _MeasurementScreenState createState() => _MeasurementScreenState();
 }
 
 class _MeasurementScreenState extends State<MeasurementScreen> {
-
-  // List<Chart> data;
+  // StreamSubscription<List<int>>? subscribeStream;
 
   @override
   void initState() {
     super.initState();
-
-    // data = [
-    //   Chart(
-    //     name: 'Protein',
-    //     value: widget.product.protein,
-    //     color: charts.ColorUtil.fromDartColor(Color(0xFF5BBE78))
-    //   ),
-    //   Chart(
-    //     name: 'Fat',
-    //     value: widget.product.fat,
-    //     color: charts.ColorUtil.fromDartColor(Color(0xFFACBE78))
-    //   ),
-    //   Chart(
-    //       name: 'Carbs',
-    //       value: widget.product.carbs,
-    //       color: charts.ColorUtil.fromDartColor(Color(0xFFACBE78))
-    //   )
-    // ];
   }
+
+  // @override
+  // void dispose() {
+  //   subscribeStream?.cancel();
+  //   super.dispose();
+  // }
+
+  Future<void> readCharacteristic() async {
+    _subScribeToCharacteristic = streamChar.listen((event) {
+      // print(event);
+      setState(() {
+        String strng = '';
+        for (int s in event) {
+          strng += String.fromCharCode(s);
+        }
+        // print(strng);
+        weight = strng;
+      });
+    });
+  }
+
+  //   data = [
+  //     Chart(
+  //       name: 'Protein',
+  //       value: widget.product.protein,
+  //       color: charts.ColorUtil.fromDartColor(Color(0xFF5BBE78))
+  //     ),
+  //     Chart(
+  //       name: 'Fat',
+  //       value: widget.product.fat,
+  //       color: charts.ColorUtil.fromDartColor(Color(0xFFACBE78))
+  //     ),
+  //     Chart(
+  //         name: 'Carbs',
+  //         value: widget.product.carbs,
+  //         color: charts.ColorUtil.fromDartColor(Color(0xFFACBE78))
+  //     )
+  //   ];
+  // }
 
   @override
   Widget build (BuildContext context) {
@@ -66,18 +94,13 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     // ];
     // final dataValues = data.map((x) => x.value);
     // final String val = (dataValues.first/dataValues.reduce((a, b) => a + b) * 100).toStringAsFixed(0);
+    // var weight;
+
+
 
     return FutureBuilder(
       future: checkLogIn(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        var weight;
-        stream.listen((connectionState) {
-            print('here');
-            weight = flutterReactiveBle.readCharacteristic(characteristic);
-            print(weight);
-          }, onError: (Object error){
-            print('error');
-          });
         return /*!isLoggedIn
         ? SignInScreen()
         :*/ Scaffold (
@@ -87,15 +110,18 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              ScreenHeader(
-                text: '$weight g'
+              FutureBuilder(
+                  future: readCharacteristic(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    return ScreenHeader(text: '$weight g');
+                  }
               ),
-              ScreenSubHeader(
-                  text: '${(weight / 100 * widget.product.kcal).toStringAsFixed(2)} kcal'
-              ),
-              Text(
-                '${widget.product.kcal} kcal/100g'
-              ),
+              // ScreenSubHeader(
+              //     text: '${(weight / 100 * widget.product.kcal).toStringAsFixed(2)} kcal'
+              // ),
+              // Text(
+              //   '${widget.product.kcal} kcal/100g'
+              // ),
               // Container(
               //   height: 200,
               //   child: Stack(
