@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/preferences/preferences.dart';
 import 'package:health_tracker/utils/routes.dart';
-import 'package:health_tracker/widgets/app_icon.dart';
+import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:health_tracker/constants/assets.dart';
 

@@ -2,19 +2,19 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:health_tracker/constants/scale.dart';
 import 'package:http/http.dart' as http;
 import 'package:health_tracker/constants/api.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/device.dart';
 
-final MIBFS = '0000181b-0000-1000-8000-00805f9b34fb';
-final serviceUUID2 = Uuid.parse(MIBFS);
-
 Stream stream;
 QualifiedCharacteristic characteristic;
+
 final flutterReactiveBle = FlutterReactiveBle();
-Uuid serviceUuid = Uuid.parse("f5ff08da-50b0-4a3e-b5e8-83509e584475");
-Uuid characteristicId = Uuid.parse("25dbb242-e59b-452c-9a04-c37bdb92e00a");
+
+Uuid serviceUuid = Uuid.parse(Scale.serviceUuid);
+Uuid characteristicId = Uuid.parse(Scale.characteristicId);
 
 class DevicesScreen extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   final List<DiscoveredDevice> discDevicesList = [];
   final List<String> devicesListId = [];
-  List<Uuid> devicesServiceUUID = [serviceUUID2];
+  List<Uuid> acceptedServiceUUID = [serviceUuid];
 
   var _subscription;
 
@@ -57,11 +57,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
     //   return Device.fromJson(json);
     // }).toList();
     //
-    devicesServiceUUID.add(serviceUuid);
-    print(devicesServiceUUID);
+    acceptedServiceUUID.add(serviceUuid);
+    print(acceptedServiceUUID);
 
     _subscription = flutterReactiveBle.scanForDevices(
-      withServices: devicesServiceUUID,
+      withServices: acceptedServiceUUID,
       // withServices: [],
       // requireLocationServicesEnabled: false,
       scanMode: ScanMode.lowLatency,
