@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'authorization.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
 import 'main_screen.dart';
 import 'sign_in_screen.dart';
 import 'main.dart';

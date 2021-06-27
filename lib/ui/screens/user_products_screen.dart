@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:health_tracker/widgets/screen_header.dart';
-import 'package:health_tracker/product_measurement_screen.dart';
-import 'package:health_tracker/profile_screen.dart';
-import 'package:health_tracker/sign_in_screen.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
-import 'constants/api.dart';
-import 'widgets/rounded_button.dart';
-import 'main.dart';
-import 'authorization.dart';
-import 'model/user_product.dart';
-import 'package:health_tracker/products_screen.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class UserProductsScreen extends StatefulWidget {

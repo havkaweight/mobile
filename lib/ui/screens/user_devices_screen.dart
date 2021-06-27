@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/widgets/rounded_button.dart';
-import 'package:health_tracker/widgets/screen_header.dart';
-import 'package:health_tracker/profile_screen.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:http/http.dart' as http;
-import 'constants/api.dart';
-import 'devices_screen.dart';
-import 'authorization.dart';
-import 'model/user_device.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/screens/devices_screen.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/model/user_device.dart';
 
 class UserDevicesScreen extends StatefulWidget {
   @override

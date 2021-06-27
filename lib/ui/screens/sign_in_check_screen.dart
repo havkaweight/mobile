@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/home.dart';
+import 'package:health_tracker/ui/screens/home.dart';
 
 import 'authorization.dart';
 

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/sign_in_screen.dart';
-import 'package:health_tracker/widgets/rounded_button.dart';
-import 'package:health_tracker/widgets/rounded_textfield.dart';
-import 'package:health_tracker/sign_in_check_screen.dart';
-import 'constants/api.dart';
-import 'widgets/screen_header.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import 'package:health_tracker/ui/screens/sign_in_check_screen.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';

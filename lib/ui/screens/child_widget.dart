@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/product_measurement_screen.dart';
-import 'package:health_tracker/profile_screen.dart';
-import 'package:health_tracker/test_screen.dart';
-import 'package:health_tracker/user_devices_screen.dart';
-import 'package:health_tracker/user_products_screen.dart';
+import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/screens/user_devices_screen.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 
-import 'components/bubbles.dart';
+import '../../components/bubbles.dart';
 
 class ChildWidget extends StatelessWidget {
   final AvailableScreen screen;

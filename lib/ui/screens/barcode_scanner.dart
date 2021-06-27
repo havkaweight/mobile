@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:health_tracker/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   @override

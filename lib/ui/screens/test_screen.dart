@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/widgets/screen_header.dart';
-import 'widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:health_tracker/components/chart.dart';
 import 'dart:ui';

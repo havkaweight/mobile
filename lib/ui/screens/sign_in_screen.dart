@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/sign_up_screen.dart';
-import 'package:health_tracker/widgets/rounded_button.dart';
-import 'authorization.dart';
-import 'constants/api.dart';
-import 'widgets/rounded_textfield.dart';
-import 'widgets/screen_header.dart';
+import 'package:health_tracker/ui/screens/sign_up_screen.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'google_sign_in.dart';
-import 'main_screen.dart';
+import 'package:health_tracker/ui/screens/google_sign_in.dart';
+import 'package:health_tracker/ui/screens/main_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   @override

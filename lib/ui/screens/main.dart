@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/theme.dart';
-import 'package:health_tracker/widgets/app_icon.dart';
-import 'package:health_tracker/widgets/screen_header.dart';
-import 'constants/assets.dart';
-import 'home.dart';
-import 'routes/horizontal_route.dart';
+import 'package:health_tracker/ui/widgets/app_icon.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:health_tracker/constants/assets.dart';
+import 'package:health_tracker/ui/screens/home.dart';
+import 'package:health_tracker/routes/horizontal_route.dart';
 
 bool isLoggedIn = false;
 

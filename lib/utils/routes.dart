@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/profile_screen.dart';
-import 'package:health_tracker/sign_in_screen.dart';
+import 'package:health_tracker/screens/profile_screen.dart';
+import 'package:health_tracker/screens/sign_in_screen.dart';
 import 'package:health_tracker/splash/splash_screen.dart';
 
 class Routes {

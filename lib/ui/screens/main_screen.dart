@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:health_tracker/child_widget.dart';
-import 'package:health_tracker/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/child_widget.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 
 import 'main.dart';
 

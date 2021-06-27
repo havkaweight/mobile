@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/user_products_screen.dart';
-import 'package:health_tracker/widgets/screen_header.dart';
-import 'package:health_tracker/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
-import 'constants/api.dart';
-import 'main.dart';
-import 'authorization.dart';
-import 'model/product.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/screens/main.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/model/product.dart';
 
 class ProductsScreen extends StatefulWidget {
   @override

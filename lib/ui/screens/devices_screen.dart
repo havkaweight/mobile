@@ -1,21 +1,16 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'product_measurement_screen.dart';
 import 'package:http/http.dart' as http;
-import 'constants/api.dart';
-import 'authorization.dart';
-import 'model/device.dart';
+import 'package:health_tracker/constants/api.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/model/device.dart';
 
 final MIBFS = '0000181b-0000-1000-8000-00805f9b34fb';
 final serviceUUID2 = Uuid.parse(MIBFS);
 
-// StreamSubscription stream;
-
-Stream<List<int>> streamChar;
-
+Stream stream;
 QualifiedCharacteristic characteristic;
 final flutterReactiveBle = FlutterReactiveBle();
 Uuid serviceUuid = Uuid.parse("f5ff08da-50b0-4a3e-b5e8-83509e584475");
@@ -39,35 +34,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
   }
 
-  final _deviceConnectionController = StreamController<ConnectionStateUpdate>();
-  StreamSubscription<ConnectionStateUpdate> _connection;
-
-
   Future connectToDevice(device) async {
     await _subscription?.cancel();
-
-    _connection = flutterReactiveBle.connectToDevice(id: device.id).listen((update) {
-        _deviceConnectionController.add(update);
-      }
-    );
-
-    var stream = _deviceConnectionController.stream;
-
-
-    stream.listen((event) {
-      print('device connection controller: $event');
-    });
-
+    stream = flutterReactiveBle.connectToDevice(id: device.id);
     characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
-    print(characteristic);
-
-    Stream<List<int>> subScribeToCharacteristic(QualifiedCharacteristic characteristic) {
-      print('Subscribing to: ${characteristic.characteristicId} ');
-      return flutterReactiveBle.subscribeToCharacteristic(characteristic);
-    }
-
-    streamChar = subScribeToCharacteristic(characteristic);
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen()));
   }
 
   Future _setSearchingDevicesList() async {
@@ -90,17 +60,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
     devicesServiceUUID.add(serviceUuid);
     print(devicesServiceUUID);
 
-    flutterReactiveBle.statusStream.listen((value) {
-      print('Value from controller: $value');
-    });
-
     _subscription = flutterReactiveBle.scanForDevices(
       withServices: devicesServiceUUID,
       // withServices: [],
       // requireLocationServicesEnabled: false,
       scanMode: ScanMode.lowLatency,
     ).listen((device) {
-      // print(device);
       if (!devicesListId.contains(device.id)) {
         print(device);
         setState(() {

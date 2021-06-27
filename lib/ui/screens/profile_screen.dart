@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_tracker/components/profile.dart';
-import 'package:health_tracker/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
 import 'authorization.dart';
-import 'constants/api.dart';
-import 'model/user.dart';
+import '../../constants/api.dart';
+import '../../model/user.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
