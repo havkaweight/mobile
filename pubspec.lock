@@ -248,7 +248,7 @@ packages:
     source: hosted
     version: "4.0.0"
   image:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: image
       url: "https://pub.dartlang.org"
@@ -370,6 +370,13 @@ packages:
     dependency: transitive
     description:
       name: protobuf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  pull_to_refresh:
+    dependency: "direct main"
+    description:
+      name: pull_to_refresh
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
@@ -534,4 +541,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.13.0 <3.0.0"
-  flutter: ">=1.26.0-17.6.pre"
+  flutter: ">=2.0.0"

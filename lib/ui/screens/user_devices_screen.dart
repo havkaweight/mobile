@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
@@ -21,7 +22,7 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
     super.initState();
   }
 
-  Future<List<UserDevice>> getUserDevicesList() async {
+  Future<dynamic> getUserDevicesList() async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}/users/me/devices'),
@@ -30,11 +31,15 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
           'Authorization': 'Bearer $token'
         }
     );
-    final devices = jsonDecode(response.body);
-    List<UserDevice> devicesList = devices.map<UserDevice>((json) {
-      return UserDevice.fromJson(json);
-    }).toList();
-    return devicesList;
+    if(response.statusCode == 200) {
+      final devices = jsonDecode(response.body);
+      List<UserDevice> devicesList = devices.map<UserDevice>((json) {
+        return UserDevice.fromJson(json);
+      }).toList();
+      return devicesList;
+    } else {
+      return 'No data';
+    }
   }
 
   @override
@@ -57,15 +62,16 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => DevicesScreen()));
                   },
                 ),
-                FutureBuilder<List<UserDevice>>(
+                FutureBuilder<dynamic>(
                   future: getUserDevicesList(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) return Center(
                       child: Container(
-                        child: CircularProgressIndicator(),
+                        child: HavkaProgressIndicator(),
                         padding: EdgeInsets.symmetric(vertical: 40.0)
                       )
                     );
+                    if (snapshot.data.runtimeType == List)
                     return Expanded(
                         child: ListView(
                           scrollDirection: Axis.vertical,
@@ -77,6 +83,7 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                           }).toList(),
                         )
                     );
+                    return Text('No data :-(');
                   },
                 ),
               ])
