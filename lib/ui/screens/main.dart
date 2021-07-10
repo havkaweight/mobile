@@ -7,6 +7,8 @@ import 'package:health_tracker/ui/screens/home.dart';
 import 'package:health_tracker/routes/horizontal_route.dart';
 
 bool isLoggedIn = false;
+double weight = 3.0;
+bool isWeight = false;
 
 void main() {
   runApp(

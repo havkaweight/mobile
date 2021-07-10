@@ -3,11 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_tracker/components/profile.dart';
+import 'package:health_tracker/ui/screens/child_widget.dart';
+import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'authorization.dart';
 import '../../constants/api.dart';
 import '../../model/user.dart';
+import 'main.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -47,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               future: getUserInfo(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) return Center(
-                    child: CircularProgressIndicator()
+                    child: HavkaProgressIndicator()
                 );
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),

@@ -86,12 +86,6 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
               ScreenHeader(
                 text: '$weight g'
               ),
-              ScreenSubHeader(
-                  text: '${(weight / 100 * widget.product.kcal).toStringAsFixed(2)} kcal'
-              ),
-              Text(
-                '${widget.product.kcal} kcal/100g'
-              ),
               // Container(
               //   height: 200,
               //   child: Stack(

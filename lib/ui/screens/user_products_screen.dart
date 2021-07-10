@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
@@ -19,15 +22,14 @@ class UserProductsScreen extends StatefulWidget {
 }
 
 class _UserProductsScreenState extends State<UserProductsScreen> {
-
-  String _data = '-';
+  final barcodeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List<UserProduct>> getUserProductsList() async {
+  Future<dynamic> getUserProductsList() async {
     final token = await storage.read(key: 'jwt');
     // print('Before: $token');
     final http.Response response = await http.get(
@@ -38,13 +40,16 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
           'Authorization': 'Bearer $token'
         }
     );
-    // print('After: $token');
-    final products = jsonDecode(utf8.decode(response.bodyBytes));
-    List<UserProduct> productsList = products.map<UserProduct>((json) {
-      return UserProduct.fromJson(json);
-    }).toList();
-    // print(productsList);
-    return productsList;
+    if(response.statusCode == 200) {
+      final products = jsonDecode(utf8.decode(response.bodyBytes));
+      List<UserProduct> productsList = products.map<UserProduct>((json) {
+        return UserProduct.fromJson(json);
+      }).toList();
+      // print(productsList);
+      return productsList;
+    } else {
+      return 'No data';
+    }
   }
 
   Future _scanBarcode() async {
@@ -53,16 +58,28 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         'Cancel',
         true,
         ScanMode.BARCODE
-    ).then((value) => setState(() => _data = value));
+    ).then((value) => _getProductByBarcode(value));
   }
 
-  Future _scanQRCode() async {
-    await FlutterBarcodeScanner.scanBarcode(
-        '#5BBE78',
-        'Cancel',
-        true,
-        ScanMode.QR
-    ).then((value) => setState(() => _data = value));
+  Future<dynamic> _getProductByBarcode(barcode) async {
+    print('getProductByBarcode');
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}/users/me/products/get?barcode=$barcode'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+
+    if(response.statusCode == 200) {
+      var productJson = jsonDecode(response.body);
+      Product product = Product.fromJson(productJson);
+      return product;
+    } else {
+      return 'Not found';
+    }
   }
 
   // Future _addProduct(product) async {
@@ -107,11 +124,11 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => ProductsScreen()));
                             },
                           ),
-                          RoundedIconButton(
-                            icon: Icon(Icons.qr_code, color: Color(0xFFFFFFFF)),
-                            color: Theme.of(context).backgroundColor,
-                            onPressed: _scanQRCode
-                          ),
+                          // RoundedIconButton(
+                          //   icon: Icon(Icons.qr_code, color: Color(0xFFFFFFFF)),
+                          //   color: Theme.of(context).backgroundColor,
+                          //   onPressed: _scanQRCode
+                          // ),
                           RoundedIconButton(
                             faIcon: FaIcon(
                               FontAwesomeIcons.barcode,
@@ -121,23 +138,37 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                           )
                         ]
                       ),
-                      Text(
-                        'Barcode number: $_data',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Color(0xFF5BBE78),
-                          fontSize: 20,
-                        ),
+                      RoundedTextField(
+                        labelText: 'Barcode number',
+                        hintText: '4604921001960',
+                        controller: barcodeController,
                       ),
-                      FutureBuilder<List<UserProduct>>(
+                      FutureBuilder(
+                        future: _getProductByBarcode(barcodeController.text),
+                        builder: (context, snapshot) {
+                          return Visibility(
+                              visible: true,
+                              child: Text(
+                                'Havka: ${snapshot.data}',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Color(0xFF5BBE78),
+                                  fontSize: 20,
+                                ),
+                              )
+                          );
+                        }
+                      ),
+                      FutureBuilder<dynamic>(
                         future: getUserProductsList(),
                         builder: (BuildContext context, AsyncSnapshot snapshot) {
                           if (!snapshot.hasData) return Center(
                             child: Container(
-                                child: CircularProgressIndicator(),
+                                child: HavkaProgressIndicator(),
                                 padding: EdgeInsets.symmetric(vertical: 40.0)
                             )
                           );
+                          if (snapshot.data.runtimeType == List)
                           return Expanded(
                               child: ListView(
                                 scrollDirection: Axis.vertical,
@@ -152,6 +183,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                                 }).toList(),
                               )
                           );
+                          return Text('No data :-(');
                         },
                       ),
                     ])
