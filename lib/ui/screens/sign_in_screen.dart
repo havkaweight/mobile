@@ -187,6 +187,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 color: Color(0xFFEDE88E),
                 textColor: Theme.of(context).accentColor,
                 onPressed: () {
+
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) => SignInGoogleScreen()));
                 }

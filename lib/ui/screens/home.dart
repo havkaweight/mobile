@@ -20,9 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return FutureBuilder(
       future: checkLogIn(),
       builder: (context, snapshot) {
-        return /*!isLoggedIn
+        return !isLoggedIn
           ? SignInScreen()
-          : */MainScreen();
+          : MainScreen();
       }
     );
     // return Scaffold(
