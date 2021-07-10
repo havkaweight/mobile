@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:health_tracker/ui/screens/main.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: '192633702539-qtdl0k83tutselm71v05eeff38hgult4.apps.googleusercontent.com',
+  // clientId: '192633702539-43vof2btppdn077h80k06e3mu72ut4lc.apps.googleusercontent.com',
   scopes:[
-    'profile',
-    'email'
+    'email',
+    'profile'
   ]
 );
 
@@ -20,48 +21,26 @@ class SignInGoogleScreen extends StatefulWidget {
 class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
 
   GoogleSignInAccount _currentUser;
-  String _contactText = '';
+  String idToken;
+  String accessToken;
+  String serverAuthCode;
 
   @override
   void initState() {
     super.initState();
+
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
         _currentUser = account;
+        isLoggedIn = true;
+        print('huy');
+        print(isLoggedIn);
       });
-      if (_currentUser != null) {
-        _handleGetContact(_currentUser);
-      }
+      // if (_currentUser != null) {
+      //   _handleGetContact(_currentUser);
+      // }
     });
     _googleSignIn.signInSilently();
-  }
-
-  Future<void> _handleGetContact(GoogleSignInAccount user) async {
-    setState(() {
-      _contactText = "Loading contact info...";
-    });
-    final http.Response response = await http.get(
-      Uri.parse('https://people.googleapis.com/v1/people/me/connections'
-          '?requestMask.includeField=person.names'),
-      headers: await user.authHeaders,
-    );
-    if (response.statusCode != 200) {
-      setState(() {
-        _contactText = "People API gave a ${response.statusCode} "
-            "response. Check logs for details.";
-      });
-      print('People API ${response.statusCode} response: ${response.body}');
-      return;
-    }
-    final Map<String, dynamic> data = json.decode(response.body);
-    final String namedContact = _pickFirstNamedContact(data);
-    setState(() {
-      if (namedContact != null) {
-        _contactText = "I see you know $namedContact!";
-      } else {
-        _contactText = "No contacts to display.";
-      }
-    });
   }
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
@@ -80,14 +59,12 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
             subtitle: Text(user.email),
           ),
           const Text("Signed in successfully."),
-          Text(_contactText),
+          // Text("idToken: $idToken"),
+          Text("accessToken: $accessToken"),
+          Text("serverAuthCode: $serverAuthCode"),
           ElevatedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
-          ),
-          ElevatedButton(
-            child: const Text('REFRESH'),
-            onPressed: () => _handleGetContact(user),
           ),
         ],
       );
@@ -116,28 +93,25 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
           child: _buildBody(),
         ));
   }
-
-  String _pickFirstNamedContact(Map<String, dynamic> data) {
-    final List<dynamic> connections = data['connections'];
-    final Map<String, dynamic> contact = connections?.firstWhere(
-          (dynamic contact) => contact['names'] != null,
-      orElse: () => null,
-    );
-    if (contact != null) {
-      final Map<String, dynamic> name = contact['names'].firstWhere(
-            (dynamic name) => name['displayName'] != null,
-        orElse: () => null,
-      );
-      if (name != null) {
-        return name['displayName'];
-      }
-    }
-    return null;
-  }
   
   Future _handleSignIn() async {
     try{
-      await _googleSignIn.signIn();
+      // await _googleSignIn.signIn();
+      final result = await _googleSignIn.signIn();
+      final ggAuth = await result.authentication;
+      //
+      // final token = ggAuth.accessToken;
+      // final data = await http.get(
+      //     Uri.parse("https://people.googleapis.com/v1/people/me?personFields=emailAddresses"),
+      //     headers: {
+      //       "Accept": "application/json",
+      //       "Authorization": "Bearer $token"
+      //     }
+      //     );
+      // print(data.body);
+      idToken = ggAuth.idToken;
+      accessToken = ggAuth.accessToken;
+      serverAuthCode = ggAuth.serverAuthCode;
     } catch(error) {
       print(error);
     }
