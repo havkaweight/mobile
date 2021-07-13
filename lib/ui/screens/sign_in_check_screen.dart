@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/screens/home.dart';
 
 import 'authorization.dart';
+import 'main_screen.dart';
 
 class SignInCheckScreen extends StatefulWidget {
   @override
@@ -20,7 +20,7 @@ class _SignInCheckScreenState extends State<SignInCheckScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => HomeScreen()
+                  builder: (context) => MainScreen()
               )
           );
         }

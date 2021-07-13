@@ -35,11 +35,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build (BuildContext context) {
-    return /*!isLoggedIn
-      ? SignInScreen()
-      : */WillPopScope(
-      onWillPop: () => SystemNavigator.pop(),
-      child: Scaffold (
+    return Scaffold (
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Theme.of(context).backgroundColor,
           selectedItemColor: Theme.of(context).accentColor,
@@ -53,8 +49,6 @@ class _MainScreenState extends State<MainScreen> {
               duration: Duration(milliseconds: 200),
               curve: Curves.linear,
             );
-
-            setState(() {});
           },
           items: [
             BottomNavigationBarItem(
@@ -90,7 +84,6 @@ class _MainScreenState extends State<MainScreen> {
             ChildWidget(screen: AvailableScreen.Measure)
           ]
         )
-      ),
-    );
+      );
   }
 }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:http/http.dart' as http;
-import 'package:health_tracker/constants/api.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/device.dart';
 

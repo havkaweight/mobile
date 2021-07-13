@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/api/constants.dart';
+import 'package:health_tracker/ui/screens/sign_in_check_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
-import 'package:health_tracker/ui/screens/sign_in_check_screen.dart';
-import 'package:health_tracker/constants/api.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -79,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (response.statusCode == 201) {
       // setToken(password);
-      return Navigator.push(context, HorizontalRoute(SignInCheckScreen()));
+      return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInCheckScreen()));
     }
     else {
       print(response.body);

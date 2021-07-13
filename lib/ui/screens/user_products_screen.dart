@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:health_tracker/api/constants.dart';
+import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
@@ -9,7 +11,6 @@ import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:health_tracker/constants/api.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/user_product.dart';
@@ -23,6 +24,8 @@ class UserProductsScreen extends StatefulWidget {
 
 class _UserProductsScreenState extends State<UserProductsScreen> {
   final barcodeController = TextEditingController();
+
+  final ApiRoutes apiRoute = ApiRoutes();
 
   @override
   void initState() {
@@ -101,7 +104,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   @override
   Widget build (BuildContext context) {
     return FutureBuilder(
-      future: checkLogIn(),
+      future: apiRoute.getUserProductsList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return WillPopScope(
           onWillPop: () => Navigator.push((context), MaterialPageRoute(builder: (context) => ProfileScreen())),
@@ -146,16 +149,13 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       FutureBuilder(
                         future: _getProductByBarcode(barcodeController.text),
                         builder: (context, snapshot) {
-                          return Visibility(
-                              visible: true,
-                              child: Text(
-                                'Havka: ${snapshot.data}',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  color: Color(0xFF5BBE78),
-                                  fontSize: 20,
-                                ),
-                              )
+                          return Text(
+                            'Havka: ${snapshot.data}',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Color(0xFF5BBE78),
+                              fontSize: 20,
+                            ),
                           );
                         }
                       ),
@@ -176,9 +176,9 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                                   return ListTile(
                                     title: Text(data.productName),
                                     subtitle: Text(data.amount.toString()),
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen(product: data)));
-                                    }
+                                    // onTap: () {
+                                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen(product: data)));
+                                    // }
                                   );
                                 }).toList(),
                               )

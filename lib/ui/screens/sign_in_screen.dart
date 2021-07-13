@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/api/constants.dart';
+import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/ui/screens/sign_up_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/constants/api.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
@@ -20,51 +21,12 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  Future<String> _futureSignIn;
+  Future _futureSignIn;
+  ApiRoutes _apiRoutes = ApiRoutes();
 
   @override
   void initState() {
     super.initState();
-  }
-
-  authorizationError() {
-    setState(() {
-
-    });
-  }
-
-  Future<String> signIn(email, password) async {
-    var pwdBytes = utf8.encode(password);
-    var pwdHashed = sha256.convert(pwdBytes);
-    print(pwdHashed);
-    var map = Map<String, dynamic>();
-    map['username'] = email;
-    map['password'] = password;
-    final http.Response response = await http.post(
-      Uri.https(Api.host, '${Api.prefix}/auth/login'),
-      headers: <String, String>{
-        // 'Content-Type': 'application/json; charset=UTF-8'
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: map
-    );
-
-    print(response.body);
-    print(response.statusCode);
-
-    var data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      if (data.containsKey('access_token')) {
-        setToken(data['access_token']);
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-      } else {
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-      }
-    } else {
-      // authorizationError();
-      throw Exception('Failed sign in');
-    }
   }
 
   Future<String> resetPassword(email) async {
@@ -149,7 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 text: 'Sign In',
                 onPressed: () {
                   setState(() {
-                    _futureSignIn = signIn(emailController.text, passwordController.text);
+                    _futureSignIn = _apiRoutes.signIn(emailController.text, passwordController.text);
                   });
                 },
               ),
@@ -177,7 +139,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
                         },
                       )
-
                     )
                   ],
                 )
@@ -192,13 +153,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       builder: (context) => SignInGoogleScreen()));
                 }
               )
-              // RoundedButton(
-              //   text: 'Back',
-              //   color: Color(0xFF5BBE78),
-              //   onPressed: () {
-              //     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-              //   },
-              // )
             ]
           )
         : FutureBuilder<String>(

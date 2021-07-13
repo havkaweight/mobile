@@ -20,7 +20,7 @@ class ChildWidget extends StatelessWidget {
     } else if (screen == AvailableScreen.Devices) {
       widget = UserDevicesScreen();
     } else {
-      widget = MeasurementScreen();
+      // widget = MeasurementScreen();
     }
 
     return SafeArea(

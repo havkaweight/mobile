@@ -3,10 +3,10 @@ import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/constants/assets.dart';
-import 'package:health_tracker/ui/screens/home.dart';
 import 'package:health_tracker/routes/horizontal_route.dart';
 
-bool isLoggedIn = false;
+import 'main_screen.dart';
+
 double weight = 3.0;
 bool isWeight = false;
 
@@ -30,9 +30,9 @@ class _HavkaAppState extends State<HavkaApp> {
     Future.delayed(
       Duration(seconds: 5),
         () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            HorizontalRoute(HomeScreen())
+            MaterialPageRoute(builder: (context) => MainScreen())
           );
         }
     );
