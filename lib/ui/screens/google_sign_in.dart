@@ -75,7 +75,7 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
           const Text("You are not currently signed in."),
           ElevatedButton(
             child: const Text('SIGN IN'),
-            onPressed: _handleSignIn,
+            onPressed: handleSignIn,
           ),
         ],
       );
@@ -94,7 +94,7 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
         ));
   }
   
-  Future _handleSignIn() async {
+  Future handleSignIn() async {
     try{
       // await _googleSignIn.signIn();
       final result = await _googleSignIn.signIn();
@@ -112,6 +112,10 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
       idToken = ggAuth.idToken;
       accessToken = ggAuth.accessToken;
       serverAuthCode = ggAuth.serverAuthCode;
+
+
+
+
     } catch(error) {
       print(error);
     }

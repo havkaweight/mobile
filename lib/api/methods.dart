@@ -17,7 +17,7 @@ class ApiRoutes {
     }
   }
 
-  Future signIn(email, password) async {
+  Future<bool> signIn(email, password) async {
     var pwdBytes = utf8.encode(password);
     var pwdHashed = sha256.convert(pwdBytes);
     Map map = Map<String, dynamic>();
@@ -31,16 +31,66 @@ class ApiRoutes {
         body: map
     );
     dynamic data = jsonDecode(response.body);
+    print(data);
     if (response.statusCode == 200) {
       if (data.containsKey('access_token')) {
         setToken(data['access_token']);
+        return true;
         // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
       }
-      // else {
+      else {
         // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-      // }
+      }
     } else {
-      throw Exception('Failed sign in');
+      return false;
+      // throw Exception('Failed sign in');
+    }
+  }
+
+  Future<String> googleAuthorize() async {
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.googleAuthorize}?authentication_backend=jwt'),
+        headers: <String, String>{
+          // 'Content-Type': 'application/json'
+        },
+    );
+
+    dynamic data = jsonDecode(response.body);
+    print(data);
+    if (response.statusCode == 200) {
+      if (data.containsKey('authorization_url')) {
+        var uri = Uri.parse(data['authorization_url']);
+        return uri.queryParameters['state'];
+      }
+    }
+  }
+
+  Future<bool> googleCallback(serverAuthCode) async {
+    var state = await googleAuthorize();
+    print(state);
+    Map map = Map<String, dynamic>();
+    map['code'] = serverAuthCode;
+    map['state'] = state;
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.googleCallback}?code=$serverAuthCode&state=$state'),
+        headers: <String, String>{
+          // 'Content-Type': 'application/json'
+        }
+        );
+    dynamic data = jsonDecode(response.body);
+    print(data);
+    if (response.statusCode == 200) {
+      if (data.containsKey('access_token')) {
+        setToken(data['access_token']);
+        return true;
+        // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+      }
+      else {
+        // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+      }
+    } else {
+      return false;
+      // throw Exception('Failed sign in');
     }
   }
 
