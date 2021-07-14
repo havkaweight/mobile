@@ -48,15 +48,19 @@ class ApiRoutes {
   }
 
   Future<String> googleAuthorize() async {
+    var queryParameters = {
+      'authentication_backend': 'jwt'
+    };
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.googleAuthorize}?authentication_backend=jwt'),
+        Uri.https(Api.host, '${Api.prefix}${Api.googleAuthorize}', queryParameters),
         headers: <String, String>{
           // 'Content-Type': 'application/json'
         },
     );
 
     dynamic data = jsonDecode(response.body);
-    print(data);
+    print('data ${response.body}');
+    print('statusCode ${response.statusCode}');
     if (response.statusCode == 200) {
       if (data.containsKey('authorization_url')) {
         var uri = Uri.parse(data['authorization_url']);
@@ -67,12 +71,16 @@ class ApiRoutes {
 
   Future<bool> googleCallback(serverAuthCode) async {
     var state = await googleAuthorize();
-    print(state);
+    var queryParameters = {
+      'code': '$serverAuthCode',
+      'state': '$state'
+    };
+    print('state $state');
     Map map = Map<String, dynamic>();
     map['code'] = serverAuthCode;
     map['state'] = state;
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.googleCallback}?code=$serverAuthCode&state=$state'),
+        Uri.https(Api.host, '${Api.prefix}${Api.googleCallback}', queryParameters),
         headers: <String, String>{
           // 'Content-Type': 'application/json'
         }

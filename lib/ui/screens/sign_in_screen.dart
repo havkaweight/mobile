@@ -101,9 +101,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: emailController,
                   ),
                   RoundedTextField(
-                      hintText: 'Password',
-                      obscureText: true,
-                      controller: passwordController
+                    hintText: 'Password',
+                    obscureText: true,
+                    controller: passwordController
                   ),
                   futureSignIn ? Container() : Text("wrong login or password"),
                   RoundedButton(

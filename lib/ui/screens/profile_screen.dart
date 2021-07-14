@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/components/profile.dart';
 import 'package:health_tracker/ui/screens/child_widget.dart';
@@ -92,6 +93,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onPressed: () {
                   setState(() {
                     removeToken();
+                    GoogleSignIn _googleSignIn = GoogleSignIn();
+                    _googleSignIn.disconnect();
                   });
                 }
               )
