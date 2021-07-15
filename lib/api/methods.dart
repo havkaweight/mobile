@@ -136,25 +136,47 @@ class ApiRoutes {
     return productsList;
   }
 
-  Future<dynamic> getUserDevicesList() async {
+  Future<List<UserDevice>> getUserDevicesList() async {
     final token = await getToken();
+    print(token);
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.devices}'),
+        Uri.https(Api.host, '${Api.prefix}${Api.userDevices}'),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         }
     );
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final devices = jsonDecode(response.body);
+      print(devices);
       List<UserDevice> devicesList = devices.map<UserDevice>((json) {
         return UserDevice.fromJson(json);
       }).toList();
+      print(devicesList);
       return devicesList;
-    } else {
-      return 'No data';
     }
   }
+
+  Future<UserDevice> userDeviceAdd(UserDeviceCreate userDeviceCreate) async {
+    print(jsonEncode(userDeviceCreate.toJson()));
+    final token = await getToken();
+    final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(userDeviceCreate.toJson())
+    );
+
+    if (response.statusCode == 201) {
+      return UserDevice.fromJson(jsonDecode(response.body));
+    }
+  }
+
+
 
   Future _addProduct(product) async {
     print('Ya tut');

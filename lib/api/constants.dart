@@ -7,7 +7,10 @@ class Api {
   static const me = '/users/me';
   static const product = '/products';
 
-  static const devices = 'users/me/devices';
+  static const userDevices = '/users/me/devices';
+  static const userDevicesAdd = '/users/me/devices/add';
+
+  static const devices = '/devices';
 
   static const login = '/auth/login';
   static const register = '/auth/register';

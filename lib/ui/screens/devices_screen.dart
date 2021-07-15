@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/scale.dart';
+import 'package:health_tracker/model/user_device.dart';
 import 'package:http/http.dart' as http;
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/device.dart';
@@ -26,6 +28,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
   final List<String> devicesListId = [];
   List<Uuid> acceptedServiceUUID = [serviceUuid];
 
+  ApiRoutes _apiRoutes = ApiRoutes();
+
   var _subscription;
 
   @override
@@ -37,6 +41,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
     await _subscription?.cancel();
     stream = flutterReactiveBle.connectToDevice(id: device.id);
     characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
+
+    UserDeviceCreate userDeviceCreate = UserDeviceCreate(
+      serviceUUID: serviceUuid.toString(),
+      deviceUUID: characteristicId.toString()
+    );
+    final userDevice = await _apiRoutes.userDeviceAdd(userDeviceCreate);
+    print(userDevice);
   }
 
   Future _setSearchingDevicesList() async {
@@ -76,22 +87,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
       print('Device scan fails with error: $e');
     });
   }
-  //
-  // Future _addDevice(device) async {
-  //   print(jsonEncode(device.toJson()));
-  //   final token = await storage.read(key: 'jwt');
-  //   final http.Response _ = await http.post(
-  //       Uri.https(SERVER_IP, '$API_PREFIX/users/me/devices/add/'),
-  //       headers: <String, String>{
-  //         'Content-type': 'application/json',
-  //         'Accept': 'application/json',
-  //         // 'Content-Type': 'application/x-www-form-urlencoded',
-  //         'Authorization': 'Bearer $token'
-  //       },
-  //       body: jsonEncode(device.toJson())
-  //   );
-  // }
-  //
+
   ListView _buildDevicesList() {
     List<Container> containers = [];
     for (DiscoveredDevice device in discDevicesList) {
@@ -112,9 +108,14 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 // color: Colors.blue,
                 child: Text(
                   'Connect',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
-                onPressed: () => connectToDevice(device)
+                onPressed: () {
+                  setState(() {
+                    connectToDevice(device);
+                    Navigator.pop(context);
+                  });
+                }
               )
             ]
           )

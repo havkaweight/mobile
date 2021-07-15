@@ -29,3 +29,19 @@ class UserDevice {
         'user_id': userId
       };
 }
+
+class UserDeviceCreate {
+  final String serviceUUID;
+  final String deviceUUID;
+
+  UserDeviceCreate({
+    this.serviceUUID,
+    this.deviceUUID,
+  });
+
+  Map<String, dynamic> toJson() =>
+      {
+        'service_uuid': serviceUUID,
+        'device_uuid': deviceUUID,
+      };
+}

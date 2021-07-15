@@ -96,29 +96,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontSize: 20,
                 ),
               ),
+              Center(
+                child: Text(
+                  'My devices',
+                  style: TextStyle(
+                    color: Color(0xFF5BBE78),
+                    fontSize: 26,
+                  )
+                ),
+              ),
               FutureBuilder<dynamic>(
                 future: _apiRoutes.getUserDevicesList(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData)
                     return Center(
-                      child: Container(
-                          child: HavkaProgressIndicator(),
-                          padding: EdgeInsets.symmetric(vertical: 40.0)
-                      )
+                        child: Container(
+                            child: HavkaProgressIndicator(),
+                            padding: EdgeInsets.symmetric(vertical: 40.0)
+                        )
                     );
-                  if (snapshot.data.runtimeType == List)
+                  print(snapshot.data.runtimeType);
+                  if (snapshot.hasData) {
                     return Expanded(
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        children: snapshot.data.map<Widget>((data) {
-                          return ListTile(
-                            title: Text(data.deviceName),
-                            subtitle: Text(data.deviceId.toString()),
-                          );
-                        }).toList(),
-                      )
+                        child: ListView(
+                          scrollDirection: Axis.vertical,
+                          children: snapshot.data.map<Widget>((data) {
+                            return ListTile(
+                              title: Text(data.deviceName),
+                              subtitle: Text(data.deviceId.toString()),
+                            );
+                          }).toList(),
+                        )
                     );
-                  return Center(
+                  } else {
+                    return Expanded(
+                        child: ListView()
+                    );
+                  }
+                }
+              ),
+              Center(
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 40.0),
                       child: Column(
@@ -128,16 +145,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               text: 'Add scale',
                               onPressed: () {
                                 _buildScaleSearching();
+                                setState(() {
+
+                                });
                               }
                           )
                         ]
                       )
-                    ),
-                  );
-                },
-              ),
-            ]
-        )
+                    )
+                  )
+        ])
     );
   }
 

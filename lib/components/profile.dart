@@ -46,14 +46,14 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   Text(
                     'Weight: ${weight.toString()}',
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.logout),
+                      onPressed: onPressed
                   )
                 ]
               ),
             ),
-            IconButton(
-                icon: Icon(Icons.logout),
-                onPressed: onPressed
-            )
           ]
         )
     );
