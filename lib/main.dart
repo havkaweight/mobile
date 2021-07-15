@@ -5,7 +5,7 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/constants/assets.dart';
 import 'package:health_tracker/routes/horizontal_route.dart';
 
-import 'main_screen.dart';
+import 'ui/screens/main_screen.dart';
 
 double weight = 3.0;
 bool isWeight = false;

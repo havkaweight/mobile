@@ -92,7 +92,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   //   );
   // }
   //
-  ListView _buildListViewOfDevices() {
+  ListView _buildDevicesList() {
     List<Container> containers = [];
     for (DiscoveredDevice device in discDevicesList) {
       containers.add(
@@ -121,7 +121,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
         )
       );
     }
-
     return ListView(
       padding: const EdgeInsets.all(8),
       children: <Widget>[
@@ -130,8 +129,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
     );
   }
 
-  ListView _buildView() => _buildListViewOfDevices();
-
   @override
   Widget build (BuildContext context) {
     return FutureBuilder(
@@ -139,21 +136,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
       builder: (context, snapshot) {
         return Scaffold (
           backgroundColor: Theme.of(context).backgroundColor,
-          body:
-          // Center(
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(vertical: 40.0),
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: <Widget>[
-          //         ScreenHeader(
-          //           text: 'Devices'
-          //         ),
-          //         // RoundedButton(
-          //         //   text: 'Stop',
-          //         //   // onPressed: widget.tflutterReactiveBle,
-          //         // )
-                  _buildView()
+          body: _buildDevicesList()
         );
       }
     );

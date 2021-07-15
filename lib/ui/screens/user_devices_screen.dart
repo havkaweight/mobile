@@ -58,9 +58,7 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                 ),
                 RoundedButton(
                   text: 'Add device',
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DevicesScreen()));
-                  },
+                  onPressed: () {},
                 ),
                 FutureBuilder<dynamic>(
                   future: getUserDevicesList(),

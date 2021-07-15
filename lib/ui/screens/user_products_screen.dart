@@ -7,7 +7,7 @@ import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
+import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;

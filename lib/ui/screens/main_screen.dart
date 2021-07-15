@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_tracker/ui/screens/child_widget.dart';
-import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
+import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 
-import 'main.dart';
+import '../../main.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   int currentIndex = 0;
 
   Widget childWidget = ChildWidget(
-    screen: AvailableScreen.Profile,
+    screen: AvailableScreen.Fridge,
   );
 
   @override
@@ -52,20 +52,16 @@ class _MainScreenState extends State<MainScreen> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Me'
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.kitchen),
+                icon: currentIndex==0 ? Icon(Icons.kitchen) : Icon(Icons.kitchen_outlined),
                 label: 'Fridge'
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.devices),
-                label: 'Devices'
+                icon: currentIndex==1 ? Icon(Icons.monitor_weight) : Icon(Icons.monitor_weight_outlined),
+                label: 'Measure'
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.trending_up),
-                label: 'Measure'
+                icon: currentIndex==2 ? Icon(Icons.person) : Icon(Icons.person_outline),
+                label: 'Me'
             )
           ],
         ),
@@ -78,10 +74,9 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           children: <Widget>[
-            ChildWidget(screen: AvailableScreen.Profile),
             ChildWidget(screen: AvailableScreen.Fridge),
-            ChildWidget(screen: AvailableScreen.Devices),
-            ChildWidget(screen: AvailableScreen.Measure)
+            ChildWidget(screen: AvailableScreen.Scale),
+            ChildWidget(screen: AvailableScreen.Profile)
           ]
         )
       );

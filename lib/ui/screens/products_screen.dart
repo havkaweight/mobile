@@ -6,7 +6,7 @@ import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:health_tracker/ui/screens/main.dart';
+import 'package:health_tracker/main.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/product.dart';
 

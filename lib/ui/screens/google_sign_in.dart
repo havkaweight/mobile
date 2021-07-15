@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:health_tracker/ui/screens/main.dart';
+import 'package:health_tracker/main.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 

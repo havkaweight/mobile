@@ -6,12 +6,14 @@ class ProfileHeader extends StatelessWidget {
   final double height;
   final double weight;
   final String photoUrl;
+  final Function onPressed;
 
   const ProfileHeader({
     this.username,
     this.height,
     this.weight,
-    this.photoUrl
+    this.photoUrl,
+    this.onPressed
   });
 
   @override
@@ -47,6 +49,10 @@ class ProfileHeader extends StatelessWidget {
                   )
                 ]
               ),
+            ),
+            IconButton(
+                icon: Icon(Icons.logout),
+                onPressed: onPressed
             )
           ]
         )

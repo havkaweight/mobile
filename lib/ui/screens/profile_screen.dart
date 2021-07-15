@@ -6,14 +6,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/components/profile.dart';
 import 'package:health_tracker/ui/screens/child_widget.dart';
-import 'package:health_tracker/ui/screens/product_measurement_screen.dart';
+import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:http/http.dart' as http;
 import 'authorization.dart';
 import '../../model/user.dart';
-import 'main.dart';
+import '../../main.dart';
+import 'devices_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  ApiRoutes apiRoutes = ApiRoutes();
+  ApiRoutes _apiRoutes = ApiRoutes();
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.all(12.0),
           child: Center(
             child: FutureBuilder<User>(
-              future: apiRoutes.getMe(),
+              future: _apiRoutes.getMe(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 Widget widget;
                 if (!snapshot.hasData) {
@@ -72,7 +73,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   username: '${snapshot.data.email}',
                   height: 163,
                   weight: 67,
-                  photoUrl: 'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg'
+                  photoUrl: 'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                  onPressed: () {
+                    setState(() {
+                      removeToken();
+                      GoogleSignIn _googleSignIn = GoogleSignIn();
+                      _googleSignIn.disconnect();
+                    });
+                  }
               ),
               Text(
                 'My id: ${snapshot.data.id}',
@@ -88,18 +96,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontSize: 20,
                 ),
               ),
-              RoundedButton(
-                text: 'Log out',
-                onPressed: () {
-                  setState(() {
-                    removeToken();
-                    GoogleSignIn _googleSignIn = GoogleSignIn();
-                    _googleSignIn.disconnect();
-                  });
-                }
-              )
+              FutureBuilder<dynamic>(
+                future: _apiRoutes.getUserDevicesList(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData)
+                    return Center(
+                      child: Container(
+                          child: HavkaProgressIndicator(),
+                          padding: EdgeInsets.symmetric(vertical: 40.0)
+                      )
+                    );
+                  if (snapshot.data.runtimeType == List)
+                    return Expanded(
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        children: snapshot.data.map<Widget>((data) {
+                          return ListTile(
+                            title: Text(data.deviceName),
+                            subtitle: Text(data.deviceId.toString()),
+                          );
+                        }).toList(),
+                      )
+                    );
+                  return Center(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 40.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text('No devices added :-('),
+                          RoundedButton(
+                              text: 'Add scale',
+                              onPressed: () {
+                                _buildScaleSearching();
+                              }
+                          )
+                        ]
+                      )
+                    ),
+                  );
+                },
+              ),
             ]
         )
     );
   }
+
+  Future<dynamic> _buildScaleSearching() {
+    return showModalBottomSheet(
+      context: context, builder: (builder) {
+        double mWidth = MediaQuery.of(context).size.width;
+        double mHeight = MediaQuery.of(context).size.height;
+        return Container(
+          width: mWidth,
+          height: mHeight * 0.75,
+          child: DevicesScreen()
+        );
+      }
+    );
+  }
+
 }

@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/model/device.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
+import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
@@ -132,6 +134,26 @@ class ApiRoutes {
       return Product.fromJson(json);
     }).toList();
     return productsList;
+  }
+
+  Future<dynamic> getUserDevicesList() async {
+    final token = await getToken();
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.devices}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+    if(response.statusCode == 200) {
+      final devices = jsonDecode(response.body);
+      List<UserDevice> devicesList = devices.map<UserDevice>((json) {
+        return UserDevice.fromJson(json);
+      }).toList();
+      return devicesList;
+    } else {
+      return 'No data';
+    }
   }
 
   Future _addProduct(product) async {
