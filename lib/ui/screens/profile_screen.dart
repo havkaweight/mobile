@@ -2,19 +2,24 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/components/profile.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/child_widget.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
 import 'authorization.dart';
 import '../../model/user.dart';
 import '../../main.dart';
 import 'devices_screen.dart';
+
+final flutterReactiveBle = FlutterReactiveBle();
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -82,28 +87,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   }
               ),
-              Text(
-                'My id: ${snapshot.data.id}',
-                style: TextStyle(
-                    color: Color(0xFF5BBE78),
-                    fontSize: 20
-                ),
-              ),
-              Text(
-                'My password hashed: ${snapshot.data.email}',
-                style: TextStyle(
-                  color: Color(0xFF5BBE78),
-                  fontSize: 20,
-                ),
-              ),
-              Center(
-                child: Text(
-                  'My devices',
-                  style: TextStyle(
-                    color: Color(0xFF5BBE78),
-                    fontSize: 26,
-                  )
-                ),
+              ScreenSubHeader(
+                text: 'My devices'
               ),
               FutureBuilder<dynamic>(
                 future: _apiRoutes.getUserDevicesList(),
@@ -129,41 +114,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                     );
                   } else {
-                    return Expanded(
-                        child: ListView()
-                    );
+                    return Text('No devices added :-(');
                   }
                 }
               ),
               Center(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 40.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text('No devices added :-('),
-                          RoundedButton(
-                              text: 'Add scale',
-                              onPressed: () {
-                                _buildScaleSearching();
-                                setState(() {
-
-                                });
-                              }
-                          )
-                        ]
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 40.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RoundedButton(
+                        text: 'Add scale',
+                        onPressed: () {
+                          _buildScaleSearching();
+                          setState(() {});
+                        }
+                      ),
+                      ([BleStatus.unauthorized, BleStatus.poweredOff].contains(flutterReactiveBle.status))
+                      ? Icon(
+                          Icons.bluetooth_disabled,
+                          color: Colors.grey,
+                        )
+                      : Icon(
+                          Icons.bluetooth,
+                          color: HavkaColors.green,
+                        ),
+                        ([BleStatus.unauthorized, BleStatus.poweredOff].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled)
+                          ? Icon(
+                        Icons.location_disabled,
+                        color: Colors.grey,
                       )
-                    )
+                          : Icon(
+                        Icons.my_location,
+                        color: HavkaColors.green,
+                      )
+                    ],
                   )
+                )
+              )
         ])
     );
   }
 
   Future<dynamic> _buildScaleSearching() {
     return showModalBottomSheet(
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).backgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0))
+      ),
       context: context, builder: (builder) {
         double mWidth = MediaQuery.of(context).size.width;
         double mHeight = MediaQuery.of(context).size.height;
         return Container(
+          padding: EdgeInsets.symmetric(vertical: 10.0),
           width: mWidth,
           height: mHeight * 0.75,
           child: DevicesScreen()

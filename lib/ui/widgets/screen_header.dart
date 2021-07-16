@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/font_family.dart';
 
 class ScreenHeader extends StatelessWidget {
@@ -11,13 +12,14 @@ class ScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: Text(
             text,
             style: TextStyle(
-              fontFamily: 'Itim',
-              fontSize: 50,
-              color: Color(0xFF5BBE78),
+              fontFamily: FontFamily.roboto,
+              fontWeight: FontWeight.bold,
+              fontSize: 30,
+              color: HavkaColors.green,
             )
         )
     );
@@ -37,18 +39,19 @@ class ScreenSubHeader extends StatelessWidget {
         child: Text(
             text,
             style: TextStyle(
-              fontFamily: FontFamily.itim,
-              fontSize: 30,
-              color: Color(0xFF5BBE78),
+              fontFamily: FontFamily.roboto,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: HavkaColors.green,
             )
         )
     );
   }
 }
 
-class CustomText extends StatelessWidget {
+class HavkaText extends StatelessWidget {
   final String text;
-  const CustomText({
+  const HavkaText({
     this.text
   });
 

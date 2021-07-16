@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:health_tracker/model/device.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
@@ -119,21 +121,55 @@ class ApiRoutes {
     return user;
   }
 
-  Future<List<Product>> getUserProductsList() async {
-    final token = await getToken();
+  Future<List<UserProduct>> getUserProductsList() async {
+    final token = await storage.read(key: 'jwt');
+    // print('Before: $token');
     final http.Response response = await http.get(
-      Uri.https(Api.host, '${Api.prefix}${Api.product}'),
-      headers: <String, String>{
-        'Content-type': 'application/json; charset=utf-8',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token'
-      }
+        Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
     );
-    final products = jsonDecode(utf8.decode(response.bodyBytes));
-    List<Product> productsList = products.map<Product>((json) {
-      return Product.fromJson(json);
-    }).toList();
-    return productsList;
+    if(response.statusCode == 200) {
+      final products = jsonDecode(utf8.decode(response.bodyBytes));
+      List<UserProduct> productsList = products.map<UserProduct>((json) {
+        return UserProduct.fromJson(json);
+      }).toList();
+      // print(productsList);
+      return productsList;
+    }
+    return [];
+  }
+
+  Future scanBarcode() async {
+    await FlutterBarcodeScanner.scanBarcode(
+        '#5BBE78',
+        'Cancel',
+        true,
+        ScanMode.BARCODE
+    ).then((value) => getProductByBarcode(value));
+  }
+
+  Future<dynamic> getProductByBarcode(barcode) async {
+    print('getProductByBarcode');
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}/users/me/products/get?barcode=$barcode'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+
+    if(response.statusCode == 200) {
+      var productJson = jsonDecode(response.body);
+      Product product = Product.fromJson(productJson);
+      return product;
+    } else {
+      return 'Not found';
+    }
   }
 
   Future<List<UserDevice>> getUserDevicesList() async {

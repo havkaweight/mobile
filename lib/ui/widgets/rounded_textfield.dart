@@ -10,6 +10,8 @@ class RoundedTextField extends StatefulWidget {
   final bool autoFocus;
   final String errorText;
   final TextEditingController controller;
+  final TextInputType keyboardType;
+
   const RoundedTextField({
     Key key,
     this.labelText,
@@ -19,7 +21,8 @@ class RoundedTextField extends StatefulWidget {
     this.controller,
     this.errorText,
     this.obscureText = false,
-    this.autoFocus = false
+    this.autoFocus = false,
+    this.keyboardType = TextInputType.text
   }) : super(key: key);
 
   @override
@@ -62,6 +65,7 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
       padding: EdgeInsets.symmetric(vertical: 20.0),
       child: TextField(
         obscureText: _isHidden,
+        keyboardType: widget.keyboardType,
         autofocus: widget.autoFocus,
         controller: widget.controller,
         decoration: InputDecoration(

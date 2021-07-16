@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/theme.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/constants/assets.dart';
-import 'package:health_tracker/routes/horizontal_route.dart';
-
-import 'ui/screens/main_screen.dart';
-
-double weight = 3.0;
-bool isWeight = false;
 
 void main() {
   runApp(
@@ -32,7 +26,7 @@ class _HavkaAppState extends State<HavkaApp> {
         () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen())
+            MaterialPageRoute(builder: (context) => SignInScreen())
           );
         }
     );

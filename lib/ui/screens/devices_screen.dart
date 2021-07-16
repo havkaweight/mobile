@@ -1,18 +1,15 @@
-import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/device.dart';
 
 Stream stream;
 QualifiedCharacteristic characteristic;
-
-final flutterReactiveBle = FlutterReactiveBle();
 
 Uuid serviceUuid = Uuid.parse(Scale.serviceUuid);
 Uuid characteristicId = Uuid.parse(Scale.characteristicId);
@@ -51,22 +48,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   Future _setSearchingDevicesList() async {
-    // final token = await storage.read(key: 'jwt');
-    // print('Before: $token');
-    // final http.Response response = await http.get(
-    //     Uri.https(Api.host, '${Api.prefix}/devices/'),
-    //     headers: <String, String>{
-    //       'Content-type': 'application/json',
-    //       'Accept': 'application/json',
-    //       'Authorization': 'Bearer $token'
-    //     }
-    // );
-    // print('After: $token');
-    // final devices = jsonDecode(response.body);
-    // List<Device> devicesList = devices.map<Device>((json) {
-    //   return Device.fromJson(json);
-    // }).toList();
-    //
     acceptedServiceUUID.add(serviceUuid);
     print(acceptedServiceUUID);
 
@@ -135,10 +116,34 @@ class _DevicesScreenState extends State<DevicesScreen> {
     return FutureBuilder(
       future: _setSearchingDevicesList(),
       builder: (context, snapshot) {
-        return Scaffold (
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: _buildDevicesList()
+      if ([BleStatus.unauthorized, BleStatus.poweredOff, BleStatus.unsupported].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.bluetooth_disabled, color: Colors.grey,
+                        size: 40),
+                    Icon(Icons.location_disabled, color: Colors.grey,
+                        size: 40),
+                  ],
+                ),
+              ),
+              Text('Turn on Bluetooth and Location')
+            ]
+          )
         );
+      }
+      return Scaffold(
+          backgroundColor: Theme
+              .of(context)
+              .backgroundColor,
+          body: _buildDevicesList()
+      );
       }
     );
   }

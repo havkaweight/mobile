@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
@@ -28,47 +29,43 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return FutureBuilder(
       future: apiRoutes.getUserProductsList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return /*!isLoggedIn
-        ? SignInScreen()
-        : */Scaffold (
+        return Scaffold (
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ScreenHeader(
-                text: 'Products'
-              ),
-              FutureBuilder<List<Product>>(
-                future: apiRoutes.getUserProductsList(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  print(snapshot);
-                  if (!snapshot.hasData) return Center(
-                    child: Container(
-                        child: CircularProgressIndicator(),
-                        padding: EdgeInsets.symmetric(vertical: 40.0)
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ScreenHeader(
+              text: 'Products'
+            ),
+            FutureBuilder<List<UserProduct>>(
+              future: apiRoutes.getUserProductsList(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                print(snapshot);
+                if (!snapshot.hasData) return Center(
+                  child: Container(
+                      child: CircularProgressIndicator(),
+                      padding: EdgeInsets.symmetric(vertical: 40.0)
+                  )
+                );
+                return Expanded(
+                    child: ListView(
+                      scrollDirection: Axis.vertical,
+                      children: snapshot.data.map<Widget>((data) {
+                        final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
+                        return ListTile(
+                          title: Text(data.name),
+                          subtitle: Text(subtitle),
+                          // onTap: () {
+                          //   _addProduct(data);
+                          // },
+                        );
+                      }).toList(),
                     )
-                  );
-                  return Expanded(
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        children: snapshot.data.map<Widget>((data) {
-                          final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
-                          return ListTile(
-                            title: Text(data.name),
-                            subtitle: Text(subtitle),
-                            // onTap: () {
-                            //   _addProduct(data);
-                            // },
-                          );
-                        }).toList(),
-                      )
-                  );
-                },
-              ),
-            ])
-        )
+                );
+              },
+            ),
+          ])
       )
     );
       }

@@ -126,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: [
                       Container(
                           child: TextButton(
-                            child: CustomText(
+                            child: HavkaText(
                                 text: 'Sign In'
                             ),
                             onPressed: () {
@@ -136,7 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       Container(
                           child: TextButton(
-                            child: CustomText(
+                            child: HavkaText(
                               text: 'Reset password',
                             ),
                             onPressed: () {

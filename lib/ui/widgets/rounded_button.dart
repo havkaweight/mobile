@@ -28,7 +28,7 @@ class RoundedButton extends StatelessWidget {
         child: TextButton(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             backgroundColor: color,
           ),
           child: Text(
@@ -70,6 +70,7 @@ class RoundedIconButton extends StatelessWidget {
       ),
       child: ClipRRect(
           child: IconButton(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             onPressed: onPressed,
             icon: icon != null
               ? icon

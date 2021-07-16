@@ -5,12 +5,16 @@ class Api {
   static const prefix = '/api/v1';
 
   static const me = '/users/me';
-  static const product = '/products';
+
+  static const products = '/products';
+
+  static const userProducts = '/users/me/products';
+  static const userProductsAdd = '/users/me/products/add';
+
+  static const devices = '/devices';
 
   static const userDevices = '/users/me/devices';
   static const userDevicesAdd = '/users/me/devices/add';
-
-  static const devices = '/devices';
 
   static const login = '/auth/login';
   static const register = '/auth/register';
