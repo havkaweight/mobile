@@ -1,11 +1,11 @@
 class Product {
   final int id;
   final String name;
-  final int protein;
-  final int fat;
-  final int carbs;
-  final int kcal;
-  final int baseValue;
+  final double protein;
+  final double fat;
+  final double carbs;
+  final double kcal;
+  final double baseValue;
 
   Product({
     this.id,
@@ -18,13 +18,13 @@ class Product {
   });
 
   Product.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        name = json['name'],
-        protein = json['protein'],
-        fat = json['fat'],
-        carbs = json['carbs'],
-        kcal = json['kcal'],
-        baseValue = json['nutrition_per'];
+      : id = json['id'] as int,
+        name = json['name'] as String,
+        protein = json['protein'] as double,
+        fat = json['fat'] as double,
+        carbs = json['carbs'] as double,
+        kcal = json['kcal'] as double,
+        baseValue = json['nutrition_per'] as double;
 
   Map<String, dynamic> toJson() =>
       {

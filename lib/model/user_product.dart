@@ -22,15 +22,15 @@ class UserProduct {
   });
 
   UserProduct.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        productId = json['product_id'],
-        productName = json['name'],
-        userId = json['user_id'],
-        protein = json['protein'],
-        fat = json['fat'],
-        carbs = json['carbs'],
-        kcal = json['kcal'],
-        amount = json['amount'];
+      : id = json['id'] as int,
+        productId = json['product_id'] as int,
+        productName = json['name'] as String,
+        userId = json['user_id'] as int,
+        protein = json['protein'] as double,
+        fat = json['fat'] as double,
+        carbs = json['carbs'] as double,
+        kcal = json['kcal'] as double,
+        amount = json['amount'] as double;
 
   Map<String, dynamic> toJson() =>
       {

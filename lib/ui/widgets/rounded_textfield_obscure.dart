@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
-class RoundedTextField extends StatefulWidget {
+class RoundedTextFieldObscured extends StatefulWidget {
   final String labelText, hintText;
   final double width;
   final Color color;
@@ -13,7 +13,7 @@ class RoundedTextField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
 
-  const RoundedTextField({
+  const RoundedTextFieldObscured({
     Key key,
     this.labelText,
     this.hintText,
@@ -22,19 +22,42 @@ class RoundedTextField extends StatefulWidget {
     this.color,
     this.controller,
     this.errorText,
-    this.obscureText = false,
+    this.obscureText = true,
     this.autoFocus = false,
     this.keyboardType = TextInputType.text
   }) : super(key: key);
 
   @override
-  RoundedTextFieldState createState() => RoundedTextFieldState();
+  _RoundedTextFieldObscuredState createState() => _RoundedTextFieldObscuredState();
 }
 
-class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTextField> {
+class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
+  bool _isHidden;
+  bool _isIconShown = false;
+
   @override
   void initState() {
     super.initState();
+    if (widget.obscureText) {
+      _isHidden = true;
+      widget.controller.addListener(_checkField);
+    } else {
+      _isHidden = false;
+    }
+  }
+
+  _checkField() {
+    setState(() {
+      widget.controller.text.isNotEmpty
+          ? _isIconShown = true
+          : _isIconShown = false;
+    });
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
   }
 
   @override
@@ -44,12 +67,25 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
       width: widget.width * mWidth,
       padding: EdgeInsets.symmetric(vertical: 20.0),
       child: TextField(
-        obscureText: widget.obscureText,
+        obscureText: _isHidden,
         keyboardType: widget.keyboardType,
         autofocus: widget.autoFocus,
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: _isIconShown
+                  ? Icon(
+                      _isHidden
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                      color: HavkaColors.green
+                    )
+                  : Icon(null),
+                onPressed: _togglePasswordView,
+              )
+            : null,
           fillColor: Color(0xFFEDE88E),
           filled: true,
           border: OutlineInputBorder(

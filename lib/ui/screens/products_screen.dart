@@ -4,6 +4,7 @@ import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +18,7 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  final ApiRoutes apiRoutes = ApiRoutes();
+  final ApiRoutes _apiRoutes = ApiRoutes();
 
   @override
   void initState() {
@@ -27,47 +28,49 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build (BuildContext context) {
     return FutureBuilder(
-      future: apiRoutes.getUserProductsList(),
+      future: _apiRoutes.getUserProductsList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return Scaffold (
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ScreenHeader(
-              text: 'Products'
-            ),
-            FutureBuilder<List<UserProduct>>(
-              future: apiRoutes.getUserProductsList(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                print(snapshot);
-                if (!snapshot.hasData) return Center(
-                  child: Container(
-                      child: CircularProgressIndicator(),
-                      padding: EdgeInsets.symmetric(vertical: 40.0)
-                  )
-                );
-                return Expanded(
-                    child: ListView(
-                      scrollDirection: Axis.vertical,
-                      children: snapshot.data.map<Widget>((data) {
-                        final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
-                        return ListTile(
-                          title: Text(data.name),
-                          subtitle: Text(subtitle),
-                          // onTap: () {
-                          //   _addProduct(data);
-                          // },
-                        );
-                      }).toList(),
+          backgroundColor: Theme.of(context).backgroundColor,
+          body: Column(
+            children: <Widget>[
+              Row(
+                children: const <Widget>[
+                  ScreenHeader(
+                    text: 'Food'
+                  ),
+                ],
+              ),
+              FutureBuilder<List<UserProduct>>(
+                future: _apiRoutes.getUserProductsList(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  print(snapshot);
+                  if (!snapshot.hasData) {
+                    return Center(
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 40.0),
+                        child: const HavkaProgressIndicator()
                     )
-                );
-              },
-            ),
-          ])
-      )
-    );
+                  );
+                  }
+                  return Expanded(
+                      child: ListView(
+                        children: snapshot.data.map<Widget>((data) {
+                          final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
+                          return ListTile(
+                            title: Text(data.name),
+                            subtitle: Text(subtitle),
+                            // onTap: () {
+                            //   _addProduct(data);
+                            // },
+                          );
+                        }).toList(),
+                      )
+                  );
+                },
+              ),
+            ])
+        );
       }
     );
   }

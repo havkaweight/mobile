@@ -63,7 +63,7 @@ class HavkaText extends StatelessWidget {
           text,
           style: TextStyle(
             fontSize: 15,
-            color: Theme.of(context).accentColor
+            color: HavkaColors.green
           )
         ),
     );

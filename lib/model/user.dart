@@ -12,11 +12,11 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> data) => User(
-    id: data['id'],
-    email: data['email'],
-    isActive: data['is_active'],
-    isSuperuser: data['is_superuser'],
-    isVerified: data['is_verified']
+    id: data['id'] as String,
+    email: data['email'] as String,
+    isActive: data['is_active'] as bool,
+    isSuperuser: data['is_superuser'] as bool,
+    isVerified: data['is_verified'] as bool
   );
 
   Map<String, dynamic> toJson() => {

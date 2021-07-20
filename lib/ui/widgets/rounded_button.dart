@@ -6,7 +6,7 @@ import 'package:health_tracker/constants/theme.dart';
 
 class RoundedButton extends StatelessWidget {
   final String text;
-  final Function onPressed;
+  final void Function() onPressed;
   final Color color, textColor;
 
   const RoundedButton({
@@ -20,15 +20,14 @@ class RoundedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+        margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
         child: TextButton(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             backgroundColor: color,
           ),
           child: Text(
@@ -45,7 +44,7 @@ class RoundedButton extends StatelessWidget {
 }
 
 class RoundedIconButton extends StatelessWidget {
-  final Function onPressed;
+  final void Function() onPressed;
   final Color color, iconColor;
   final Icon icon;
   final FaIcon faIcon;
@@ -63,18 +62,16 @@ class RoundedIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
       decoration: BoxDecoration(
         color: HavkaColors.green,
         borderRadius: BorderRadius.circular(5),
       ),
       child: ClipRRect(
           child: IconButton(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             onPressed: onPressed,
-            icon: icon != null
-              ? icon
-              : faIcon
+            icon: icon ?? faIcon
           )
       )
     );

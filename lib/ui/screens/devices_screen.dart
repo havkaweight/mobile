@@ -25,7 +25,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   final List<String> devicesListId = [];
   List<Uuid> acceptedServiceUUID = [serviceUuid];
 
-  ApiRoutes _apiRoutes = ApiRoutes();
+  final ApiRoutes _apiRoutes = ApiRoutes();
 
   var _subscription;
 
@@ -34,12 +34,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
   }
 
-  Future connectToDevice(device) async {
+  Future connectToDevice(DiscoveredDevice device) async {
     await _subscription?.cancel();
     stream = flutterReactiveBle.connectToDevice(id: device.id);
     characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
 
-    UserDeviceCreate userDeviceCreate = UserDeviceCreate(
+    final UserDeviceCreate userDeviceCreate = UserDeviceCreate(
       serviceUUID: serviceUuid.toString(),
       deviceUUID: characteristicId.toString()
     );
@@ -70,8 +70,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   ListView _buildDevicesList() {
-    List<Container> containers = [];
-    for (DiscoveredDevice device in discDevicesList) {
+    final List<Container> containers = [];
+    for (final DiscoveredDevice device in discDevicesList) {
       containers.add(
         Container(
           height: 50,
@@ -87,16 +87,17 @@ class _DevicesScreenState extends State<DevicesScreen> {
               ),
               TextButton(
                 // color: Colors.blue,
-                child: Text(
-                  'Connect',
-                  style: TextStyle(color: Colors.black),
-                ),
                 onPressed: () {
                   setState(() {
                     connectToDevice(device);
                     Navigator.pop(context);
                   });
-                }
+                },
+                // color: Colors.blue,
+                child: const Text(
+                  'Connect',
+                  style: TextStyle(color: Colors.black),
+                )
               )
             ]
           )
@@ -122,18 +123,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.bluetooth_disabled, color: Colors.grey,
+                    const Icon(Icons.bluetooth_disabled, color: Colors.grey,
                         size: 40),
                     Icon(Icons.location_disabled, color: Colors.grey,
                         size: 40),
                   ],
                 ),
               ),
-              Text('Turn on Bluetooth and Location')
+              const Text('Turn on Bluetooth and Location')
             ]
           )
         );

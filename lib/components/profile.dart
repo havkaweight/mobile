@@ -6,7 +6,7 @@ class ProfileHeader extends StatelessWidget {
   final double height;
   final double weight;
   final String photoUrl;
-  final Function onPressed;
+  final void Function() onPressed;
 
   const ProfileHeader({
     this.username,
@@ -19,7 +19,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         child: Row(
           children: <Widget>[
             ClipRRect(
@@ -30,13 +30,13 @@ class ProfileHeader extends StatelessWidget {
               )
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     username,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Itim',
                       fontSize: 15
                     )
@@ -48,7 +48,7 @@ class ProfileHeader extends StatelessWidget {
                     'Weight: ${weight.toString()}',
                   ),
                   IconButton(
-                      icon: Icon(Icons.logout),
+                      icon: const Icon(Icons.logout),
                       onPressed: onPressed
                   )
                 ]

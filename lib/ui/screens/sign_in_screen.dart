@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/ui/screens/sign_up_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
@@ -26,7 +28,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  ApiRoutes _apiRoutes = ApiRoutes();
+  final ApiRoutes _apiRoutes = ApiRoutes();
 
   Widget body;
 
@@ -35,8 +37,8 @@ class _SignInScreenState extends State<SignInScreen> {
     super.initState();
   }
 
-  Future<String> resetPassword(email) async {
-    Map map = Map<String, dynamic>();
+  Future<String> resetPassword(String email) async {
+    final Map map = <String, dynamic>{};
     map['email'] = email;
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}/auth/reset-password'),
@@ -46,10 +48,10 @@ class _SignInScreenState extends State<SignInScreen> {
         body: map
     );
 
-    var data = jsonDecode(response.body);
+    final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      if (data.containsKey('access_token')) {
+      if (data.containsKey('access_token') != null) {
         setToken(data['access_token']);
         return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
@@ -61,8 +63,8 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Future<String> googleSignIn(username, password) async {
-    Map queryParameters = new Map<String, dynamic>();
+  Future<String> googleSignIn(String username, String password) async {
+    final Map<String, dynamic> queryParameters = <String, dynamic>{};
     queryParameters['authentication_backend'] = 'jwt';
     queryParameters['scopes'] = ['email', 'profile'];
     final http.Response response = await http.post(
@@ -75,10 +77,10 @@ class _SignInScreenState extends State<SignInScreen> {
     print(response.body);
     print(response.statusCode);
 
-    var data = jsonDecode(response.body);
+    final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      if (data.containsKey('access_token')) {
+      if (data.containsKey('access_token') != null) {
         setToken(data['access_token']);
         return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
@@ -90,24 +92,23 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Widget loginFormWidget (context) {
+  Widget loginFormWidget(BuildContext context) {
     return Container(
-          padding: EdgeInsets.symmetric(horizontal: 50.0),
+          padding: const EdgeInsets.symmetric(horizontal: 50.0),
           child: Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ScreenHeader(text: 'Sign In'),
+                    const ScreenHeader(text: 'Sign In'),
                     RoundedTextField(
                       hintText: 'Email',
                       controller: emailController,
                     ),
-                    RoundedTextField(
+                    RoundedTextFieldObscured(
                       hintText: 'Password',
-                      obscureText: true,
                       controller: passwordController
                     ),
-                    futureSignIn ? Container() : Text("Wrong login or password"),
+                    if (futureSignIn) Container() else const Text("Wrong login or password"),
                     RoundedButton(
                         text: 'Sign In',
                         onPressed: () async {
@@ -122,38 +123,38 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         }),
                         Container(
-                            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
                                     child: TextButton(
-                                      child: HavkaText(
-                                          text: 'Sign Up'
-                                      ),
                                       onPressed: () {
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
                                       },
+                                      child: const HavkaText(
+                                          text: 'Sign Up'
+                                      ),
                                     )
                                 ),
                                 Container(
                                     child: TextButton(
-                                      child: HavkaText(
-                                        text: 'Reset password',
-                                      ),
                                       onPressed: () {
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
                                       },
+                                      child: const HavkaText(
+                                        text: 'Reset password',
+                                      ),
                                     )
                                 )
                                 ])
                         ),
                         RoundedButton(
                             text: 'Continue with Google',
-                            color: Color(0xFFEDE88E),
+                            color: HavkaColors.cream,
                             textColor: Theme.of(context).accentColor,
                             onPressed: () async {
-                              GoogleSignIn _googleSignIn = GoogleSignIn(
+                              final GoogleSignIn _googleSignIn = GoogleSignIn(
                                   scopes:[
                                     'email',
                                     'profile'
@@ -163,9 +164,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               final result = await _googleSignIn.signIn();
                               final ggAuth = await result.authentication;
 
-                              var idToken = ggAuth.idToken;
-                              var accessToken = ggAuth.accessToken;
-                              var serverAuthCode = ggAuth.serverAuthCode;
+                              final idToken = ggAuth.idToken;
+                              final accessToken = ggAuth.accessToken;
+                              final serverAuthCode = ggAuth.serverAuthCode;
 
                               print('id $idToken');
                               print('acs $accessToken');

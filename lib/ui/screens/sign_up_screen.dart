@@ -5,6 +5,7 @@ import 'package:health_tracker/ui/screens/sign_in_check_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -23,8 +24,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _userExists = false;
   String buttonText = 'Sign Up';
 
-  _checkEmail() {
-    Timer(Duration(seconds: 3), () async {
+  void _checkEmail() {
+    Timer(const Duration(seconds: 3), () async {
       print(emailController.text);
       // var url = 'https://maupars.ru/check_username.php?username=${usernameController.text}';
       final http.Response response = await http.get(
@@ -33,7 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'Content-Type': 'application/json; charset=UTF-8',
         }
       );
-      var data = jsonDecode(response.body);
+      final data = jsonDecode(response.body);
       print(data);
       print(response.statusCode);
       print(_userExists);
@@ -56,13 +57,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     emailController.addListener(_checkEmail);
   }
 
-  Future signUp(email, password) async {
-    var pwdBytes = utf8.encode(password);
-    var pwdHashed = sha256.convert(pwdBytes);
+  Future<String> signUp(String email, String password) async {
+    final pwdBytes = utf8.encode(password);
+    final pwdHashed = sha256.convert(pwdBytes);
     print(pwdHashed);
     // var url = 'https://maupars.ru/signup.php?username=$username&password=$pwdHashed';
     // final http.Response response = await http.post(url);
-    var map = new Map<String, dynamic>();
+    final map = <String, dynamic>{};
     map['email'] = email;
     map['password'] = password;
     final http.Response response = await http.post(
@@ -92,13 +93,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold (
       backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 70.0),
+        padding: const EdgeInsets.symmetric(horizontal: 70.0),
         child: Center(
           child: (_futureSignUp == null)
            ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              ScreenHeader(
+              const ScreenHeader(
                   text: 'Sign Up'
               ),
               RoundedTextField(
@@ -106,9 +107,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 controller: emailController,
                 errorText: _userExists ? 'User already exists' : null,
               ),
-              RoundedTextField(
+              RoundedTextFieldObscured(
                 hintText: 'Password',
-                obscureText: true,
                 controller: passwordController,
               ),
               RoundedButton(
@@ -120,28 +120,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
               ),
               Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                           child: TextButton(
-                            child: HavkaText(
-                                text: 'Sign In'
-                            ),
                             onPressed: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
                             },
+                            child: const HavkaText(
+                                text: 'Sign In'
+                            ),
                           )
                       ),
                       Container(
                           child: TextButton(
-                            child: HavkaText(
-                              text: 'Reset password',
-                            ),
                             onPressed: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
                             },
+                            child: const HavkaText(
+                              text: 'Reset password',
+                            ),
                           )
 
                       )
@@ -163,7 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (snapshot.hasData) {
                 return Text(
                     snapshot.data,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xFF5BBE78),
                       fontSize: 25
                     )
@@ -171,7 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             },
           )
         ),

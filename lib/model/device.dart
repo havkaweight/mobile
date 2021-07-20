@@ -14,11 +14,11 @@ class Device {
   });
 
   Device.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        name = json['name'],
-        vendor = json['vendor'],
-        serviceUUID = json['service_uuid'],
-        status = json['status'];
+      : id = json['id'] as int,
+        name = json['name'] as String,
+        vendor = json['vendor'] as String,
+        serviceUUID = json['service_uuid'] as String,
+        status = json['status'] as int;
 
   Map<String, dynamic> toJson() =>
       {

@@ -9,7 +9,7 @@ final ThemeData themeData = ThemeData(
   primaryColorBrightness: Brightness.light,
   accentColor: HavkaColors.green,
   accentColorBrightness: Brightness.light,
-  backgroundColor: HavkaColors.cream,
+  backgroundColor: HavkaColors.cream
 );
 
 final ThemeData themeDataDark = ThemeData(

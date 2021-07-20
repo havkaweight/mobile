@@ -63,16 +63,17 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                 FutureBuilder<dynamic>(
                   future: getUserDevicesList(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) return Center(
+                    if (!snapshot.hasData) {
+                      return Center(
                       child: Container(
-                        child: HavkaProgressIndicator(),
-                        padding: EdgeInsets.symmetric(vertical: 40.0)
+                        padding: const EdgeInsets.symmetric(vertical: 40.0),
+                        child: const HavkaProgressIndicator()
                       )
                     );
-                    if (snapshot.data.runtimeType == List)
-                    return Expanded(
+                    }
+                    if (snapshot.data.runtimeType == List) {
+                      return Expanded(
                         child: ListView(
-                          scrollDirection: Axis.vertical,
                           children: snapshot.data.map<Widget>((data) {
                             return ListTile(
                               title: Text(data.deviceName),
@@ -81,7 +82,8 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                           }).toList(),
                         )
                     );
-                    return Text('No data :-(');
+                    }
+                    return const Text('No data :-(');
                   },
                 ),
               ])

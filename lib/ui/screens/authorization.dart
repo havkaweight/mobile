@@ -1,9 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:health_tracker/model/scale.dart';
-import '../../main.dart';
-import 'package:http/http.dart' as http;
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 Future<bool> setToken(String value) async {
   await storage.write(key: 'jwt', value: value);
@@ -11,11 +8,11 @@ Future<bool> setToken(String value) async {
 }
 
 Future<String> getToken() async {
-  String token = await storage.read(key: 'jwt');
+  final String token = await storage.read(key: 'jwt');
   return token;
 }
 
-void removeToken() async {
+Future removeToken() async {
   await storage.delete(key: 'jwt');
 }
 
