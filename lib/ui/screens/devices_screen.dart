@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:http/http.dart' as http;
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/model/device.dart';
 
 Stream stream;
 QualifiedCharacteristic characteristic;
@@ -70,10 +68,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   ListView _buildDevicesList() {
-    final List<Container> containers = [];
+    final List<SizedBox> containers = [];
     for (final DiscoveredDevice device in discDevicesList) {
       containers.add(
-        Container(
+        SizedBox(
           height: 50,
           child: Row(
             children: <Widget>[
@@ -96,7 +94,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 // color: Colors.blue,
                 child: const Text(
                   'Connect',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: HavkaColors.green)
                 )
               )
             ]
@@ -118,25 +116,23 @@ class _DevicesScreenState extends State<DevicesScreen> {
       future: _setSearchingDevicesList(),
       builder: (context, snapshot) {
       if ([BleStatus.unauthorized, BleStatus.poweredOff, BleStatus.unsupported].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Icon(Icons.bluetooth_disabled, color: Colors.grey,
-                        size: 40),
-                    Icon(Icons.location_disabled, color: Colors.grey,
-                        size: 40),
-                  ],
-                ),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const <Widget>[
+                  Icon(Icons.bluetooth_disabled, color: Colors.grey,
+                      size: 40),
+                  Icon(Icons.location_disabled, color: Colors.grey,
+                      size: 40),
+                ],
               ),
-              const Text('Turn on Bluetooth and Location')
-            ]
-          )
+            ),
+            const Text('Turn on Bluetooth and Location')
+          ]
         );
       }
       return Scaffold(

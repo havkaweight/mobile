@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,9 +13,12 @@ class HavkaProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator(
-        valueColor: new AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)
-    );
+    if (Platform.isAndroid) {
+      return CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)
+      );
+    }
+    return const CupertinoActivityIndicator();
   }
 
 }

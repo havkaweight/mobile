@@ -1,22 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/user.dart';
-import 'package:health_tracker/ui/screens/sign_up_screen.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/ui/screens/main_screen.dart';
+import 'package:health_tracker/ui/screens/sign_up_screen.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'dart:async';
-import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:health_tracker/ui/screens/google_sign_in.dart';
-import 'package:health_tracker/ui/screens/main_screen.dart';
 
 bool futureSignIn = true;
 
@@ -52,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     if (response.statusCode == 200) {
       if (data.containsKey('access_token') != null) {
-        setToken(data['access_token']);
+        setToken(data['access_token'] as String);
         return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
         return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
@@ -81,7 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     if (response.statusCode == 200) {
       if (data.containsKey('access_token') != null) {
-        setToken(data['access_token']);
+        setToken(data['access_token'] as String);
         return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
         return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
@@ -127,25 +124,21 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                                      },
-                                      child: const HavkaText(
-                                          text: 'Sign Up'
-                                      ),
-                                    )
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                                  },
+                                  child: const HavkaText(
+                                      text: 'Sign Up'
+                                  ),
                                 ),
-                                Container(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                                      },
-                                      child: const HavkaText(
-                                        text: 'Reset password',
-                                      ),
-                                    )
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                                  },
+                                  child: const HavkaText(
+                                    text: 'Reset password',
+                                  ),
                                 )
                                 ])
                         ),

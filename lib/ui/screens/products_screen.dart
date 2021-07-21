@@ -1,16 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:http/http.dart' as http;
-import 'package:health_tracker/main.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/ui/widgets/search_textfield.dart';
 
 class ProductsScreen extends StatefulWidget {
   @override
@@ -19,6 +12,7 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
+  final searchController = TextEditingController();
 
   @override
   void initState() {
@@ -30,16 +24,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return FutureBuilder(
       future: _apiRoutes.getUserProductsList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return Scaffold (
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: Column(
+        return Column(
             children: <Widget>[
-              Row(
-                children: const <Widget>[
-                  ScreenHeader(
-                    text: 'Food'
-                  ),
-                ],
+              SearchTextField(
+                hintText: 'Search...',
+                controller: searchController,
+                icon: const Icon(Icons.search),
               ),
               FutureBuilder<List<UserProduct>>(
                 future: _apiRoutes.getUserProductsList(),
@@ -53,24 +43,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     )
                   );
                   }
-                  return Expanded(
-                      child: ListView(
-                        children: snapshot.data.map<Widget>((data) {
-                          final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
-                          return ListTile(
-                            title: Text(data.name),
-                            subtitle: Text(subtitle),
-                            // onTap: () {
-                            //   _addProduct(data);
-                            // },
-                          );
-                        }).toList(),
-                      )
+                  return Column(
+                    children: [
+                      Expanded(
+                          child: ListView(
+                            children: snapshot.data.map<Widget>((data) {
+                              final String subtitle = 'Protein: ${data.protein.toString()}  Fat: ${data.fat.toString()}  Carbs: ${data.carbs.toString()}  Kcal: ${data.kcal.toString()}';
+                              return ListTile(
+                                title: Text(data.name),
+                                subtitle: Text(subtitle),
+                                // onTap: () {
+                                //   _addProduct(data);
+                                // },
+                              );
+                            }).toList(),
+                          )
+                      ),
+                    ],
                   );
                 },
               ),
-            ])
-        );
+            ]);
       }
     );
   }

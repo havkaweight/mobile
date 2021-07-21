@@ -6,7 +6,6 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/model/user_device.dart';
 
@@ -32,9 +31,9 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
         }
     );
     if(response.statusCode == 200) {
-      final devices = jsonDecode(response.body);
-      List<UserDevice> devicesList = devices.map<UserDevice>((json) {
-        return UserDevice.fromJson(json);
+      final devices = jsonDecode(response.body) as List;
+      final List<UserDevice> devicesList = devices.map<UserDevice>((json) {
+        return UserDevice.fromJson(json as Map<String, dynamic>);
       }).toList();
       return devicesList;
     } else {
@@ -45,49 +44,47 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
   @override
   Widget build (BuildContext context) {
     return WillPopScope(
-      onWillPop: () => Navigator.push((context), MaterialPageRoute(builder: (context) => ProfileScreen())),
+      onWillPop: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen())),
       child: Scaffold (
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ScreenHeader(
-                  text: 'My devices'
-                ),
-                RoundedButton(
-                  text: 'Add device',
-                  onPressed: () {},
-                ),
-                FutureBuilder<dynamic>(
-                  future: getUserDevicesList(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 40.0),
-                        child: const HavkaProgressIndicator()
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const ScreenHeader(
+                text: 'My devices'
+              ),
+              RoundedButton(
+                text: 'Add device',
+                onPressed: () {},
+              ),
+              FutureBuilder<dynamic>(
+                future: getUserDevicesList(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 40.0),
+                      child: const HavkaProgressIndicator()
+                    )
+                  );
+                  }
+                  if (snapshot.data.runtimeType == List) {
+                    return Expanded(
+                      child: ListView(
+                        children: snapshot.data.map<Widget>((data) {
+                          return ListTile(
+                            title: Text(data.deviceName),
+                            subtitle: Text(data.deviceId.toString()),
+                          );
+                        }).toList(),
                       )
-                    );
-                    }
-                    if (snapshot.data.runtimeType == List) {
-                      return Expanded(
-                        child: ListView(
-                          children: snapshot.data.map<Widget>((data) {
-                            return ListTile(
-                              title: Text(data.deviceName),
-                              subtitle: Text(data.deviceId.toString()),
-                            );
-                          }).toList(),
-                        )
-                    );
-                    }
-                    return const Text('No data :-(');
-                  },
-                ),
-              ])
-          )
+                  );
+                  }
+                  return const Text('No data :-(');
+                },
+              ),
+            ])
         )
       ),
     );

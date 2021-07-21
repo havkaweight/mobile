@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/ui/screens/sign_in_check_screen.dart';
@@ -7,10 +10,7 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
-import 'package:health_tracker/routes/horizontal_route.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override

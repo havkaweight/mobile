@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'authorization.dart';
 
 class ScaleScreen extends StatefulWidget {
   final UserProduct product;
 
-  ScaleScreen({
+  const ScaleScreen({
     this.product
   });
 
@@ -21,7 +17,7 @@ class ScaleScreen extends StatefulWidget {
 }
 
 class _ScaleScreenState extends State<ScaleScreen> {
-  ApiRoutes _apiRoutes = ApiRoutes();
+  final ApiRoutes _apiRoutes = ApiRoutes();
 
   @override
   void initState() {
@@ -66,7 +62,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
     return FutureBuilder(
       future: _apiRoutes.getMe(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        var weight = 0;
+        const weight = 0;
         // stream.listen((connectionState) {
         //     weight = flutterReactiveBle.readCharacteristic(characteristic);
         //   }, onError: (Object error){
@@ -74,21 +70,19 @@ class _ScaleScreenState extends State<ScaleScreen> {
         return Scaffold (
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ScreenHeader(
-                text: '$weight g'
-              ),
-              RoundedButton(
-                text: 'OK',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                },
-              )
-            ])
-        )
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const ScreenHeader(
+              text: '$weight g'
+            ),
+            RoundedButton(
+              text: 'OK',
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+              },
+            )
+          ])
       )
     );
       }

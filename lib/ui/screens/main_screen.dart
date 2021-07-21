@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   int currentIndex = 0;
 
   Widget childWidget = const ChildWidget(
-    screen: AvailableScreen.Fridge,
+    screen: AvailableScreen.fridge,
   );
 
   @override
@@ -70,9 +70,9 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           children: const <Widget>[
-            ChildWidget(screen: AvailableScreen.Fridge),
-            ChildWidget(screen: AvailableScreen.Scale),
-            ChildWidget(screen: AvailableScreen.Profile)
+            ChildWidget(screen: AvailableScreen.fridge),
+            ChildWidget(screen: AvailableScreen.scale),
+            ChildWidget(screen: AvailableScreen.profile)
           ]
         )
       );
