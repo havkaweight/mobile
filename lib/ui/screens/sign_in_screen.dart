@@ -9,6 +9,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/sign_up_screen.dart';
+import 'package:health_tracker/ui/widgets/popup.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
@@ -117,45 +118,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
                               });
                             }
-                            showGeneralDialog(
-                              barrierLabel: "Label",
-                              barrierDismissible: true,
-                              barrierColor: null, //Colors.black.withOpacity(0.5),
-                              transitionDuration: const Duration(seconds: 1),
-                              context: context,
-                              pageBuilder: (context, anim1, anim2) {
-                                Future.delayed(const Duration(seconds: 3), () {
-                                  Navigator.of(context).pop(true);
-                                });
-                                return Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Container(
-                                    height: 50,
-                                    margin: const EdgeInsets.only(top: 70, left: 30, right: 30),
-                                    decoration: BoxDecoration(
-                                      color: HavkaColors.bone,
-                                      borderRadius: BorderRadius.circular(40),
-                                    ),
-                                    child: const Center(
-                                        child: Text(
-                                            'Incorrect login or password',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: HavkaColors.green,
-                                                decoration: TextDecoration.none
-                                            )
-                                        )),
-                                  ),
-                                );
-                              },
-                              transitionBuilder: (context, anim1, anim2, child) {
-                                return SlideTransition(
-                                  position: Tween(begin: const Offset(0, -1), end: const Offset(0, 0)).animate(anim1),
-                                  child: child,
-                                );
-                              },
-                            );
+                            showPopUp(context, 'Invalid login or password');
                           });
                         }),
                         Container(

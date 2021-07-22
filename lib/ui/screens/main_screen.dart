@@ -63,6 +63,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         backgroundColor: Theme.of(context).backgroundColor,
         body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           onPageChanged: (page) {
             setState(() {

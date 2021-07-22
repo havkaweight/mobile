@@ -110,9 +110,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }).toList(),
                         )
                     );
-                  } else {
-                    return const Text('No devices added :-(');
                   }
+                  return const Text('No devices added :-(');
                 }
               ),
               Center(

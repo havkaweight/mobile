@@ -41,11 +41,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
             key: qrKey,
             onQRViewCreated: _onQRViewCreated,
             overlay: QrScannerOverlayShape(
-                borderColor: HavkaColors.green,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 20,
-                cutOutSize: scanArea
+              borderColor: HavkaColors.green,
+              borderRadius: 10,
+              borderLength: 30,
+              borderWidth: 20,
+              cutOutSize: scanArea
             )
           ),
         ),
