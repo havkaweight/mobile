@@ -27,7 +27,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         return Column(
             children: <Widget>[
               SearchTextField(
-                hintText: 'Search...',
+                hintText: 'Search',
+                width: 0.9,
                 controller: searchController,
                 icon: const Icon(Icons.search),
               ),

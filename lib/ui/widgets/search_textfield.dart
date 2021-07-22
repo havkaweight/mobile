@@ -53,7 +53,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(15.0),
           ),
           focusColor: const Color(0xFFFFFFFF),
           focusedBorder: OutlineInputBorder(
@@ -70,10 +70,9 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
           ),
           hintText: widget.controller.text.isEmpty ? widget.hintText : widget.controller.text,
           errorText: widget.errorText,
-          // labelText: controller.text.isEmpty ? labelText : controller.text,
+          prefixIcon: widget.icon,
           hintStyle: const TextStyle(
             color: Color(0x7A66550B),
-            // fontWeight: FontWeight.bold,
             fontSize: 16
           ),
         )

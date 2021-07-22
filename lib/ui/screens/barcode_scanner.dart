@@ -29,38 +29,36 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+    final scanArea = (MediaQuery.of(context).size.width < 400 ||
         MediaQuery.of(context).size.height < 400)
         ? 150.0
         : 300.0;
-    return Container(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 5,
-              child: QRView(
-                key: qrKey,
-                onQRViewCreated: _onQRViewCreated,
-                overlay: QrScannerOverlayShape(
-                    borderColor: HavkaColors.green,
-                    borderRadius: 10,
-                    borderLength: 30,
-                    borderWidth: 20,
-                    cutOutSize: scanArea
-                )
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: (result != null)
-                    ? Text(
-                    'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
-                    : Text('Scan a code'),
-              ),
+    return Column(
+      children: <Widget>[
+        Expanded(
+          flex: 5,
+          child: QRView(
+            key: qrKey,
+            onQRViewCreated: _onQRViewCreated,
+            overlay: QrScannerOverlayShape(
+                borderColor: HavkaColors.green,
+                borderRadius: 10,
+                borderLength: 30,
+                borderWidth: 20,
+                cutOutSize: scanArea
             )
-          ],
+          ),
         ),
+        Expanded(
+          flex: 1,
+          child: Center(
+            child: (result != null)
+                ? Text(
+                'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
+                : const Text('Scan a code'),
+          ),
+        )
+      ],
     );
   }
 
