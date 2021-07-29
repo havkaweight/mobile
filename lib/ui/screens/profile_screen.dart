@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/components/profile.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
@@ -103,6 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return Expanded(
                         child: ListView(
                           children: snapshot.data.map<Widget>((data) {
+                            isDeviceConnected(data);
                             return ListTile(
                               title: Text(data.deviceName),
                               subtitle: Text(data.deviceId.toString()),
@@ -121,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RoundedButton(
-                        text: 'Add scale',
+                        text: 'Add device',
                         onPressed: () {
                           _buildScaleSearching();
                           setState(() {});
@@ -177,6 +179,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     );
+  }
+
+  Future<bool> isDeviceConnected(UserDevice userDevice) async {
+    flutterReactiveBle.connectToDevice(id: userDevice.deviceUUID).listen((update) {
+      bool status = false;
+      if (update.connectionState == DeviceConnectionState.connected) {
+        status = true;
+      } else {
+        status = false;
+      };
+      return status;
+    });
   }
 
 }

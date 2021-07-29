@@ -114,7 +114,6 @@ class ApiRoutes {
     );
     isAuthorized(response);
     final user = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    print(response.body);
     return user;
   }
 

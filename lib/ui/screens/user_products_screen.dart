@@ -71,25 +71,25 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                             // ),
                             ]
               ),
-              RoundedTextField(
-                labelText: 'Barcode number',
-                hintText: '4604921001960',
-                keyboardType: TextInputType.number,
-                controller: barcodeController,
-              ),
-              FutureBuilder(
-                future: _apiRoutes.getProductByBarcode(barcodeController.text),
-                builder: (context, snapshot) {
-                  return Text(
-                    'Havka: ${snapshot.data}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      color: HavkaColors.green,
-                      fontSize: 20,
-                    ),
-                  );
-                }
-              ),
+              // RoundedTextField(
+              //   labelText: 'Barcode number',
+              //   hintText: '4604921001960',
+              //   keyboardType: TextInputType.number,
+              //   controller: barcodeController,
+              // ),
+              // FutureBuilder(
+              //   future: _apiRoutes.getProductByBarcode(barcodeController.text),
+              //   builder: (context, snapshot) {
+              //     return Text(
+              //       'Havka: ${snapshot.data}',
+              //       textAlign: TextAlign.left,
+              //       style: const TextStyle(
+              //         color: HavkaColors.green,
+              //         fontSize: 20,
+              //       ),
+              //     );
+              //   }
+              // ),
               FutureBuilder<dynamic>(
                 future: _apiRoutes.getUserProductsList(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -116,7 +116,14 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       )
                   );
                   }
-                  return const Text('No data :-(');
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const <Widget>[
+                        Text('No data')
+                      ]
+                    )
+                  );
                 },
               ),
             ])
