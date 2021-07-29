@@ -52,29 +52,41 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   if (!snapshot.hasData) {
                     return Column(
                       children: [
-                        Expanded(
-                            child: ListView(
-                              children: snapshot.data.map<Widget>((data) {
-                                final String subtitle = 'Protein: ${data.protein
-                                    .toString()}  Fat: ${data.fat
-                                    .toString()}  Carbs: ${data.carbs
-                                    .toString()}  Kcal: ${data.kcal
-                                    .toString()}';
-                                return ListTile(
-                                  title: Text(data.name),
-                                  subtitle: Text(subtitle),
-                                  // onTap: () {
-                                  //   _addProduct(data);
-                                  // },
-                                );
-                              }).toList(),
-                            )
+                        ListView(
+                          children: snapshot.data.map<Widget>((data) {
+                            final String subtitle = 'Protein: ${data.protein
+                                .toString()}  Fat: ${data.fat
+                                .toString()}  Carbs: ${data.carbs
+                                .toString()}  Kcal: ${data.kcal
+                                .toString()}';
+                            return ListTile(
+                              title: Text(data.name),
+                              subtitle: Text(subtitle),
+                              // onTap: () {
+                              //   _addProduct(data);
+                              // },
+                            );
+                          }).toList(),
                         ),
                       ],
                     );
                   }
-                  return const Center(
-                    child: Text('Error internet connection')
+                  return
+                  //   const Center(
+                  //   child: Text('Error internet connection')
+                  // );
+                  SizedBox(
+                    child: Column(
+                      children: [
+                        ListTile(
+                              title: Text('Havka'),
+                              subtitle: Text('Nasha havka'),
+                              // onTap: () {
+                              //   _addProduct(data);
+                              // },
+                            ),
+                      ],
+                    ),
                   );
                 },
               ),

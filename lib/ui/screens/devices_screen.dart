@@ -67,7 +67,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
     });
   }
 
-  ListView _buildDevicesList() {
+  SizedBox _buildDevicesList() {
     final List<SizedBox> containers = [];
     for (final DiscoveredDevice device in discDevicesList) {
       containers.add(
@@ -102,11 +102,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
         )
       );
     }
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: <Widget>[
-        ...containers,
-      ],
+    return SizedBox(
+      child: ListView(
+        padding: const EdgeInsets.all(8),
+        children: <Widget>[
+          ...containers,
+        ],
+      ),
     );
   }
 
