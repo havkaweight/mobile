@@ -40,7 +40,7 @@ class _HavkaAppState extends State<HavkaApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
+      body: const Center(
         child: AppIcon(image: Assets.appLogo)
       )
     );

@@ -7,6 +7,7 @@ import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:http/http.dart' as http;
 import 'constants.dart';
 
@@ -205,9 +206,7 @@ class ApiRoutes {
     }
   }
 
-
-
-  Future _addProduct(product) async {
+  Future addProduct(product) async {
     print('Ya tut');
     print(jsonEncode(product.toJson()));
     final token = await storage.read(key: 'jwt');
@@ -221,4 +220,5 @@ class ApiRoutes {
         body: jsonEncode(product.toJson())
     );
   }
+
 }

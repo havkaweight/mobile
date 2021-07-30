@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/search_textfield.dart';
@@ -71,6 +72,46 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ],
                     );
                   }
+                  const List<Map<String, String>> prod = [
+                    {
+                      'name': 'Pervoe',
+                      'desc': 'Nasha havka',
+                      'protein': '3',
+                      'fats': '4',
+                      'carbs': '50',
+                      'kcal': '185'
+                    },
+                    {
+                      'name': 'Vtoroe',
+                      'desc': 'Nasha havka',
+                      'protein': '40',
+                      'fats': '3',
+                      'carbs': '10',
+                      'kcal': '400'
+                    },
+                    {
+                      'name': 'Kompot',
+                      'desc': 'Nasha havka',
+                      'protein': '0',
+                      'fats': '0',
+                      'carbs': '30',
+                      'kcal': '50'
+                    }
+                  ];
+                  print(prod);
+                  final List<ListTile> tiles = [];
+                  for (final Map<String, String> el in prod) {
+                    tiles.add(
+                      ListTile(
+                        title: Text(el['name']),
+                        subtitle: Text(el['desc']),
+                        onTap: () {
+                          tempAddProduct(el);
+                          Navigator.pop(context);
+                        },
+                      )
+                    );
+                  }
                   return
                   //   const Center(
                   //   child: Text('Error internet connection')
@@ -78,13 +119,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   SizedBox(
                     child: Column(
                       children: [
-                        ListTile(
-                              title: Text('Havka'),
-                              subtitle: Text('Nasha havka'),
-                              // onTap: () {
-                              //   _addProduct(data);
-                              // },
-                            ),
+                        ...tiles
                       ],
                     ),
                   );
@@ -93,6 +128,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ]);
       }
     );
+  }
+
+  void tempAddProduct(Map<String, String> prod) {
+    // final token = await storage.read(key: 'jwt');
+    // final http.Response _ = await http.post(
+    //     Uri.https(Api.host, '${Api.prefix}/product/add/'),
+    //     headers: <String, String>{
+    //       'Content-type': 'application/json',
+    //       'Accept': 'application/json',
+    //       'Authorization': 'Bearer $token'
+    //     },
+    //     body: jsonEncode(product.toJson())
+    // );
+    userProductsList.add(prod);
   }
 
   void _onQRViewCreated(QRViewController controller) {

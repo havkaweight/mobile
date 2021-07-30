@@ -103,6 +103,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
       );
     }
     return SizedBox(
+      height: 300,
       child: ListView(
         padding: const EdgeInsets.all(8),
         children: <Widget>[

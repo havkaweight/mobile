@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 
 import 'barcode_scanner.dart';
+
+List<Map<String, String>> userProductsList = [];
 
 class UserProductsScreen extends StatefulWidget {
   @override
@@ -116,13 +118,26 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       )
                   );
                   }
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const <Widget>[
-                        Text('No data')
+                  final List<ListTile> lst = [];
+                  print(userProductsList);
+                  for (final Map<String, String> prod in userProductsList) {
+                    lst.add(
+                        ListTile(
+                          title: Text(prod['name']),
+                          subtitle: Text(prod['desc']),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(prod: prod)));
+                          },
+                        )
+                    );
+                  }
+                  return SizedBox(
+                    height: 300,
+                    child: ListView(
+                      children: [
+                        ...lst
                       ]
-                    )
+                    ),
                   );
                 },
               ),
