@@ -23,10 +23,8 @@ class Product {
       : id = json['id'] as int,
         name = json['name'] as String,
         brand = json['brand'] as String,
-        protein = json['protein'] as double,
-        fat = json['fat'] as double,
-
-
+        protein = json['proteins'] as double,
+        fat = json['fats'] as double,
         carbs = json['carbs'] as double,
         kcal = json['kcal'] as double,
         baseValue = json['nutrition_per'] as double;
@@ -36,8 +34,8 @@ class Product {
         'id': id,
         'name': name,
         'brand': brand,
-        'protein': protein,
-        'fat': fat,
+        'proteins': protein,
+        'fats': fat,
         'carbs': carbs,
         'kcal': kcal,
         'nutrition_per': baseValue

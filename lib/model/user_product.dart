@@ -29,8 +29,8 @@ class UserProduct {
         productName = json['name'] as String,
         productBrand = json['brand'] as String,
         userId = json['user_id'] as String,
-        protein = json['protein'] as double,
-        fat = json['fat'] as double,
+        protein = json['proteins'] as double,
+        fat = json['fats'] as double,
         carbs = json['carbs'] as double,
         kcal = json['kcal'] as double,
         netWeightLeft = json['new_weight_left'] as double;
@@ -42,8 +42,8 @@ class UserProduct {
         'name': productName,
         'brand': productBrand,
         'user_id': userId,
-        'protein': protein,
-        'fat': fat,
+        'proteins': protein,
+        'fats': fat,
         'carbs': carbs,
         'kcal': kcal,
         'new_weight_left': netWeightLeft

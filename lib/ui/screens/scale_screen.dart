@@ -35,10 +35,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
     //     weight = flutterReactiveBle.readCharacteristic(characteristic);
     //   }, onError: (Object error){
     //   });
-    final double protein = (widget.userProduct.protein != null) ? widget.userProduct.protein : 0 * weight / 100;
-    final double fats = (widget.userProduct.fat != null) ? widget.userProduct.fat : 0 * weight / 100;
-    final double carbs = (widget.userProduct.carbs != null) ? widget.userProduct.carbs : 0 * weight / 100;
-    final double kcal = (widget.userProduct.kcal != null) ? widget.userProduct.kcal : 0 * weight / 100;
+    final double protein = widget.userProduct.protein * weight / 100;
+    final double fats = widget.userProduct.fat * weight / 100;
+    final double carbs = widget.userProduct.carbs * weight / 100;
+    final double kcal = widget.userProduct.kcal * weight / 100;
     return FutureBuilder(
         future: Future.delayed(const Duration(seconds: 1), () {
               setState((){weight += 1;});
@@ -53,10 +53,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
                     ScreenHeader(text: widget.userProduct.productName),
                     ScreenSubHeader(text: widget.userProduct.productBrand),
                     ScreenHeader(text: '$weight g'),
-                    ScreenSubHeader(text: 'Protein: $protein g'),
-                    ScreenSubHeader(text: 'Fats: $fats g'),
-                    ScreenSubHeader(text: 'Carbs: $carbs g'),
-                    ScreenSubHeader(text: '$kcal kcal'),
+                    ScreenSubHeader(text: 'Protein: ${protein.toStringAsFixed(2)} g'),
+                    ScreenSubHeader(text: 'Fats: ${fats.toStringAsFixed(2)} g'),
+                    ScreenSubHeader(text: 'Carbs: ${carbs.toStringAsFixed(2)} g'),
+                    ScreenSubHeader(text: '${kcal.toStringAsFixed(2)} kcal'),
                     // RoundedButton(
                     //   text: 'OK',
                     //   onPressed: () {
