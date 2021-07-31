@@ -51,12 +51,12 @@ class _MainScreenState extends State<MainScreen> {
                 icon: currentIndex==0 ? const Icon(Icons.kitchen) : const Icon(Icons.kitchen_outlined),
                 label: 'Fridge'
             ),
+            // BottomNavigationBarItem(
+            //     icon: currentIndex==1 ? const Icon(Icons.monitor_weight) : const Icon(Icons.monitor_weight_outlined),
+            //     label: 'Measure'
+            // ),
             BottomNavigationBarItem(
-                icon: currentIndex==1 ? const Icon(Icons.monitor_weight) : const Icon(Icons.monitor_weight_outlined),
-                label: 'Measure'
-            ),
-            BottomNavigationBarItem(
-                icon: currentIndex==2 ? const Icon(Icons.person) : const Icon(Icons.person_outline),
+                icon: currentIndex==1 ? const Icon(Icons.person) : const Icon(Icons.person_outline),
                 label: 'Me'
             )
           ],
@@ -72,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
           },
           children: const <Widget>[
             ChildWidget(screen: AvailableScreen.fridge),
-            ChildWidget(screen: AvailableScreen.scale),
+            // ChildWidget(screen: AvailableScreen.scale),
             ChildWidget(screen: AvailableScreen.profile)
           ]
         )

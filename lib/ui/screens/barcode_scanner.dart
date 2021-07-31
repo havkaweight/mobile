@@ -40,7 +40,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     return Column(
       children: <Widget>[
         Expanded(
-          flex: 5,
+          flex: 4,
           child: QRView(
             key: qrKey,
             onQRViewCreated: _onQRViewCreated,
@@ -76,7 +76,19 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   final Product product = snapshot.data as Product;
                   return ListTile(
                     title: Text(product.name),
-                    subtitle: Text(product.brand)
+                    subtitle: Text(product.brand),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RoundedButton(
+                          text: 'Add',
+                          onPressed: () async {
+                            await _apiRoutes.addProduct(product);
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    )
                   );
                 }
                 if (snapshot.hasError) {
