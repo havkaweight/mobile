@@ -157,11 +157,12 @@ class ApiRoutes {
     );
 
     if(response.statusCode == 200) {
-      final productJson = jsonDecode(response.body) as Map<String, dynamic>;
+      final productJson = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       final Product product = Product.fromJson(productJson);
       return product;
-    } else {
-      return 'Not found';
+    }
+    if (response.statusCode == 404) {
+      throw Exception('Not found');
     }
   }
 
