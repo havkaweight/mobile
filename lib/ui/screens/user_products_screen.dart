@@ -151,7 +151,6 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
     return showModalBottomSheet(
         isScrollControlled: true,
         backgroundColor: Theme.of(context).backgroundColor,
-        // backgroundColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15.0),
@@ -194,7 +193,11 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
               children: [
                 Holder(),
                 Center(
-                  child: ProductsScreen()
+                  child: Column(
+                    children: [
+                      ProductsScreen(),
+                    ],
+                  )
                 )
               ]
             )

@@ -147,13 +147,11 @@ class ApiRoutes {
   }
 
   Future<dynamic> getProductByBarcode(String barcode) async {
-    print('getProductByBarcode');
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}/users/me/products/get?barcode=$barcode'),
+        Uri.https(Api.host, '${Api.prefix}${Api.productByBarcode}/$barcode'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Accept': 'application/json',
           'Authorization': 'Bearer $token'
         }
     );
@@ -206,19 +204,37 @@ class ApiRoutes {
     }
   }
 
-  Future addProduct(product) async {
-    print('Ya tut');
-    print(jsonEncode(product.toJson()));
+  Future<List<Product>> getProductsList() async {
     final token = await storage.read(key: 'jwt');
-    final http.Response _ = await http.post(
-        Uri.https(Api.host, '${Api.prefix}/product/add/'),
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.products}'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+    if(response.statusCode == 200) {
+      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+      final List<Product> productsList = products.map<Product>((json) {
+        return Product.fromJson(json as Map<String, dynamic>);
+      }).toList();
+      return productsList;
+    }
+    return [];
+  }
+
+  Future addProduct(Product product) async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.userProductsAdd}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(product.toJson())
+        body: jsonEncode(product.productIdToJson())
     );
+
+    print('${response.statusCode} ${response.body}');
   }
 
 }
