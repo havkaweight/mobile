@@ -137,15 +137,6 @@ class ApiRoutes {
     return [];
   }
 
-  Future scanBarcode() async {
-    await FlutterBarcodeScanner.scanBarcode(
-        '#5BBE78',
-        'Cancel',
-        true,
-        ScanMode.BARCODE
-    ).then((value) => getProductByBarcode(value));
-  }
-
   Future<dynamic> getProductByBarcode(String barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(

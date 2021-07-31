@@ -103,20 +103,21 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                     )
                   );
                   }
-                  if (snapshot.data.runtimeType == List) {
-                    return Expanded(
+                  if (snapshot.hasData) {
+                    return SizedBox(
+                      height: 600,
                       child: ListView(
-                        children: snapshot.data.map<Widget>((data) {
+                        children: snapshot.data.map<Widget>((userProduct) {
                           return ListTile(
-                            title: Text(data.productName),
-                            subtitle: Text(data.amount.toString()),
+                            title: Text(userProduct.productName),
+                            subtitle: Text(userProduct.productBrand),
                             // onTap: () {
                             //   Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen(product: data)));
                             // }
                           );
                         }).toList(),
-                      )
-                  );
+                      ),
+                    );
                   }
                   final List<ListTile> lst = [];
                   print(userProductsList);

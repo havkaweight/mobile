@@ -55,8 +55,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   }
                   if (snapshot.hasData) {
                     print(snapshot.data);
+                    final double mHeight = MediaQuery.of(context).size.height;
                     return SizedBox(
-                      height: 500,
+                      height: mHeight * 0.73,
                       child: ListView(
                         children: snapshot.data.map<Widget>((product) {
                           return ListTile(
