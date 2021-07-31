@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class UserProductScreen extends StatefulWidget {
-  final Map<String, String> prod;
+  final UserProduct userProduct;
 
   const UserProductScreen({
     Key key,
-    @required this.prod
+    @required this.userProduct
   }) : super(key: key);
 
   @override
@@ -24,11 +25,11 @@ class _UserProductScreenState extends State<UserProductScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ScreenHeader(text: widget.prod['name']),
-            ScreenSubHeader(text: widget.prod['desc']),
+            ScreenHeader(text: widget.userProduct.productName),
+            ScreenSubHeader(text: widget.userProduct.productBrand),
             RoundedButton(
               text: 'Weigh',
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(prod: widget.prod)))
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: widget.userProduct)))
             )
           ]
         )

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
@@ -92,7 +94,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
               //     );
               //   }
               // ),
-              FutureBuilder<dynamic>(
+              FutureBuilder<List<UserProduct>>(
                 future: _apiRoutes.getUserProductsList(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
@@ -111,12 +113,18 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                           return ListTile(
                             title: Text(userProduct.productName),
                             subtitle: Text(userProduct.productBrand),
-                            // onTap: () {
-                            //   Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen(product: data)));
-
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(userProduct: userProduct)));
+                            },
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                IconButton(
+                                  icon: Icon(Icons.monitor_weight),
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct)));
+                                  },
+                                ),
                                 IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () async {
@@ -131,27 +139,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       ),
                     );
                   }
-                  final List<ListTile> lst = [];
-                  print(userProductsList);
-                  for (final Map<String, String> prod in userProductsList) {
-                    lst.add(
-                        ListTile(
-                          title: Text(prod['name']),
-                          subtitle: Text(prod['desc']),
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(prod: prod)));
-                          },
-                        )
-                    );
-                  }
-                  return SizedBox(
-                    height: 300,
-                    child: ListView(
-                      children: [
-                        ...lst
-                      ]
-                    ),
-                  );
+                  return Container();
                 },
               ),
             ])

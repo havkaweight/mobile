@@ -8,10 +8,11 @@ import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
 class ScaleScreen extends StatefulWidget {
-  final UserProduct product;
-  final Map<String, String> prod;
+  final UserProduct userProduct;
 
-  const ScaleScreen({this.product, this.prod});
+  const ScaleScreen({
+    this.userProduct
+  });
 
   @override
   _ScaleScreenState createState() => _ScaleScreenState();
@@ -34,10 +35,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
     //     weight = flutterReactiveBle.readCharacteristic(characteristic);
     //   }, onError: (Object error){
     //   });
-    final double protein = double.parse(widget.prod['protein']) * weight / 100;
-    final double fats = double.parse(widget.prod['fats']) * weight / 100;
-    final double carbs = double.parse(widget.prod['carbs']) * weight / 100;
-    final double kcal = double.parse(widget.prod['kcal']) * weight / 100;
+    final double protein = (widget.userProduct.protein != null) ? widget.userProduct.protein : 0 * weight / 100;
+    final double fats = (widget.userProduct.fat != null) ? widget.userProduct.fat : 0 * weight / 100;
+    final double carbs = (widget.userProduct.carbs != null) ? widget.userProduct.carbs : 0 * weight / 100;
+    final double kcal = (widget.userProduct.kcal != null) ? widget.userProduct.kcal : 0 * weight / 100;
     return FutureBuilder(
         future: Future.delayed(const Duration(seconds: 1), () {
               setState((){weight += 1;});
@@ -49,8 +50,8 @@ class _ScaleScreenState extends State<ScaleScreen> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                    ScreenHeader(text: widget.prod['name']),
-                    ScreenSubHeader(text: widget.prod['desc']),
+                    ScreenHeader(text: widget.userProduct.productName),
+                    ScreenSubHeader(text: widget.userProduct.productBrand),
                     ScreenHeader(text: '$weight g'),
                     ScreenSubHeader(text: 'Protein: $protein g'),
                     ScreenSubHeader(text: 'Fats: $fats g'),
