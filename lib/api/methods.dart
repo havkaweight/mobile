@@ -137,6 +137,19 @@ class ApiRoutes {
     return [];
   }
 
+  Future deleteUserProduct(UserProduct userProduct) async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.userProductsDelete}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+
+        body: jsonEncode(userProduct.idToJson())
+    );
+  }
+
   Future<dynamic> getProductByBarcode(String barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(

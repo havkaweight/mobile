@@ -48,4 +48,9 @@ class UserProduct {
         'kcal': kcal,
         'new_weight_left': netWeightLeft
       };
+
+  Map<String, dynamic> idToJson() =>
+      {
+        'id': id
+      };
 }

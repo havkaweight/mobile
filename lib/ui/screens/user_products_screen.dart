@@ -113,7 +113,19 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                             subtitle: Text(userProduct.productBrand),
                             // onTap: () {
                             //   Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementScreen(product: data)));
-                            // }
+
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () async {
+                                    await _apiRoutes.deleteUserProduct(userProduct);
+                                    setState(() {});
+                                  },
+                                )
+                              ]
+                            )
                           );
                         }).toList(),
                       ),
