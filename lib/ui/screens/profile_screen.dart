@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       RoundedButton(
                         text: 'Add device',
                         onPressed: () {
-                          _buildScaleSearching();
+                          _buildScaleSearching(context);
                           setState(() {});
                         }
                       ),
@@ -152,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<Widget> _buildScaleSearching() {
+  Future<Widget> _buildScaleSearching(BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
       backgroundColor: Theme.of(context).backgroundColor,

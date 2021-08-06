@@ -35,7 +35,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   Widget build(BuildContext context) {
     final scanArea = (MediaQuery.of(context).size.width < 400 ||
         MediaQuery.of(context).size.height < 400)
-        ? 150.0
+        ? 250.0
         : 300.0;
     return Column(
       children: <Widget>[

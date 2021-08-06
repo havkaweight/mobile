@@ -49,8 +49,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       RoundedButton(
                         text: 'Add food',
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => ProductsScreen()));
-                          _buildProductsList();
+                          _buildProductsList(context);
                         },
                       ),
                       IconButton(
@@ -174,7 +173,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
     );
   }
 
-  Future<Widget> _buildProductsList() {
+  Future<Widget> _buildProductsList(BuildContext context) {
     return showModalBottomSheet(
         isScrollControlled: true,
         backgroundColor: Theme.of(context).backgroundColor,
@@ -188,20 +187,19 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
           return SizedBox(
-            child: Wrap(
-                children: [Column(
-                  children: [
-                    Holder(),
-                    Center(
-                      child: Column(
-                        children: [
-                          ProductsScreen(),
-                        ],
-                      )
-                    )
-                  ]
-                )],
-              ),
+            height: mHeight * 0.85,
+            child: Column(
+              children: [
+                Holder(),
+                Center(
+                  child: Column(
+                    children: [
+                      ProductsScreen(),
+                    ],
+                  )
+                )
+              ]
+            ),
           );
         }
     );
