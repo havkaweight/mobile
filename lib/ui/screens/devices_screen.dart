@@ -37,25 +37,23 @@ class _DevicesScreenState extends State<DevicesScreen> {
     stream = flutterReactiveBle.connectToDevice(id: device.id);
     characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
 
-    final UserDeviceCreate userDeviceCreate = UserDeviceCreate(
+    final UserDevice userDevice = UserDevice(
       serviceUUID: serviceUuid.toString(),
       deviceUUID: characteristicId.toString()
     );
-    final userDevice = await _apiRoutes.userDeviceAdd(userDeviceCreate);
-    print(userDevice);
+    final response = await _apiRoutes.userDeviceAdd(userDevice);
+    print(response);
   }
 
   Future _setSearchingDevicesList() async {
-    acceptedServiceUUID.add(serviceUuid);
     print(acceptedServiceUUID);
 
     _subscription = flutterReactiveBle.scanForDevices(
       withServices: acceptedServiceUUID,
-      // withServices: [],
-      // requireLocationServicesEnabled: false,
       scanMode: ScanMode.lowLatency,
     ).listen((device) {
       if (!devicesListId.contains(device.id)) {
+        print('tut');
         print(device);
         setState(() {
           discDevicesList.add(device);
@@ -74,41 +72,24 @@ class _DevicesScreenState extends State<DevicesScreen> {
         SizedBox(
           height: 50,
           child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  children: <Widget>[
-                    Text(device.name == '' ? '(unknown device)' : device.name),
-                    Text(device.id.toString()),
-                  ],
-                ),
+            children: [
+              ListTile(
+                title: Text(device.name == '' ? '(unknown device)' : device.name),
+                subtitle: Text(device.id.toString()),
               ),
-              TextButton(
-                // color: Colors.blue,
-                onPressed: () {
-                  setState(() {
-                    connectToDevice(device);
-                    Navigator.pop(context);
-                  });
-                },
-                // color: Colors.blue,
-                child: const Text(
-                  'Connect',
-                  style: TextStyle(color: HavkaColors.green)
-                )
-              )
-            ]
+            ],
           )
         )
       );
     }
     return SizedBox(
-      height: 300,
-      child: ListView(
-        padding: const EdgeInsets.all(8),
-        children: <Widget>[
-          ...containers,
-        ],
+      child: Wrap(
+        children: [ListView(
+          padding: const EdgeInsets.all(8),
+          children: <Widget>[
+            ...containers,
+          ],
+        )],
       ),
     );
   }

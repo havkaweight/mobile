@@ -4,13 +4,15 @@ class UserDevice {
   final String deviceUUID;
   final String deviceName;
   final String userId;
+  final String serviceUUID;
 
   UserDevice({
     this.id,
     this.deviceId,
     this.deviceUUID,
     this.deviceName,
-    this.userId
+    this.userId,
+    this.serviceUUID
   });
 
   UserDevice.fromJson(Map<String, dynamic> json)
@@ -18,7 +20,8 @@ class UserDevice {
         deviceId = json['device_id'] as int,
         deviceUUID = json['device_uuid'] as String,
         deviceName = json['device_name'] as String,
-        userId = json['user_id'] as String;
+        userId = json['user_id'] as String,
+        serviceUUID = json['service_uuid'] as String;
 
   Map<String, dynamic> toJson() =>
       {
@@ -28,18 +31,8 @@ class UserDevice {
         'device_name': deviceName,
         'user_id': userId
       };
-}
 
-class UserDeviceCreate {
-  final String serviceUUID;
-  final String deviceUUID;
-
-  UserDeviceCreate({
-    this.serviceUUID,
-    this.deviceUUID,
-  });
-
-  Map<String, dynamic> toJson() =>
+  Map<String, dynamic> createdDataToJson() =>
       {
         'service_uuid': serviceUUID,
         'device_uuid': deviceUUID,

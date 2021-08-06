@@ -54,10 +54,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     );
                   }
                   if (snapshot.hasData) {
-                    print(snapshot.data);
-                    final double mHeight = MediaQuery.of(context).size.height;
                     return SizedBox(
-                      height: mHeight * 0.73,
+                      height: 400,
                       child: ListView(
                         children: snapshot.data.map<Widget>((product) {
                           return ListTile(
@@ -82,12 +80,4 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
-    });
-  }
 }

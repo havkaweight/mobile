@@ -106,8 +106,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                   );
                   }
                   if (snapshot.hasData) {
-                    return SizedBox(
-                      height: 600,
+                    return Expanded(
                       child: ListView(
                         children: snapshot.data.map<Widget>((userProduct) {
                           return ListTile(
@@ -189,19 +188,20 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
           return SizedBox(
-            height: mHeight * 0.85,
-            child: Column(
-              children: [
-                Holder(),
-                Center(
-                  child: Column(
-                    children: [
-                      ProductsScreen(),
-                    ],
-                  )
-                )
-              ]
-            )
+            child: Wrap(
+                children: [Column(
+                  children: [
+                    Holder(),
+                    Center(
+                      child: Column(
+                        children: [
+                          ProductsScreen(),
+                        ],
+                      )
+                    )
+                  ]
+                )],
+              ),
           );
         }
     );

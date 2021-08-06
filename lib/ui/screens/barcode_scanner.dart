@@ -67,7 +67,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 if (!snapshot.hasData) {
                   return Center(
                       child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
                           child: const HavkaProgressIndicator()
                       )
                   );

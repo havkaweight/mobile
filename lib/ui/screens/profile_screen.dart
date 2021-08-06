@@ -91,6 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FutureBuilder<dynamic>(
                 future: _apiRoutes.getUserDevicesList(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  print(flutterReactiveBle.status);
                   if (!snapshot.hasData) {
                     return Center(
                         child: Container(
@@ -156,7 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).backgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0))
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15.0),
+            topRight: Radius.circular(15.0)
+        )
       ),
       context: context, builder: (builder) {
         final double mHeight = MediaQuery.of(context).size.height;
@@ -166,14 +170,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               topRight: Radius.circular(15.0)
           ),
           child: SizedBox(
-            height: mHeight * 0.75,
-            child: Column(
-              children: [
-                Holder(),
-                Center(
-                  child: DevicesScreen()
-                )
-              ]
+            height: mHeight * 0.85,
+            child: Wrap(
+              children: [Column(
+                children: [
+                  Holder(),
+                  Center(
+                    child: DevicesScreen()
+                  )
+                ]
+              )],
             )
           ),
         );

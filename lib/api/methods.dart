@@ -191,8 +191,8 @@ class ApiRoutes {
     }
   }
 
-  Future<UserDevice> userDeviceAdd(UserDeviceCreate userDeviceCreate) async {
-    print(jsonEncode(userDeviceCreate.toJson()));
+  Future<UserDevice> userDeviceAdd(UserDevice userDevice) async {
+    print(jsonEncode(userDevice.toJson()));
     final token = await getToken();
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
@@ -201,7 +201,7 @@ class ApiRoutes {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(userDeviceCreate.toJson())
+        body: jsonEncode(userDevice.createdDataToJson())
     );
 
     if (response.statusCode == 201) {

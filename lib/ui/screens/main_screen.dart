@@ -40,11 +40,7 @@ class _MainScreenState extends State<MainScreen> {
           currentIndex: currentIndex,
           onTap: (value) {
             currentIndex = value;
-            _pageController.animateToPage(
-              value,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear,
-            );
+            _pageController.jumpToPage(value);
           },
           items: [
             BottomNavigationBarItem(
