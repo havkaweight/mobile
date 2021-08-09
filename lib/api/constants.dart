@@ -12,7 +12,7 @@ class Api {
 
   static const userProducts = '/users/me/product';
   static const userProductsAdd = '/users/me/product/add';
-  static const userProductsDelete = '/users/me/product/delete';
+  static const userProductsDelete = '/users/me/product';
 
   static const devices = '/devices';
 

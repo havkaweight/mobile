@@ -137,17 +137,21 @@ class ApiRoutes {
     return [];
   }
 
-  Future deleteUserProduct(UserProduct userProduct) async {
+  Future<String> deleteUserProduct(UserProduct userProduct) async {
     final token = await storage.read(key: 'jwt');
-    final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProductsDelete}'),
+    final http.Response response = await http.delete(
+        Uri.https(Api.host, '${Api.prefix}${Api.userProductsDelete}/${userProduct.id}'),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        },
-
-        body: jsonEncode(userProduct.idToJson())
+        }
     );
+
+    if(response.statusCode == 200) {
+      return 'success';
+    } else {
+      return 'bad';
+    }
   }
 
   Future<dynamic> getProductByBarcode(String barcode) async {
