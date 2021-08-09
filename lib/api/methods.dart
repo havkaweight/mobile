@@ -170,6 +170,29 @@ class ApiRoutes {
     }
   }
 
+  Future<dynamic> getProductsBySearchingRequest(String request) async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.productsByRequest}/$request'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+
+    if(response.statusCode == 200) {
+      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+      final List<Product> productsList = products.map<Product>((json) {
+        return Product.fromJson(json as Map<String, dynamic>);
+      }).toList();
+
+      return productsList;
+    }
+    if (response.statusCode == 404) {
+      throw Exception('Not found');
+    }
+  }
+
   Future<List<UserDevice>> getUserDevicesList() async {
     final token = await getToken();
     print(token);

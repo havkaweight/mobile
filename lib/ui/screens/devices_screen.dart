@@ -99,24 +99,28 @@ class _DevicesScreenState extends State<DevicesScreen> {
     return FutureBuilder(
       future: _setSearchingDevicesList(),
       builder: (context, snapshot) {
+      final double mHeight = MediaQuery.of(context).size.height;
       if ([BleStatus.unauthorized, BleStatus.poweredOff, BleStatus.unsupported].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Icon(Icons.bluetooth_disabled, color: Colors.grey,
-                      size: 40),
-                  Icon(Icons.location_disabled, color: Colors.grey,
-                      size: 40),
-                ],
+        return SizedBox(
+          height: mHeight * 0.73,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    Icon(Icons.bluetooth_disabled, color: Colors.grey,
+                        size: 40),
+                    Icon(Icons.location_disabled, color: Colors.grey,
+                        size: 40),
+                  ],
+                ),
               ),
-            ),
-            const Text('Turn on Bluetooth and Location')
-          ]
+              const Text('Turn on Bluetooth and Location')
+            ]
+          ),
         );
       }
       return Scaffold(
