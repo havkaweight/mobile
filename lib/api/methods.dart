@@ -269,4 +269,23 @@ class ApiRoutes {
     print('${response.statusCode} ${response.body}');
   }
 
+  Future addUserProductWeighting(UserProduct userProduct, UserDevice userDevice, double netWeight) async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode({
+          'user_product_id': userProduct.id,
+          'user_device_id': 1,
+          // 'user_device_id': userDevice.id,
+          'weight': netWeight
+        })
+    );
+
+    print('${response.statusCode} ${response.body}');
+  }
+
 }

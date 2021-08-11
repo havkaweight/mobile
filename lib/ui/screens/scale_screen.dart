@@ -1,17 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
+import 'authorization.dart';
+
 class ScaleScreen extends StatefulWidget {
   final UserProduct userProduct;
+  final UserDevice userDevice;
 
   const ScaleScreen({
-    this.userProduct
+    this.userProduct,
+    this.userDevice
   });
 
   @override
@@ -21,7 +28,7 @@ class ScaleScreen extends StatefulWidget {
 class _ScaleScreenState extends State<ScaleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  int weight = 0;
+  double weight = 0.0;
 
   @override
   void initState() {
@@ -31,10 +38,11 @@ class _ScaleScreenState extends State<ScaleScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     // stream.listen((connectionState) {
-    //     weight = flutterReactiveBle.readCharacteristic(characteristic);
-    //   }, onError: (Object error){
-    //   });
+    //   weight = flutterReactiveBle.readCharacteristic(characteristic);
+    // }, onError: (Object error) {});
+
     final double protein = widget.userProduct.protein * weight / 100;
     final double fats = widget.userProduct.fat * weight / 100;
     final double carbs = widget.userProduct.carbs * weight / 100;
@@ -57,12 +65,13 @@ class _ScaleScreenState extends State<ScaleScreen> {
                     ScreenSubHeader(text: 'Fats: ${fats.toStringAsFixed(2)} g'),
                     ScreenSubHeader(text: 'Carbs: ${carbs.toStringAsFixed(2)} g'),
                     ScreenSubHeader(text: '${kcal.toStringAsFixed(2)} kcal'),
-                    // RoundedButton(
-                    //   text: 'OK',
-                    //   onPressed: () {
-                    //     Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                    //   },
-                    // )
+                    RoundedButton(
+                      text: 'Save',
+                      onPressed: () async {
+                        await _apiRoutes.addUserProductWeighting(widget.userProduct, widget.userDevice, weight);
+                        Navigator.pop(context);
+                      },
+                    )
                   ])));
         });
   }

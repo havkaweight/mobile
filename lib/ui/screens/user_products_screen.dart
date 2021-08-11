@@ -110,7 +110,12 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                         children: snapshot.data.map<Widget>((userProduct) {
                           return ListTile(
                             title: Text(userProduct.productName),
-                            subtitle: Text(userProduct.productBrand),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(userProduct.productBrand),
+                                  Text('${userProduct.netWeightLeft.round()}g left')
+                                ]),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(userProduct: userProduct)));
                             },
@@ -120,7 +125,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                                 IconButton(
                                   icon: Icon(Icons.monitor_weight),
                                   onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct))).then((_) => setState((){}));
                                   },
                                 ),
                                 IconButton(
