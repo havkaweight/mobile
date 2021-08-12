@@ -7,6 +7,7 @@ import 'package:health_tracker/model/user_product_weighting.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/search_textfield.dart';
+import 'package:intl/intl.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'authorization.dart';
@@ -42,9 +43,11 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
               height: mHeight * 0.82,
               child: ListView(
                 children: snapshot.data.map<Widget>((weighting) {
+                  final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(weighting.createdAt);
                   return ListTile(
                     title: Text(weighting.userProductWeight.toString()),
                     subtitle: Text(weighting.userProductName),
+                    trailing: Text('$createdAt'),
                     onTap: () async {
                       Navigator.pop(context);
                     },

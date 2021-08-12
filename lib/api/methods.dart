@@ -279,6 +279,7 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
+    // print(utf8.decode(response.bodyBytes));
     if(response.statusCode == 200) {
       final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
       final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
