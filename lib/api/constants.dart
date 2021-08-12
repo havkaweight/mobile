@@ -14,6 +14,7 @@ class Api {
   static const userProductsAdd = '/users/me/product/add';
   static const userProductsDelete = '/users/me/product';
   static const userProductsWeightingAdd = '/users/me/product/weighting/add';
+  static const userProductsWeightingsHistory = '/users/me/product/weighting';
 
   static const devices = '/devices';
 

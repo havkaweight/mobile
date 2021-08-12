@@ -29,90 +29,79 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   @override
-  Widget build (BuildContext context) {
-    return FutureBuilder(
-      future: _apiRoutes.getProductsList(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return Column(
-            children: <Widget>[
-              SearchTextField(
-                hintText: 'Search food',
-                width: 0.9,
-                controller: searchController,
-                icon: const Icon(Icons.search),
-              ),
-              if (searchController.text.isEmpty) FutureBuilder<List<Product>>(
-                future: _apiRoutes.getProductsList(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  print(snapshot);
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 40.0),
-                        child: const HavkaProgressIndicator()
-                      )
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      SearchTextField(
+        hintText: 'Search food',
+        width: 0.9,
+        controller: searchController,
+        icon: const Icon(Icons.search),
+      ),
+      if (searchController.text.isEmpty)
+        FutureBuilder<List<Product>>(
+          future: _apiRoutes.getProductsList(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            print(snapshot);
+            if (!snapshot.hasData) {
+              return Center(
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 40.0),
+                      child: const HavkaProgressIndicator()));
+            }
+            if (snapshot.hasData) {
+              final double mHeight = MediaQuery.of(context).size.height;
+              return SizedBox(
+                height: mHeight * 0.73,
+                child: ListView(
+                  children: snapshot.data.map<Widget>((product) {
+                    return ListTile(
+                      title: Text(product.name),
+                      subtitle: Text(product.brand),
+                      onTap: () async {
+                        await _apiRoutes.addProduct(product);
+                        Navigator.pop(context);
+                      },
                     );
-                  }
-                  if (snapshot.hasData) {
-                    final double mHeight = MediaQuery.of(context).size.height;
-                    return SizedBox(
-                      height: mHeight * 0.73,
-                      child: ListView(
-                        children: snapshot.data.map<Widget>((product) {
-                          return ListTile(
-                            title: Text(product.name),
-                            subtitle: Text(product.brand),
-                            onTap: () async {
-                              await _apiRoutes.addProduct(product);
-                              Navigator.pop(context);
-                            },
-                          );
-                        }).toList(),
-                      ),
+                  }).toList(),
+                ),
+              );
+            }
+            return const Center(child: Text('Error internet connection'));
+          },
+        )
+      else
+        FutureBuilder<dynamic>(
+          future:
+              _apiRoutes.getProductsBySearchingRequest(searchController.text),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            print(snapshot);
+            if (!snapshot.hasData) {
+              return Center(
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 40.0),
+                      child: const HavkaProgressIndicator()));
+            }
+            if (snapshot.hasData) {
+              final double mHeight = MediaQuery.of(context).size.height;
+              return SizedBox(
+                height: mHeight * 0.73,
+                child: ListView(
+                  children: snapshot.data.map<Widget>((product) {
+                    return ListTile(
+                      title: Text(product.name),
+                      subtitle: Text(product.brand),
+                      onTap: () async {
+                        await _apiRoutes.addProduct(product);
+                        Navigator.pop(context);
+                      },
                     );
-                  }
-                  return const Center(
-                    child: Text('Error internet connection')
-                  );
-                },
-              ) else FutureBuilder<dynamic>(
-                future: _apiRoutes.getProductsBySearchingRequest(searchController.text),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  print(snapshot);
-                  if (!snapshot.hasData) {
-                    return Center(
-                        child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 40.0),
-                            child: const HavkaProgressIndicator()
-                        )
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    final double mHeight = MediaQuery.of(context).size.height;
-                    return SizedBox(
-                      height: mHeight * 0.73,
-                      child: ListView(
-                        children: snapshot.data.map<Widget>((product) {
-                          return ListTile(
-                            title: Text(product.name),
-                            subtitle: Text(product.brand),
-                            onTap: () async {
-                              await _apiRoutes.addProduct(product);
-                              Navigator.pop(context);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  }
-                  return const Center(
-                      child: Text('Error internet connection')
-                  );
-                },
-              ),
-            ]);
-      }
-    );
+                  }).toList(),
+                ),
+              );
+            }
+            return const Center(child: Text('Error internet connection'));
+          },
+        ),
+    ]);
   }
-
 }

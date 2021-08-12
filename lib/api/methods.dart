@@ -6,6 +6,7 @@ import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/model/user_product_weighting.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:http/http.dart' as http;
@@ -267,6 +268,26 @@ class ApiRoutes {
     );
 
     print('${response.statusCode} ${response.body}');
+  }
+
+  Future<List<UserProductWeighting>> getWeightingsHistory() async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingsHistory}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+    print(utf8.decode(response.bodyBytes));
+    if(response.statusCode == 200) {
+      final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+      final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
+        return UserProductWeighting.fromJson(json as Map<String, dynamic>);
+      }).toList();
+      return userProductsWeightingsList;
+    }
+    return [];
   }
 
   Future addUserProductWeighting(UserProduct userProduct, UserDevice userDevice, double netWeight) async {

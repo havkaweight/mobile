@@ -8,6 +8,7 @@ import 'package:health_tracker/components/profile.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/weightings_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -16,6 +17,7 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import '../../model/user.dart';
 import 'authorization.dart';
 import 'devices_screen.dart';
+import 'products_screen.dart';
 
 final flutterReactiveBle = FlutterReactiveBle();
 
@@ -109,6 +111,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             return ListTile(
                               title: Text(data.deviceName),
                               subtitle: Text(data.deviceId.toString()),
+                              trailing: IconButton(
+                                icon: Icon(Icons.history),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    backgroundColor: Theme.of(context).backgroundColor,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(15.0),
+                                            topRight: Radius.circular(15.0)
+                                        )
+                                    ),
+                                    context: context,
+                                    builder: (BuildContext builder) {
+                                      final double mHeight = MediaQuery.of(context).size.height;
+                                      return SizedBox(
+                                        height: mHeight * 0.85,
+                                        child: Column(
+                                            children: [
+                                              Holder(),
+                                              Center(
+                                                  child: Column(
+                                                    children: [
+                                                      WeightingsScreen(),
+                                                    ],
+                                                  )
+                                              )
+                                            ]
+                                        ),
+                                      );
+                                    }
+                                  );
+                                }
+                              ),
                             );
                           }).toList(),
                         )
