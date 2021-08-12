@@ -42,7 +42,6 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
               height: mHeight * 0.82,
               child: ListView(
                 children: snapshot.data.map<Widget>((weighting) {
-                  print(weighting);
                   return ListTile(
                     title: Text(weighting.userProductWeight.toString()),
                     subtitle: Text(weighting.userProductName),
