@@ -65,6 +65,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               future: _apiRoutes.getProductByBarcode(result.code),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
+                  if (snapshot.hasError) {
+                    return Text(result.code);
+                  }
                   return Center(
                       child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -90,9 +93,6 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       ],
                     )
                   );
-                }
-                if (snapshot.hasError) {
-                  return Text(result.code);
                 }
                 return Container();
               }

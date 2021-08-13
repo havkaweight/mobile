@@ -164,7 +164,7 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-
+    print(response.statusCode);
     if(response.statusCode == 200) {
       final productJson = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       final Product product = Product.fromJson(productJson);

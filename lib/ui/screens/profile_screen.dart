@@ -162,8 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       RoundedButton(
                         text: 'Add device',
                         onPressed: () {
-                          _buildScaleSearching(context);
-                          setState(() {});
+                          _buildScaleSearching(context).then((_) => setState(() {}));
                         }
                       ),
                       if ([BleStatus.unauthorized, BleStatus.poweredOff].contains(flutterReactiveBle.status)) const Icon(
@@ -207,15 +206,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: SizedBox(
             height: mHeight * 0.85,
-            child: Wrap(
-              children: [Column(
-                children: [
-                  Holder(),
-                  Center(
-                    child: DevicesScreen()
-                  )
-                ]
-              )],
+            child: Column(
+              children: [
+                Holder(),
+                Center(
+                  child: DevicesScreen()
+                )
+              ]
             )
           ),
         );

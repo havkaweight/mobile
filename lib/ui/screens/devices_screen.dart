@@ -5,6 +5,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
 Stream stream;
 QualifiedCharacteristic characteristic;
@@ -32,6 +33,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription.cancel();
+  }
+
   Future connectToDevice(DiscoveredDevice device) async {
     await _subscription?.cancel();
     stream = flutterReactiveBle.connectToDevice(id: device.id);
@@ -46,12 +53,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   Future _setSearchingDevicesList() async {
-    print(acceptedServiceUUID);
+    print('tut $acceptedServiceUUID');
 
     _subscription = flutterReactiveBle.scanForDevices(
       withServices: acceptedServiceUUID,
       scanMode: ScanMode.lowLatency,
     ).listen((device) {
+      print(device.id);
       if (!devicesListId.contains(device.id)) {
         print('tut');
         print(device);
@@ -65,45 +73,42 @@ class _DevicesScreenState extends State<DevicesScreen> {
     });
   }
 
-  SizedBox _buildDevicesList() {
-    final List<SizedBox> containers = [];
-    for (final DiscoveredDevice device in discDevicesList) {
-      containers.add(
-        SizedBox(
-          height: 50,
-          child: Row(
-            children: [
+  ListView _buildDevicesList(BuildContext context) {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: discDevicesList.length,
+        padding: const EdgeInsets.all(8),
+        itemBuilder: (context, index) {
+          final DiscoveredDevice device = discDevicesList[index];
+          return
               ListTile(
                 title: Text(device.name == '' ? '(unknown device)' : device.name),
-                subtitle: Text(device.id.toString()),
-              ),
-            ],
-          )
-        )
-      );
-    }
-    return SizedBox(
-      child: Wrap(
-        children: [ListView(
-          padding: const EdgeInsets.all(8),
-          children: <Widget>[
-            ...containers,
-          ],
-        )],
-      ),
+                subtitle: Text(device.id),
+                trailing: TextButton(
+                  onPressed: () {
+                    connectToDevice(device);
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Connect',
+                    style: TextStyle(color: HavkaColors.green)
+                  ),
+                ),
+              );
+        }
     );
   }
 
   @override
   Widget build (BuildContext context) {
-    return FutureBuilder(
-      future: _setSearchingDevicesList(),
-      builder: (context, snapshot) {
-      final double mHeight = MediaQuery.of(context).size.height;
-      if ([BleStatus.unauthorized, BleStatus.poweredOff, BleStatus.unsupported].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
-        return SizedBox(
-          height: mHeight * 0.73,
-          child: Column(
+    final double mHeight = MediaQuery.of(context).size.height;
+    return SizedBox(
+      height: mHeight * 0.82,
+      child: FutureBuilder(
+        future: _setSearchingDevicesList(),
+        builder: (context, snapshot) {
+        if ([BleStatus.unauthorized, BleStatus.poweredOff, BleStatus.unsupported].contains(flutterReactiveBle.status) || flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
+          return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
@@ -120,16 +125,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
               ),
               const Text('Turn on Bluetooth and Location')
             ]
-          ),
-        );
-      }
-      return Scaffold(
-          backgroundColor: Theme
-              .of(context)
-              .backgroundColor,
-          body: _buildDevicesList()
-      );
-      }
+          );
+        }
+        return _buildDevicesList(context);
+        }
+      ),
     );
   }
 

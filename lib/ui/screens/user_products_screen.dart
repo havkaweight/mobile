@@ -181,7 +181,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   Future<Widget> _buildProductsList(BuildContext context) {
     return showModalBottomSheet(
         isScrollControlled: true,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(15.0),
@@ -191,7 +191,8 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         context: context,
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
-          return SizedBox(
+          return Container(
+            color: Theme.of(context).backgroundColor,
             height: mHeight * 0.85,
             child: Column(
               children: [
