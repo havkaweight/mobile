@@ -30,7 +30,7 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
     return Column(children: <Widget>[
       FutureBuilder<List<UserProductWeighting>>(
         future: _apiRoutes.getWeightingsHistory(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<UserProductWeighting>> snapshot) {
           if (!snapshot.hasData) {
             return Center(
                 child: Container(
@@ -41,18 +41,28 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
             final double mHeight = MediaQuery.of(context).size.height;
             return SizedBox(
               height: mHeight * 0.82,
-              child: ListView(
-                children: snapshot.data.map<Widget>((weighting) {
-                  final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(weighting.createdAt);
+              child: ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, index) {
+                  final UserProductWeighting userProductWeighting = snapshot.data[index];
+                  final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(userProductWeighting.createdAt);
                   return ListTile(
-                    title: Text(weighting.userProductWeight.toString()),
-                    subtitle: Text(weighting.userProductName),
-                    trailing: Text('$createdAt'),
-                    onTap: () async {
+                    title: Text('${userProductWeighting.userProductWeight.toString()} g', ),
+                    subtitle: Text(userProductWeighting.userProductName, style: TextStyle(
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .fontSize)),
+                    trailing: Text(createdAt, style: TextStyle(
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .fontSize)),
+                    onTap: () {
                       Navigator.pop(context);
                     },
                   );
-                }).toList(),
+                }
               ),
             );
           }

@@ -87,9 +87,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const ScreenSubHeader(
                 text: 'My devices'
               ),
-              FutureBuilder<dynamic>(
+              FutureBuilder<List<UserDevice>>(
                 future: _apiRoutes.getUserDevicesList(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<UserDevice>> snapshot) {
                   print(flutterReactiveBle.status);
                   if (!snapshot.hasData) {
                     return Center(
@@ -102,47 +102,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   print(snapshot.data.runtimeType);
                   if (snapshot.hasData) {
                     return Expanded(
-                        child: ListView(
-                          children: snapshot.data.map<Widget>((data) {
+                        child: ListView.builder(
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (BuildContext context, index) {
+                            final UserDevice userDevice = snapshot.data[index];
                             return ListTile(
-                              title: Text(data.deviceName),
-                              subtitle: Text(data.id.toString()),
+                              title: Text(userDevice.deviceName, style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .headline3
+                                      .fontSize)),
+                              subtitle: Text(userDevice.id.toString(), style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .headline4
+                                      .fontSize)),
                               trailing: IconButton(
-                                icon: Icon(Icons.history),
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    backgroundColor: Theme.of(context).backgroundColor,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(15.0),
-                                            topRight: Radius.circular(15.0)
-                                        )
-                                    ),
-                                    context: context,
-                                    builder: (BuildContext builder) {
-                                      final double mHeight = MediaQuery.of(context).size.height;
-                                      return SizedBox(
-                                        height: mHeight * 0.85,
-                                        child: Column(
-                                            children: [
-                                              Holder(),
-                                              Center(
-                                                  child: Column(
-                                                    children: [
-                                                      WeightingsScreen(),
-                                                    ],
-                                                  )
-                                              )
-                                            ]
-                                        ),
-                                      );
-                                    }
-                                  );
-                                }
+                                  icon: const Icon(Icons.history),
+                                  onPressed: _buildWeightingsHistory
                               ),
                             );
-                          }).toList(),
+                          }
                         )
                     );
                   }
@@ -180,6 +160,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               )
         ])
+    );
+  }
+
+  Future _buildWeightingsHistory() {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Theme.of(context).backgroundColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)
+            )
+        ),
+        context: context,
+        builder: (BuildContext builder) {
+          final double mHeight = MediaQuery.of(context).size.height;
+          return SizedBox(
+            height: mHeight * 0.85,
+            child: Column(
+                children: [
+                  Holder(),
+                  Center(
+                      child: Column(
+                        children: [
+                          WeightingsScreen(),
+                        ],
+                      )
+                  )
+                ]
+            ),
+          );
+        }
     );
   }
 

@@ -217,6 +217,7 @@ class ApiRoutes {
       print(devicesList);
       return devicesList;
     }
+    return [];
   }
 
   Future<UserDevice> userDeviceAdd(UserDevice userDevice) async {

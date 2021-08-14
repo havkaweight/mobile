@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String username;
@@ -37,8 +38,7 @@ class ProfileHeader extends StatelessWidget {
                   Text(
                     username,
                     style: const TextStyle(
-                      fontFamily: 'Itim',
-                      fontSize: 15
+                      fontWeight: FontWeight.bold
                     )
                   ),
                   Text(
@@ -47,9 +47,13 @@ class ProfileHeader extends StatelessWidget {
                   Text(
                     'Weight: ${weight.toString()}',
                   ),
-                  IconButton(
-                      icon: const Icon(Icons.logout),
-                      onPressed: onPressed
+                  // IconButton(
+                  //     icon: const Icon(Icons.logout),
+                  //     onPressed: onPressed
+                  // ),
+                  TextButton(
+                      onPressed: onPressed,
+                      child: const HavkaText(text: 'Log out')
                   )
                 ]
               ),
