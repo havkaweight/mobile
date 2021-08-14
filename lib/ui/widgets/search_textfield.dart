@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class SearchTextField extends StatefulWidget {
   final String labelText, hintText;
@@ -48,8 +49,8 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
         autofocus: widget.autoFocus,
         controller: widget.controller,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-          fillColor: const Color(0xFFEDE88E),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+          fillColor: HavkaColors.bone,
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
@@ -57,7 +58,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
           ),
           focusColor: const Color(0xFFFFFFFF),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFF5BBE78), width: 3.0),
+            borderSide: const BorderSide(color: HavkaColors.green, width: 3.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedErrorBorder: OutlineInputBorder(
