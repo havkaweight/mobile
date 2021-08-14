@@ -134,14 +134,14 @@ class _SignInScreenState extends State<SignInScreen> {
                                       text: 'Sign Up'
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                                  },
-                                  child: const HavkaText(
-                                    text: 'Reset password',
-                                  ),
-                                )
+                                // TextButton(
+                                //   onPressed: () {
+                                //     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                                //   },
+                                //   child: const HavkaText(
+                                //     text: 'Reset password',
+                                //   ),
+                                // )
                                 ])
                         ),
                         RoundedButton(

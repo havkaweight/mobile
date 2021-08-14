@@ -55,7 +55,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       IconButton(
                         icon: const Icon(Icons.qr_code_2, color: HavkaColors.green),
                           onPressed: () {
-                            _buildBarcodeScanner();
+                            _buildBarcodeScanner().then((_) => setState((){}));
                           }
                             ),
                             // RoundedIconButton(

@@ -107,10 +107,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return Expanded(
                         child: ListView(
                           children: snapshot.data.map<Widget>((data) {
-                            isDeviceConnected(data);
                             return ListTile(
                               title: Text(data.deviceName),
-                              subtitle: Text(data.deviceId.toString()),
+                              subtitle: Text(data.id.toString()),
                               trailing: IconButton(
                                 icon: Icon(Icons.history),
                                 onPressed: () {
