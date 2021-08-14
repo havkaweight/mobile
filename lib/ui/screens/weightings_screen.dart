@@ -47,7 +47,7 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
                   final UserProductWeighting userProductWeighting = snapshot.data[index];
                   final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(userProductWeighting.createdAt);
                   return ListTile(
-                    title: Text('${userProductWeighting.userProductWeight.toString()} g', ),
+                    title: Text('${userProductWeighting.userProductWeight.toString()} g', style: const TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(userProductWeighting.userProductName, style: TextStyle(
                         fontSize: Theme.of(context)
                             .textTheme
