@@ -42,7 +42,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: TextField(
         obscureText: widget.obscureText,
         keyboardType: widget.keyboardType,

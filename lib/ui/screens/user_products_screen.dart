@@ -116,7 +116,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                           trailing:
                               Row(mainAxisSize: MainAxisSize.min, children: [
                             IconButton(
-                              icon: Icon(Icons.monitor_weight),
+                              icon: const Icon(Icons.monitor_weight),
                               onPressed: () {
                                 Navigator.push(
                                         context,
@@ -168,7 +168,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   Future<Widget> _buildProductsList(BuildContext context) {
     return showModalBottomSheet(
         isScrollControlled: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).backgroundColor,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15.0),
@@ -177,7 +177,6 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
           return Container(
-            color: Theme.of(context).backgroundColor,
             height: mHeight * 0.85,
             child: Column(children: [
               Holder(),
