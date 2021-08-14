@@ -5,7 +5,6 @@ import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/list_tile.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
