@@ -5,6 +5,7 @@ import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
+import 'package:health_tracker/ui/widgets/list_tile.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -74,28 +75,9 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                             // ),
                             ]
               ),
-              // RoundedTextField(
-              //   labelText: 'Barcode number',
-              //   hintText: '4604921001960',
-              //   keyboardType: TextInputType.number,
-              //   controller: barcodeController,
-              // ),
-              // FutureBuilder(
-              //   future: _apiRoutes.getProductByBarcode(barcodeController.text),
-              //   builder: (context, snapshot) {
-              //     return Text(
-              //       'Havka: ${snapshot.data}',
-              //       textAlign: TextAlign.left,
-              //       style: const TextStyle(
-              //         color: HavkaColors.green,
-              //         fontSize: 20,
-              //       ),
-              //     );
-              //   }
-              // ),
               FutureBuilder<List<UserProduct>>(
                 future: _apiRoutes.getUserProductsList(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<UserProduct>> snapshot) {
                   if (!snapshot.hasData) {
                     return Center(
                     child: Container(
@@ -106,39 +88,41 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                   }
                   if (snapshot.hasData) {
                     return Expanded(
-                      child: ListView(
-                        children: snapshot.data.map<Widget>((userProduct) {
+                      child: ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, index) {
+                          final UserProduct userProduct = snapshot.data[index];
                           return ListTile(
-                            title: Text(userProduct.productName),
-                            subtitle: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(userProduct.productBrand),
-                                  Text('${userProduct.netWeightLeft.round()}g left')
-                                ]),
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(userProduct: userProduct)));
-                            },
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.monitor_weight),
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct))).then((_) => setState((){}));
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    await _apiRoutes.deleteUserProduct(userProduct);
-                                    setState(() {});
-                                  },
-                                )
-                              ]
-                            )
+                              title: Text(userProduct.productName, style: TextStyle(fontSize: Theme.of(context).textTheme.headline3.fontSize)),
+                              subtitle: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(userProduct.productBrand, style: TextStyle(fontSize: Theme.of(context).textTheme.headline4.fontSize)),
+                                    Text('${userProduct.netWeightLeft.round()}g left', style: TextStyle(fontSize: Theme.of(context).textTheme.headline4.fontSize))
+                                  ]),
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(userProduct: userProduct)));
+                              },
+                              trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.monitor_weight),
+                                      onPressed: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct))).then((_) => setState((){}));
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () async {
+                                        await _apiRoutes.deleteUserProduct(userProduct);
+                                        setState(() {});
+                                      },
+                                    )
+                                  ]
+                              )
                           );
-                        }).toList(),
+                        },
                       ),
                     );
                   }
