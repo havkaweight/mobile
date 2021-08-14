@@ -31,108 +31,117 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   }
 
   @override
-  Widget build (BuildContext context) {
-    return FutureBuilder(
-      future: _apiRoutes.getUserProductsList(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return Scaffold (
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const ScreenHeader(
-                      text: 'Fridge'
-                  ),
-                  Row(
-                    children: [
-                      RoundedButton(
-                        text: 'Add food',
-                        onPressed: () {
-                          _buildProductsList(context).then((_) => setState(() {}));
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.qr_code_2, color: HavkaColors.green),
-                          onPressed: () {
-                            _buildBarcodeScanner().then((_) => setState((){}));
-                          }
-                            ),
-                            // RoundedIconButton(
-                            //     faIcon: FaIcon(
-                            //       FontAwesomeIcons.barcode,
-                            //       color: Color(0xFFFFFFFF),
-                            //     ),
-                            //     onPressed: () => _apiRoutes.scanBarcode()
-                            // )
-                            ],
-                            ),
-                            // RoundedIconButton(
-                            //   icon: Icon(Icons.qr_code, color: Color(0xFFFFFFFF)),
-                            //   color: Theme.of(context).backgroundColor,
-                            //   onPressed: _scanQRCode
-                            // ),
-                            ]
-              ),
-              FutureBuilder<List<UserProduct>>(
-                future: _apiRoutes.getUserProductsList(),
-                builder: (BuildContext context, AsyncSnapshot<List<UserProduct>> snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Column(children: <Widget>[
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
+              Widget>[
+            const ScreenHeader(text: 'Fridge'),
+            Row(
+              children: [
+                RoundedButton(
+                  text: 'Add food',
+                  onPressed: () {
+                    _buildProductsList(context).then((_) => setState(() {}));
+                  },
+                ),
+                IconButton(
+                    icon: const Icon(Icons.qr_code_2, color: HavkaColors.green),
+                    onPressed: () {
+                      _buildBarcodeScanner().then((_) => setState(() {}));
+                    }),
+                // RoundedIconButton(
+                //     faIcon: FaIcon(
+                //       FontAwesomeIcons.barcode,
+                //       color: Color(0xFFFFFFFF),
+                //     ),
+                //     onPressed: () => _apiRoutes.scanBarcode()
+                // )
+              ],
+            ),
+            // RoundedIconButton(
+            //   icon: Icon(Icons.qr_code, color: Color(0xFFFFFFFF)),
+            //   color: Theme.of(context).backgroundColor,
+            //   onPressed: _scanQRCode
+            // ),
+          ]),
+          FutureBuilder<List<UserProduct>>(
+            future: _apiRoutes.getUserProductsList(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<UserProduct>> snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
                     child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 40.0),
-                        child: const HavkaProgressIndicator()
-                    )
-                  );
-                  }
-                  if (snapshot.hasData) {
-                    return Expanded(
-                      child: ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, index) {
-                          final UserProduct userProduct = snapshot.data[index];
-                          return ListTile(
-                              title: Text(userProduct.productName, style: TextStyle(fontSize: Theme.of(context).textTheme.headline3.fontSize)),
-                              subtitle: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(userProduct.productBrand, style: TextStyle(fontSize: Theme.of(context).textTheme.headline4.fontSize)),
-                                    Text('${userProduct.netWeightLeft.round()}g left', style: TextStyle(fontSize: Theme.of(context).textTheme.headline4.fontSize))
-                                  ]),
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserProductScreen(userProduct: userProduct)));
+                        child: const HavkaProgressIndicator()));
+              }
+              if (snapshot.hasData) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, index) {
+                      final UserProduct userProduct = snapshot.data[index];
+                      return ListTile(
+                          title: Text(userProduct.productName,
+                              style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .headline3
+                                      .fontSize)),
+                          subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(userProduct.productBrand,
+                                    style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .headline4
+                                            .fontSize)),
+                                Text(
+                                    '${userProduct.netWeightLeft.round()}g left',
+                                    style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .headline4
+                                            .fontSize))
+                              ]),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UserProductScreen(
+                                        userProduct: userProduct)));
+                          },
+                          trailing:
+                              Row(mainAxisSize: MainAxisSize.min, children: [
+                            IconButton(
+                              icon: Icon(Icons.monitor_weight),
+                              onPressed: () {
+                                Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ScaleScreen(
+                                                userProduct: userProduct)))
+                                    .then((_) => setState(() {}));
                               },
-                              trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.monitor_weight),
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: userProduct))).then((_) => setState((){}));
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () async {
-                                        await _apiRoutes.deleteUserProduct(userProduct);
-                                        setState(() {});
-                                      },
-                                    )
-                                  ]
-                              )
-                          );
-                        },
-                      ),
-                    );
-                  }
-                  return Container();
-                },
-              ),
-            ])
-        );
-      }
-    );
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                await _apiRoutes.deleteUserProduct(userProduct);
+                                setState(() {});
+                              },
+                            )
+                          ]));
+                    },
+                  ),
+                );
+              }
+              return Container();
+            },
+          ),
+        ]));
   }
 
   Future<dynamic> _buildBarcodeScanner() {
@@ -142,24 +151,18 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0)
-            )
-        ),
+                topRight: Radius.circular(15.0))),
         context: context,
         builder: (builder) {
           final double mHeight = MediaQuery.of(context).size.height;
           return ClipRRect(
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0)
-            ),
-            child: SizedBox(
-              height: mHeight * 0.75,
-              child: BarcodeScannerScreen()
-            ),
+                topRight: Radius.circular(15.0)),
+            child:
+                SizedBox(height: mHeight * 0.75, child: BarcodeScannerScreen()),
           );
-        }
-    );
+        });
   }
 
   Future<Widget> _buildProductsList(BuildContext context) {
@@ -167,31 +170,25 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0)
-          )
-        ),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
         context: context,
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
           return Container(
             color: Theme.of(context).backgroundColor,
             height: mHeight * 0.85,
-            child: Column(
-              children: [
-                Holder(),
-                Center(
+            child: Column(children: [
+              Holder(),
+              Center(
                   child: Column(
-                    children: [
-                      ProductsScreen(),
-                    ],
-                  )
-                )
-              ]
-            ),
+                children: [
+                  ProductsScreen(),
+                ],
+              ))
+            ]),
           );
-        }
-    );
+        });
   }
 }
