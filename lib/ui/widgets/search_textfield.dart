@@ -74,7 +74,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
           prefixIcon: widget.icon,
           hintStyle: const TextStyle(
             color: Color(0x7A66550B),
-            fontSize: 16
+            fontSize: 14
           ),
         )
       )

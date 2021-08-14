@@ -176,7 +176,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         context: context,
         builder: (BuildContext builder) {
           final double mHeight = MediaQuery.of(context).size.height;
-          return Container(
+          return SizedBox(
             height: mHeight * 0.85,
             child: Column(children: [
               Holder(),
