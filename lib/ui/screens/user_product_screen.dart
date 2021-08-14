@@ -25,7 +25,7 @@ class _UserProductScreenState extends State<UserProductScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ScreenHeader(text: widget.userProduct.productName),
+            ScreenSubHeader(text: widget.userProduct.productName),
             ScreenSubHeader(text: widget.userProduct.productBrand),
             RoundedButton(
               text: 'Weigh',

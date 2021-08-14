@@ -44,7 +44,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
   @override
   void dispose() {
     super.dispose();
-    _subscription.cancel();
+    // _subscription.cancel();
   }
 
   @override
@@ -55,11 +55,16 @@ class _ScaleScreenState extends State<ScaleScreen> {
     final Uuid serviceUuid = Uuid.parse(Scale.serviceUuid);
     final Uuid characteristicId = Uuid.parse(Scale.characteristicId);
 
-    characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: '1');
+    characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: '7C:9E:BD:F4:5B:1A');
 
-    _subscription = flutterReactiveBle.subscribeToCharacteristic(characteristic).listen((value) {
-      // weight = value;
-      print(value);
+    _subscription = flutterReactiveBle.readCharacteristic(characteristic).then((valueArray) {
+      final buffer = StringBuffer();
+      for (final int element in valueArray) {
+        buffer.write(String.fromCharCode(element));
+      }
+      final String valueString = buffer.toString();
+      weight = double.parse(valueString);
+      print(weight);
     }, onError: (Object error) {});
 
     final double protein = widget.userProduct.protein * weight / 100;
@@ -68,30 +73,33 @@ class _ScaleScreenState extends State<ScaleScreen> {
     final double kcal = widget.userProduct.kcal * weight / 100;
     return FutureBuilder(
         future: Future.delayed(const Duration(seconds: 1), () {
-              setState((){weight += 1;});
+              setState((){});
             }),
         builder: (context, snapshot) {
           return Scaffold(
               backgroundColor: Theme.of(context).backgroundColor,
               body: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                    ScreenHeader(text: widget.userProduct.productName),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ScreenSubHeader(text: widget.userProduct.productName),
                     ScreenSubHeader(text: widget.userProduct.productBrand),
                     ScreenHeader(text: '$weight g'),
-                    ScreenSubHeader(text: 'Protein: ${protein.toStringAsFixed(2)} g'),
-                    ScreenSubHeader(text: 'Fats: ${fats.toStringAsFixed(2)} g'),
-                    ScreenSubHeader(text: 'Carbs: ${carbs.toStringAsFixed(2)} g'),
-                    ScreenSubHeader(text: '${kcal.toStringAsFixed(2)} kcal'),
+                    HavkaText(text: 'Protein: ${protein.toStringAsFixed(2)} g'),
+                    HavkaText(text: 'Fats: ${fats.toStringAsFixed(2)} g'),
+                    HavkaText(text: 'Carbs: ${carbs.toStringAsFixed(2)} g'),
+                    HavkaText(text: '${kcal.toStringAsFixed(2)} kcal'),
                     RoundedButton(
                       text: 'Save',
-                      onPressed: () async {
-                        await _apiRoutes.addUserProductWeighting(widget.userProduct, widget.userDevice, weight);
+                      onPressed: () {
+                        _apiRoutes.addUserProductWeighting(widget.userProduct, widget.userDevice, weight);
                         Navigator.pop(context);
                       },
                     )
-                  ])));
+                  ]
+                ),
+              )
+          );
         });
   }
 }

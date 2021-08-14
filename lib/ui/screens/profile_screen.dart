@@ -39,29 +39,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build (BuildContext context) {
     return Scaffold (
         backgroundColor: Theme.of(context).backgroundColor,
-        body: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Center(
-            child: FutureBuilder<User>(
-              future: _apiRoutes.getMe(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                Widget widget;
-                if (!snapshot.hasData) {
-                  widget = const Center(
-                      child: HavkaProgressIndicator()
-                  );
-                } else if (snapshot.hasData) {
-                  widget = _buildProfileScreen(snapshot);
-                }
-                if (snapshot.hasError) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) => SignInScreen()));
-                  });
-                }
-                return widget;
-              },
-            ),
+        body: Center(
+          child: FutureBuilder<User>(
+            future: _apiRoutes.getMe(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              Widget widget;
+              if (!snapshot.hasData) {
+                widget = const Center(
+                    child: HavkaProgressIndicator()
+                );
+              } else if (snapshot.hasData) {
+                widget = _buildProfileScreen(snapshot);
+              }
+              if (snapshot.hasError) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacement(context, MaterialPageRoute(
+                      builder: (context) => SignInScreen()));
+                });
+              }
+              return widget;
+            },
           ),
         )
       );

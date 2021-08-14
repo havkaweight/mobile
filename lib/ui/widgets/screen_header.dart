@@ -58,10 +58,10 @@ class HavkaText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: HavkaColors.green
           )
