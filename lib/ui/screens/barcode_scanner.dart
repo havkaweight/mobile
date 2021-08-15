@@ -78,8 +78,16 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 if (snapshot.hasData) {
                   final Product product = snapshot.data as Product;
                   return ListTile(
-                    title: Text(product.name),
-                    subtitle: Text(product.brand),
+                    title: Text(product.name, style: TextStyle(
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .headline3
+                            .fontSize)),
+                    subtitle: Text(product.brand, style: TextStyle(
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .fontSize)),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
