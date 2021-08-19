@@ -10,6 +10,7 @@ import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/sign_up_screen.dart';
 import 'package:health_tracker/ui/widgets/popup.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
@@ -17,6 +18,9 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
 
 bool futureSignIn = true;
+enum SignInStatus { notLoggedIn, logging, loggedIn }
+
+SignInStatus signInStatus = SignInStatus.notLoggedIn;
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -43,17 +47,18 @@ class _SignInScreenState extends State<SignInScreen> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'
         },
-        body: map
-    );
+        body: map);
 
     final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       if (data.containsKey('access_token') != null) {
         setToken(data['access_token'] as String);
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+        return Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+        return Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignInScreen()));
       }
     } else {
       print(response.body);
@@ -66,11 +71,10 @@ class _SignInScreenState extends State<SignInScreen> {
     queryParameters['authentication_backend'] = 'jwt';
     queryParameters['scopes'] = ['email', 'profile'];
     final http.Response response = await http.post(
-      Uri.https(Api.host, '${Api.prefix}/auth/google', queryParameters),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
-    );
+        Uri.https(Api.host, '${Api.prefix}/auth/google', queryParameters),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        });
 
     print(response.body);
     print(response.statusCode);
@@ -80,9 +84,11 @@ class _SignInScreenState extends State<SignInScreen> {
     if (response.statusCode == 200) {
       if (data.containsKey('access_token') != null) {
         setToken(data['access_token'] as String);
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+        return Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
-        return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+        return Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignInScreen()));
       }
     } else {
       print(response.body);
@@ -90,105 +96,118 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  Future _signIn() async {
+    setState(() {
+      signInStatus = SignInStatus.logging;
+    });
+    futureSignIn =
+        await _apiRoutes.signIn(emailController.text, passwordController.text);
+    // print('res $futureSignIn');
+    setState(() {
+      if (futureSignIn) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => MainScreen()));
+        });
+      }
+      signInStatus = SignInStatus.notLoggedIn;
+      showPopUp(context, 'Invalid login or password');
+    });
+  }
+
   Widget loginFormWidget(BuildContext context) {
+    final FocusNode passwordFocusNode = FocusNode();
     return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 50.0),
-          child: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const ScreenHeader(text: 'Sign In'),
-                    RoundedTextField(
-                      hintText: 'Email',
-                      controller: emailController,
-                    ),
-                    RoundedTextFieldObscured(
-                      hintText: 'Password',
-                      controller: passwordController
-                    ),
-                    // if (futureSignIn) Container() else const Text("Wrong login or password"),
-                    RoundedButton(
-                        text: 'Sign In',
-                        onPressed: () async {
-                          futureSignIn = await _apiRoutes.signIn(emailController.text, passwordController.text);
-                          print('res $futureSignIn');
-                          setState(() {
-                            if (futureSignIn) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                              });
-                            }
-                            showPopUp(context, 'Invalid login or password');
-                          });
-                        }),
-                        Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                                  },
-                                  child: const HavkaText(
-                                      text: 'Sign Up'
-                                  ),
-                                ),
-                                // TextButton(
-                                //   onPressed: () {
-                                //     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                                //   },
-                                //   child: const HavkaText(
-                                //     text: 'Reset password',
-                                //   ),
-                                // )
-                                ])
-                        ),
-                        RoundedButton(
-                            text: 'Continue with Google',
-                            color: HavkaColors.cream,
-                            textColor: Theme.of(context).accentColor,
-                            onPressed: () async {
-                              final GoogleSignIn _googleSignIn = GoogleSignIn(
-                                  scopes:[
-                                    'email',
-                                    'profile'
-                                  ]
-                              );
-
-                              final result = await _googleSignIn.signIn();
-                              final ggAuth = await result.authentication;
-
-                              final idToken = ggAuth.idToken;
-                              final accessToken = ggAuth.accessToken;
-                              final serverAuthCode = ggAuth.serverAuthCode;
-
-                              print('id $idToken');
-                              print('acs $accessToken');
-                              print('code $serverAuthCode');
-
-                              futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
-                              print('res $futureSignIn');
-                              setState(() {
-                                if (futureSignIn) {
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                                  });
-                                }
-                              });
-                            }
-                        )
-                  ],
-              )
+      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const ScreenHeader(text: 'Sign In'),
+          RoundedTextField(
+            hintText: 'Email',
+            controller: emailController,
+            onSubmitted: (_) {
+              passwordFocusNode.requestFocus();
+            },
           ),
+          RoundedTextFieldObscured(
+              focusNode: passwordFocusNode,
+              onSubmitted: (_) {
+                _signIn();
+              },
+              hintText: 'Password',
+              controller: passwordController),
+          // if (futureSignIn) Container() else const Text("Wrong login or password"),
+          if (signInStatus == SignInStatus.notLoggedIn)
+            RoundedButton(text: 'Sign In', onPressed: _signIn)
+          else if (signInStatus == SignInStatus.logging)
+            const HavkaProgressIndicator(),
+          Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SignUpScreen()));
+                  },
+                  child: const HavkaText(text: 'Sign Up'),
+                ),
+                // TextButton(
+                //   onPressed: () {
+                //     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                //   },
+                //   child: const HavkaText(
+                //     text: 'Reset password',
+                //   ),
+                // )
+              ])),
+          RoundedButton(
+              text: 'Continue with Google',
+              color: HavkaColors.cream,
+              textColor: Theme.of(context).accentColor,
+              onPressed: () async {
+                final GoogleSignIn _googleSignIn =
+                    GoogleSignIn(scopes: ['email', 'profile']);
+
+                final result = await _googleSignIn.signIn();
+                final ggAuth = await result.authentication;
+
+                final idToken = ggAuth.idToken;
+                final accessToken = ggAuth.accessToken;
+                final serverAuthCode = ggAuth.serverAuthCode;
+
+                print('id $idToken');
+                print('acs $accessToken');
+                print('code $serverAuthCode');
+
+                futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
+                print('res $futureSignIn');
+                setState(() {
+                  if (futureSignIn) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainScreen()));
+                    });
+                  }
+                });
+              })
+        ],
+      )),
     );
   }
 
   @override
-  Widget build (BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: loginFormWidget(context)
-    );
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: loginFormWidget(context));
   }
 }

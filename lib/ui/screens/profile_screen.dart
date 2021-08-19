@@ -34,22 +34,29 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
   }
-
-  AppLifecycleState _notification;
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() { _notification = state; });
-    print(_notification);
+  void dispose() {
+    super.dispose();
+    // WidgetsBinding.instance.removeObserver(this);
   }
+
+  // AppLifecycleState _notification;
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   setState(() { _notification = state; });
+  //   print(_notification);
+  // }
 
   @override
   Widget build (BuildContext context) {
-    flutterReactiveBle.statusStream.listen((status) {
-      setState(() {});
-    });
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+    // flutterReactiveBle.statusStream.listen((status) {
+    //   setState(() {});
+    // });
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

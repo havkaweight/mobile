@@ -8,10 +8,12 @@ class RoundedTextFieldObscured extends StatefulWidget {
   final Color color;
   final Icon icon;
   final bool obscureText;
+  final FocusNode focusNode;
   final bool autoFocus;
   final String errorText;
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final void Function(String) onSubmitted;
 
   const RoundedTextFieldObscured({
     Key key,
@@ -21,10 +23,12 @@ class RoundedTextFieldObscured extends StatefulWidget {
     this.icon,
     this.color,
     this.controller,
+    this.focusNode,
     this.errorText,
     this.obscureText = true,
     this.autoFocus = false,
-    this.keyboardType = TextInputType.text
+    this.keyboardType = TextInputType.text,
+    this.onSubmitted
   }) : super(key: key);
 
   @override
@@ -62,17 +66,19 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
 
   @override
   Widget build(BuildContext context) {
-    double mWidth = MediaQuery.of(context).size.width;
+    final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: TextField(
         obscureText: _isHidden,
+        onSubmitted: widget.onSubmitted,
+        focusNode: widget.focusNode,
         keyboardType: widget.keyboardType,
         autofocus: widget.autoFocus,
         controller: widget.controller,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
           suffixIcon: widget.obscureText
             ? IconButton(
                 icon: _isIconShown
@@ -82,7 +88,7 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
                         : Icons.visibility_off,
                       color: HavkaColors.green
                     )
-                  : Icon(null),
+                  : const Icon(null),
                 onPressed: _togglePasswordView,
               )
             : null,

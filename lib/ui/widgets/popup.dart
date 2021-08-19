@@ -14,18 +14,18 @@ class Popup extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
-        height: 50,
-        margin: const EdgeInsets.only(top: 70, left: 30, right: 30),
+        height: 40,
+        margin: const EdgeInsets.only(top: 40, left: 30, right: 30),
         decoration: BoxDecoration(
           color: HavkaColors.bone,
-          borderRadius: BorderRadius.circular(40),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
             child: Text(
                 text,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     color: HavkaColors.green,
                     decoration: TextDecoration.none
                 )

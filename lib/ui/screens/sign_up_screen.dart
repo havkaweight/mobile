@@ -29,11 +29,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print(emailController.text);
       // var url = 'https://maupars.ru/check_username.php?username=${usernameController.text}';
       final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}/users/${emailController.text}/check'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        }
-      );
+          Uri.https(
+              Api.host, '${Api.prefix}/users/${emailController.text}/check'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          });
       final data = jsonDecode(response.body);
       print(data);
       print(response.statusCode);
@@ -67,115 +67,109 @@ class _SignUpScreenState extends State<SignUpScreen> {
     map['email'] = email;
     map['password'] = password;
     final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}/auth/register'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8'
-        },
-        body: jsonEncode(<String, String>{
-          "email": email,
-          "password": password
-        }),
-        // body: map
+      Uri.https(Api.host, '${Api.prefix}/auth/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode(<String, String>{"email": email, "password": password}),
+      // body: map
     );
 
     if (response.statusCode == 201) {
       // setToken(password);
-      return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInCheckScreen()));
-    }
-    else {
+      return Navigator.push(context,
+          MaterialPageRoute(builder: (context) => SignInCheckScreen()));
+    } else {
       print(response.body);
       throw Exception('Failed sign up.');
     }
   }
 
   @override
-  Widget build (BuildContext context) {
-    return Scaffold (
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 70.0),
-        child: Center(
-          child: (_futureSignUp == null)
-           ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const ScreenHeader(
-                  text: 'Sign Up'
-              ),
-              RoundedTextField(
-                hintText: 'Email',
-                controller: emailController,
-                errorText: _userExists ? 'User already exists' : null,
-              ),
-              RoundedTextFieldObscured(
-                hintText: 'Password',
-                controller: passwordController,
-              ),
-              RoundedButton(
-                text: 'Sign Up',
-                onPressed: () {
-                  setState(() {
-                    _futureSignUp = signUp(emailController.text, passwordController.text);
-                  });
-                },
-              ),
-              Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                          child: TextButton(
+  Widget build(BuildContext context) {
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 70.0),
+          child: Center(
+              child: (_futureSignUp == null)
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                          const ScreenHeader(text: 'Sign Up'),
+                          RoundedTextField(
+                            hintText: 'Email',
+                            controller: emailController,
+                            errorText:
+                                _userExists ? 'User already exists' : null,
+                          ),
+                          RoundedTextFieldObscured(
+                            hintText: 'Password',
+                            controller: passwordController,
+                          ),
+                          RoundedButton(
+                            text: 'Sign Up',
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+                              setState(() {
+                                _futureSignUp = signUp(emailController.text,
+                                    passwordController.text);
+                              });
                             },
-                            child: const HavkaText(
-                                text: 'Sign In'
-                            ),
-                          )
-                      ),
-                      Container(
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-                            },
-                            child: const HavkaText(
-                              text: 'Reset password',
-                            ),
-                          )
-
-                      )
-                    ],
-                  )
-              ),
-              // RoundedButton(
-              //   text: 'Back',
-              //   color: Color(0xFF5BBE78),
-              //   onPressed: () {
-              //     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-              //   },
-              // )
-            ]
-          )
-        : FutureBuilder<String>(
-            future: _futureSignUp,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                    snapshot.data,
-                    style: const TextStyle(
-                      color: Color(0xFF5BBE78),
-                      fontSize: 25
-                    )
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-              return const CircularProgressIndicator();
-            },
-          )
-        ),
-      )
-    );
+                          ),
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SignInScreen()));
+                                    },
+                                    child: const HavkaText(text: 'Sign In'),
+                                  )),
+                                  Container(
+                                      child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SignInScreen()));
+                                    },
+                                    child: const HavkaText(
+                                      text: 'Reset password',
+                                    ),
+                                  ))
+                                ],
+                              )),
+                          // RoundedButton(
+                          //   text: 'Back',
+                          //   color: Color(0xFF5BBE78),
+                          //   onPressed: () {
+                          //     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                          //   },
+                          // )
+                        ])
+                  : FutureBuilder<String>(
+                      future: _futureSignUp,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data,
+                              style: const TextStyle(
+                                  color: Color(0xFF5BBE78), fontSize: 25));
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return const CircularProgressIndicator();
+                      },
+                    )),
+        ));
   }
 }

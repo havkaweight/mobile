@@ -8,10 +8,12 @@ class RoundedTextField extends StatefulWidget {
   final Color color;
   final Icon icon;
   final bool obscureText;
+  final FocusNode focusNode;
   final bool autoFocus;
   final String errorText;
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final void Function(String) onSubmitted;
 
   const RoundedTextField({
     Key key,
@@ -21,10 +23,12 @@ class RoundedTextField extends StatefulWidget {
     this.icon,
     this.color,
     this.controller,
+    this.focusNode,
     this.errorText,
     this.obscureText = false,
     this.autoFocus = false,
-    this.keyboardType = TextInputType.text
+    this.keyboardType = TextInputType.text,
+    this.onSubmitted
   }) : super(key: key);
 
   @override
@@ -39,26 +43,28 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
 
   @override
   Widget build(BuildContext context) {
-    double mWidth = MediaQuery.of(context).size.width;
+    final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: TextField(
+        onSubmitted: widget.onSubmitted,
+        focusNode: widget.focusNode,
         obscureText: widget.obscureText,
         keyboardType: widget.keyboardType,
         autofocus: widget.autoFocus,
         controller: widget.controller,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-          fillColor: Color(0xFFEDE88E),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          fillColor: HavkaColors.bone,
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(10.0),
           ),
-          focusColor: Color(0xFFFFFFFF),
+          focusColor: const Color(0xFFFFFFFF),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFF5BBE78), width: 3.0),
+            borderSide: const BorderSide(color: HavkaColors.green, width: 3.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedErrorBorder: OutlineInputBorder(
@@ -72,7 +78,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
           hintText: widget.controller.text.isEmpty ? widget.hintText : widget.controller.text,
           errorText: widget.errorText,
           // labelText: controller.text.isEmpty ? labelText : controller.text,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Color(0x7A66550B),
             // fontWeight: FontWeight.bold,
             fontSize: 16

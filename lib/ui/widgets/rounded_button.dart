@@ -8,13 +8,15 @@ class RoundedButton extends StatelessWidget {
   final String text;
   final void Function() onPressed;
   final Color color, textColor;
+  final FocusNode focusNode;
 
   const RoundedButton({
     Key key,
     this.text,
     this.onPressed,
     this.color = HavkaColors.green,
-    this.textColor = Colors.white
+    this.textColor = Colors.white,
+    this.focusNode
   }) : super(key: key);
 
 
@@ -25,6 +27,7 @@ class RoundedButton extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
         child: TextButton(
+          focusNode: focusNode,
           onPressed: onPressed,
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
