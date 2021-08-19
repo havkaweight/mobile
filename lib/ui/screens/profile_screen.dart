@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
@@ -26,17 +27,33 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserver {
 
   final ApiRoutes _apiRoutes = ApiRoutes();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  AppLifecycleState _notification;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() { _notification = state; });
+    print(_notification);
   }
 
   @override
   Widget build (BuildContext context) {
+    flutterReactiveBle.statusStream.listen((status) {
+      setState(() {});
+    });
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold (
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(
@@ -90,7 +107,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FutureBuilder<List<UserDevice>>(
                 future: _apiRoutes.getUserDevicesList(),
                 builder: (BuildContext context, AsyncSnapshot<List<UserDevice>> snapshot) {
-                  print(flutterReactiveBle.status);
                   if (!snapshot.hasData) {
                     return Center(
                         child: Container(
@@ -99,7 +115,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                     );
                   }
-                  print(snapshot.data.runtimeType);
                   if (snapshot.hasData) {
                     return Expanded(
                         child: ListView.builder(

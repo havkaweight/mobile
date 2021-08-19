@@ -200,7 +200,6 @@ class ApiRoutes {
 
   Future<List<UserDevice>> getUserDevicesList() async {
     final token = await getToken();
-    print(token);
     final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.userDevices}'),
         headers: <String, String>{
@@ -210,11 +209,9 @@ class ApiRoutes {
     );
     if (response.statusCode == 200) {
       final devices = jsonDecode(response.body) as List;
-      print(devices);
       final List<UserDevice> devicesList = devices.map<UserDevice>((json) {
         return UserDevice.fromJson(json as Map<String, dynamic>);
       }).toList();
-      print(devicesList);
       return devicesList;
     }
     return [];

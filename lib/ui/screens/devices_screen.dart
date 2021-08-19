@@ -10,8 +10,8 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 Stream stream;
 QualifiedCharacteristic characteristic;
 
-Uuid serviceUuid = Uuid.parse(Scale.serviceUuid);
-Uuid characteristicId = Uuid.parse(Scale.characteristicId);
+Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
+Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
 
 class DevicesScreen extends StatefulWidget {
   @override
@@ -22,11 +22,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   final List<DiscoveredDevice> discDevicesList = [];
   final List<String> devicesListId = [];
-  List<Uuid> acceptedServiceUUID = [serviceUuid];
+  List<Uuid> acceptedServiceUUID = [scaleServiceUuid];
 
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  var _subscription;
+  dynamic _subscription;
 
   @override
   void initState() {
@@ -42,11 +42,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Future connectToDevice(DiscoveredDevice device) async {
     await _subscription?.cancel();
     stream = flutterReactiveBle.connectToDevice(id: device.id);
-    characteristic = QualifiedCharacteristic(serviceId: serviceUuid, characteristicId: characteristicId, deviceId: device.id);
+    characteristic = QualifiedCharacteristic(serviceId: scaleServiceUuid, characteristicId: scaleCharacteristicId, deviceId: device.id);
 
     final UserDevice userDevice = UserDevice(
-      serviceUUID: serviceUuid.toString(),
-      deviceUUID: characteristicId.toString()
+      serviceUUID: scaleServiceUuid.toString(),
+      deviceUUID: scaleCharacteristicId.toString()
     );
     final response = await _apiRoutes.userDeviceAdd(userDevice);
     print(response);

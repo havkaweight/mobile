@@ -30,7 +30,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
 
   double weight = 0.0;
 
-  var _subscription;
+  dynamic _subscription;
 
   @override
   void initState() {
@@ -41,22 +41,22 @@ class _ScaleScreenState extends State<ScaleScreen> {
   @override
   void dispose() {
     super.dispose();
-    // _subscription.cancel();
+    _subscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    QualifiedCharacteristic characteristic;
+    QualifiedCharacteristic scaleCharacteristic;
 
-    final Uuid serviceUuid = Uuid.parse(Scale.serviceUuid);
-    final Uuid characteristicId = Uuid.parse(Scale.characteristicId);
+    final Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
+    final Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
 
-    characteristic = QualifiedCharacteristic(
-        serviceId: serviceUuid,
-        characteristicId: characteristicId,
+    scaleCharacteristic = QualifiedCharacteristic(
+        serviceId: scaleServiceUuid,
+        characteristicId: scaleCharacteristicId,
         deviceId: '7C:9E:BD:F4:5B:1A');
 
-    _subscription = flutterReactiveBle.readCharacteristic(characteristic).then(
+    _subscription = flutterReactiveBle.readCharacteristic(scaleCharacteristic).then(
         (valueArray) {
       final buffer = StringBuffer();
       for (final int element in valueArray) {
