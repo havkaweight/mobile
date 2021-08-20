@@ -1,40 +1,44 @@
 class UserDevice {
   final int id;
   final int deviceId;
-  final String deviceUUID;
-  final String deviceName;
+  final String serialId;
+  final String macAddress;
+  final String userDeviceName;
   final String userId;
-  final String serviceUUID;
+  final String firmwareVersion;
 
   UserDevice({
     this.id,
     this.deviceId,
-    this.deviceUUID,
-    this.deviceName,
+    this.serialId,
+    this.macAddress,
+    this.userDeviceName,
     this.userId,
-    this.serviceUUID
+    this.firmwareVersion
   });
 
   UserDevice.fromJson(Map<String, dynamic> json)
       : id = json['id'] as int,
         deviceId = json['device_id'] as int,
-        deviceUUID = json['device_uuid'] as String,
-        deviceName = json['device_name'] as String,
+        serialId = json['serial_id'] as String,
+        macAddress = json['macaddr'] as String,
+        userDeviceName = json['user_device_name'] as String,
         userId = json['user_id'] as String,
-        serviceUUID = json['service_uuid'] as String;
+        firmwareVersion = json['firmware_version'] as String;
 
   Map<String, dynamic> toJson() =>
       {
         'id': id,
         'device_id': deviceId,
-        'device_uuid': deviceUUID,
-        'device_name': deviceName,
-        'user_id': userId
+        'serial_id': serialId,
+        'macaddr': macAddress,
+        'user_device_name': userDeviceName,
+        'user_id': userId,
+        'firmware_version': firmwareVersion
       };
 
   Map<String, dynamic> createdDataToJson() =>
       {
-        'service_uuid': serviceUUID,
-        'device_uuid': deviceUUID,
+        'serial_id': serialId,
       };
 }

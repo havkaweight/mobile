@@ -53,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
 
   @override
   Widget build (BuildContext context) {
-    final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
     // flutterReactiveBle.statusStream.listen((status) {
     //   setState(() {});
     // });
@@ -129,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           itemBuilder: (BuildContext context, index) {
                             final UserDevice userDevice = snapshot.data[index];
                             return ListTile(
-                              title: Text(userDevice.deviceName, style: TextStyle(
+                              title: Text(userDevice.userDeviceName, style: TextStyle(
                                   fontSize: Theme.of(context)
                                       .textTheme
                                       .headline3
@@ -251,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
   }
 
   Future<bool> isDeviceConnected(UserDevice userDevice) async {
-    flutterReactiveBle.connectToDevice(id: userDevice.deviceUUID).listen((update) {
+    flutterReactiveBle.connectToDevice(id: userDevice.serialId).listen((update) {
       bool status = false;
       if (update.connectionState == DeviceConnectionState.connected) {
         status = true;

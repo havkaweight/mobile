@@ -1,19 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/scale.dart';
+import 'package:health_tracker/constants/utils.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
-
-import 'authorization.dart';
-import 'devices_screen.dart';
 
 class ScaleScreen extends StatefulWidget {
   final UserProduct userProduct;
@@ -47,6 +42,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
   @override
   Widget build(BuildContext context) {
     QualifiedCharacteristic scaleCharacteristic;
+    final Utils utils = Utils();
 
     final Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
     final Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
@@ -56,13 +52,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
         characteristicId: scaleCharacteristicId,
         deviceId: '7C:9E:BD:F4:5B:1A');
 
-    _subscription = flutterReactiveBle.readCharacteristic(scaleCharacteristic).then(
-        (valueArray) {
-      final buffer = StringBuffer();
-      for (final int element in valueArray) {
-        buffer.write(String.fromCharCode(element));
-      }
-      final String valueString = buffer.toString();
+    _subscription = flutterReactiveBle
+        .readCharacteristic(scaleCharacteristic)
+        .then((valueList) {
+      final String valueString = utils.listIntToString(valueList);
       weight = double.parse(valueString);
       print(weight);
     }, onError: (Object error) {});

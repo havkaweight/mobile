@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
@@ -217,17 +218,35 @@ class ApiRoutes {
     return [];
   }
 
-  Future<UserDevice> userDeviceAdd(UserDevice userDevice) async {
-    print(jsonEncode(userDevice.toJson()));
+  Future<List<Uuid>> getDevicesServicesList() async {
+    final token = await getToken();
+    final http.Response response = await http.get(
+        Uri.https(Api.host, '${Api.prefix}${Api.serviceByName}/scale'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+    );
+    if (response.statusCode == 200) {
+      final devicesServicesList = jsonDecode(response.body) as List;
+      final List<Uuid> devicesServicesUuidList = devicesServicesList.map<Uuid>((json) {
+        return Uuid.parse(json['service_uuid'] as String);
+      }).toList();
+      return devicesServicesUuidList;
+    }
+    return [];
+  }
+
+  Future<UserDevice> userDeviceAdd(String serialId) async {
+    print(serialId);
     final token = await getToken();
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Accept': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(userDevice.createdDataToJson())
+        body: jsonEncode('"serial_id": $serialId')
     );
 
     if (response.statusCode == 201) {

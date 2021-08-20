@@ -140,64 +140,68 @@ class _SignInScreenState extends State<SignInScreen> {
               controller: passwordController),
           // if (futureSignIn) Container() else const Text("Wrong login or password"),
           if (signInStatus == SignInStatus.notLoggedIn)
-            RoundedButton(text: 'Sign In', onPressed: _signIn)
+            Column(
+              children: [
+                RoundedButton(text: 'Sign In', onPressed: _signIn),
+                Container(
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpScreen()));
+                        },
+                        child: const HavkaText(text: 'Sign Up'),
+                      ),
+                      // TextButton(
+                      //   onPressed: () {
+                      //     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                      //   },
+                      //   child: const HavkaText(
+                      //     text: 'Reset password',
+                      //   ),
+                      // )
+                    ])),
+                RoundedButton(
+                    text: 'Continue with Google',
+                    color: HavkaColors.cream,
+                    textColor: Theme.of(context).accentColor,
+                    onPressed: () async {
+                      final GoogleSignIn _googleSignIn =
+                      GoogleSignIn(scopes: ['email', 'profile']);
+
+                      final result = await _googleSignIn.signIn();
+                      final ggAuth = await result.authentication;
+
+                      final idToken = ggAuth.idToken;
+                      final accessToken = ggAuth.accessToken;
+                      final serverAuthCode = ggAuth.serverAuthCode;
+
+                      print('id $idToken');
+                      print('acs $accessToken');
+                      print('code $serverAuthCode');
+
+                      futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
+                      print('res $futureSignIn');
+                      setState(() {
+                        if (futureSignIn) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainScreen()));
+                          });
+                        }
+                      });
+                    })
+              ],
+            )
           else if (signInStatus == SignInStatus.logging)
             const HavkaProgressIndicator(),
-          Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SignUpScreen()));
-                  },
-                  child: const HavkaText(text: 'Sign Up'),
-                ),
-                // TextButton(
-                //   onPressed: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-                //   },
-                //   child: const HavkaText(
-                //     text: 'Reset password',
-                //   ),
-                // )
-              ])),
-          RoundedButton(
-              text: 'Continue with Google',
-              color: HavkaColors.cream,
-              textColor: Theme.of(context).accentColor,
-              onPressed: () async {
-                final GoogleSignIn _googleSignIn =
-                    GoogleSignIn(scopes: ['email', 'profile']);
-
-                final result = await _googleSignIn.signIn();
-                final ggAuth = await result.authentication;
-
-                final idToken = ggAuth.idToken;
-                final accessToken = ggAuth.accessToken;
-                final serverAuthCode = ggAuth.serverAuthCode;
-
-                print('id $idToken');
-                print('acs $accessToken');
-                print('code $serverAuthCode');
-
-                futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
-                print('res $futureSignIn');
-                setState(() {
-                  if (futureSignIn) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MainScreen()));
-                    });
-                  }
-                });
-              })
         ],
       )),
     );

@@ -21,6 +21,9 @@ class Api {
   static const userDevices = '/users/me/devices';
   static const userDevicesAdd = '/users/me/devices/add';
 
+  static const devicesServices = '/users/me/devices/add';
+  static const serviceByName = '/devices/service';
+
   static const login = '/auth/login';
   static const register = '/auth/register';
 
