@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -9,38 +10,27 @@ class ProfileHeader extends StatelessWidget {
   final String photoUrl;
   final void Function() onPressed;
 
-  const ProfileHeader({
-    this.username,
-    this.height,
-    this.weight,
-    this.photoUrl,
-    this.onPressed
-  });
+  const ProfileHeader(
+      {this.username, this.height, this.weight, this.photoUrl, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-        child: Row(
-          children: <Widget>[
-            ClipRRect(
+        child: Row(children: <Widget>[
+          ClipRRect(
               borderRadius: BorderRadius.circular(1000),
               child: Image.network(
                 photoUrl,
                 width: MediaQuery.of(context).size.width * 0.3,
-              )
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
+              )),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
+                  Text(username,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     'Height: ${height.toString()}',
                   ),
@@ -51,15 +41,9 @@ class ProfileHeader extends StatelessWidget {
                   //     icon: const Icon(Icons.logout),
                   //     onPressed: onPressed
                   // ),
-                  TextButton(
-                      onPressed: onPressed,
-                      child: const HavkaText(text: 'Log out')
-                  )
-                ]
-              ),
-            ),
-          ]
-        )
-    );
+                  RoundedButton(text: 'Log out', onPressed: onPressed)
+                ]),
+          ),
+        ]));
   }
 }

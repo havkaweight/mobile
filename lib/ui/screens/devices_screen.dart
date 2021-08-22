@@ -6,6 +6,7 @@ import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:health_tracker/constants/utils.dart';
+import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -26,8 +27,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   final List<DiscoveredDevice> discDevicesList = [];
   final List<String> devicesListId = [];
-
-  // List<Uuid> acceptedServiceUUID = [scaleServiceUuid];
+  List<DeviceService> servicesList = [];
 
   StreamSubscription<DiscoveredDevice> _subscription;
 
@@ -42,33 +42,41 @@ class _DevicesScreenState extends State<DevicesScreen> {
     _subscription.cancel();
   }
 
-  Future connectToDevice(DiscoveredDevice device) async {
+  Future<String> connectToDevice(DiscoveredDevice device) async {
     final Utils utils = Utils();
-
     await _subscription?.cancel();
+    final DeviceService service = servicesList.singleWhere((serviceItem) => Uuid.parse(serviceItem.serviceUuid) == device.serviceUuids[0]);
+    final Uuid serviceUuid = Uuid.parse(service.serviceUuid);
+    final Uuid characteristicUuid = Uuid.parse(service.characteristicUuid);
     stream = flutterReactiveBle.connectToDevice(id: device.id);
     characteristic = QualifiedCharacteristic(
-        serviceId: scaleServiceUuid,
-        characteristicId: scaleCharacteristicId,
+        serviceId: serviceUuid,
+        characteristicId: characteristicUuid,
         deviceId: device.id);
     final List<int> serialIdRaw =
         await flutterReactiveBle.readCharacteristic(characteristic);
     final String serialId = utils.listIntToString(serialIdRaw);
-    final response = await _apiRoutes.userDeviceAdd(serialId);
-    print(response);
+    print(serialId);
+    return serialId;
+    // final response = await _apiRoutes.userDeviceAdd(serialId);
+    // print(response);
   }
 
   Future _setSearchingDevicesList() async {
-    final List<Uuid> servicesList = await _apiRoutes.getDevicesServicesList();
-    print(servicesList);
+    servicesList = await _apiRoutes.getDevicesServicesList();
+    final List<Uuid> servicesUuidList = servicesList.map((deviceService) {
+      return Uuid.parse(deviceService.serviceUuid);
+    }).toList();
+    servicesUuidList.add(Uuid.parse('0000181b-0000-1000-8000-00805f9b34fb'));
+    print(servicesUuidList);
     _subscription = flutterReactiveBle
         .scanForDevices(
-      withServices: servicesList,
+      withServices: servicesUuidList,
       scanMode: ScanMode.lowLatency,
     )
         .listen((device) {
-      print(device.id);
       if (!devicesListId.contains(device.id)) {
+        print(device.id);
         print(device);
         setState(() {
           discDevicesList.add(device);
@@ -86,15 +94,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
         itemCount: discDevicesList.length,
         padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
+          String btnText = 'Connect';
           final DiscoveredDevice device = discDevicesList[index];
           return ListTile(
             title: Text(device.name == '' ? '(unknown device)' : device.name),
             subtitle: Text(device.id),
             trailing: RoundedButton(
-                text: 'Connect',
+                text: btnText,
                 onPressed: () {
-                  connectToDevice(device);
-                  Navigator.pop(context);
+                  setState(() async {
+                    btnText = await connectToDevice(device);
+                  });
+                  // Navigator.pop(context);
                 }),
           );
         });

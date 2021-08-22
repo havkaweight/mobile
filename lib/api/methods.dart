@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
@@ -218,21 +219,21 @@ class ApiRoutes {
     return [];
   }
 
-  Future<List<Uuid>> getDevicesServicesList() async {
+  Future<List<DeviceService>> getDevicesServicesList() async {
     final token = await getToken();
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.serviceByName}/scale'),
+        Uri.https(Api.host, '${Api.prefix}${Api.serviceByName}/info'),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         }
     );
     if (response.statusCode == 200) {
-      final devicesServicesList = jsonDecode(response.body) as List;
-      final List<Uuid> devicesServicesUuidList = devicesServicesList.map<Uuid>((json) {
-        return Uuid.parse(json['service_uuid'] as String);
+      final devicesServices = jsonDecode(response.body) as List;
+      final List<DeviceService> devicesServicesList = devicesServices.map<DeviceService>((json) {
+        return DeviceService.fromJson(json as Map<String, dynamic>);
       }).toList();
-      return devicesServicesUuidList;
+      return devicesServicesList;
     }
     return [];
   }
