@@ -152,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       stream: flutterReactiveBle.connectToDevice(id: userDevice.macAddress.toUpperCase()),
                                       builder: (BuildContext context, AsyncSnapshot<ConnectionStateUpdate> snapshot) {
                                         String connectionStateText = 'Disconnected';
-                                        Color connectionStateColor = HavkaColors.bone;
+                                        Color connectionStateColor = Colors.red;
                                         if (snapshot.hasData) {
                                           print(snapshot.data);
                                           if (snapshot.data.connectionState ==
