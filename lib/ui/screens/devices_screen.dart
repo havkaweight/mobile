@@ -18,6 +18,10 @@ Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
 Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
 
 class DevicesScreen extends StatefulWidget {
+  final List<DeviceService> servicesList;
+
+  const DevicesScreen(this.servicesList);
+
   @override
   _DevicesScreenState createState() => _DevicesScreenState();
 }
@@ -27,13 +31,20 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   final List<DiscoveredDevice> discDevicesList = [];
   final List<String> devicesListId = [];
-  List<DeviceService> servicesList = [];
+
+  // List<DeviceService> servicesList = [];
+
+  List<Uuid> servicesUuidList = [];
 
   StreamSubscription<DiscoveredDevice> _subscription;
 
   @override
   void initState() {
     super.initState();
+    servicesUuidList = widget.servicesList.map((deviceService) {
+      return Uuid.parse(deviceService.serviceUuid);
+    }).toList();
+    servicesUuidList.add(Uuid.parse('0000181b-0000-1000-8000-00805f9b34fb'));
   }
 
   @override
@@ -42,13 +53,16 @@ class _DevicesScreenState extends State<DevicesScreen> {
     _subscription.cancel();
   }
 
-  Future<String> connectToDevice(DiscoveredDevice device) async {
+  Future connectToDevice(DiscoveredDevice device) async {
     final Utils utils = Utils();
     await _subscription?.cancel();
-    final DeviceService service = servicesList.singleWhere((serviceItem) => Uuid.parse(serviceItem.serviceUuid) == device.serviceUuids[0]);
+    final DeviceService service = widget.servicesList.singleWhere(
+        (serviceItem) =>
+            Uuid.parse(serviceItem.serviceUuid) == device.serviceUuids[0]);
     final Uuid serviceUuid = Uuid.parse(service.serviceUuid);
     final Uuid characteristicUuid = Uuid.parse(service.characteristicUuid);
-    stream = flutterReactiveBle.connectToDevice(id: device.id);
+    // stream = flutterReactiveBle.connectToDevice(id: device.id);
+    final _connectionStateUpdateSubscription = flutterReactiveBle.connectToDevice(id: device.id).listen(null);
     characteristic = QualifiedCharacteristic(
         serviceId: serviceUuid,
         characteristicId: characteristicUuid,
@@ -56,18 +70,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
     final List<int> serialIdRaw =
         await flutterReactiveBle.readCharacteristic(characteristic);
     final String serialId = utils.listIntToString(serialIdRaw);
+    print(serialIdRaw);
     print(serialId);
-    return serialId;
-    // final response = await _apiRoutes.userDeviceAdd(serialId);
-    // print(response);
+    await _connectionStateUpdateSubscription?.cancel(); // disconnecting
+    await _apiRoutes.userDeviceAdd(serialId);
   }
 
   Future _setSearchingDevicesList() async {
-    servicesList = await _apiRoutes.getDevicesServicesList();
-    final List<Uuid> servicesUuidList = servicesList.map((deviceService) {
-      return Uuid.parse(deviceService.serviceUuid);
-    }).toList();
-    servicesUuidList.add(Uuid.parse('0000181b-0000-1000-8000-00805f9b34fb'));
+    // servicesList = await _apiRoutes.getDevicesServicesList();
+    // final List<Uuid> servicesUuidList = servicesList.map((deviceService) {
+    //   return Uuid.parse(deviceService.serviceUuid);
+    // }).toList();
+    // servicesUuidList.add(Uuid.parse('0000181b-0000-1000-8000-00805f9b34fb'));
     print(servicesUuidList);
     _subscription = flutterReactiveBle
         .scanForDevices(
@@ -94,18 +108,15 @@ class _DevicesScreenState extends State<DevicesScreen> {
         itemCount: discDevicesList.length,
         padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
-          String btnText = 'Connect';
           final DiscoveredDevice device = discDevicesList[index];
           return ListTile(
             title: Text(device.name == '' ? '(unknown device)' : device.name),
             subtitle: Text(device.id),
             trailing: RoundedButton(
-                text: btnText,
+                text: 'Connect',
                 onPressed: () {
-                  setState(() async {
-                    btnText = await connectToDevice(device);
-                  });
-                  // Navigator.pop(context);
+                  connectToDevice(device);
+                  Navigator.pop(context);
                 }),
           );
         });

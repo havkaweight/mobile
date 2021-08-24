@@ -116,7 +116,7 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    isAuthorized(response);
+    // isAuthorized(response);
     final user = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     return user;
   }
@@ -243,11 +243,13 @@ class ApiRoutes {
     final token = await getToken();
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
-        headers: <String, String>{
+        headers: <String, String> {
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode('"serial_id": $serialId')
+        body: jsonEncode(<String, String> {
+          'serial_id': serialId
+        })
     );
 
     if (response.statusCode == 201) {

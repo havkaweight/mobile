@@ -58,7 +58,7 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                                 final UserDevice userDevice =
                                     snapshot.data[index];
                                 return ListTile(
-                                  title: Text(userDevice.deviceName),
+                                  title: Text(userDevice.userDeviceName),
                                   subtitle:
                                       Text(userDevice.deviceId.toString()),
                                 );
