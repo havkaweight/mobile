@@ -172,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ));
                           }));
                 }
-                return const Text('No devices added :-(');
+                return const HavkaText(text: 'No devices added :-(');
               }),
           Center(
               child: Container(
@@ -186,30 +186,35 @@ class _ProfileScreenState extends State<ProfileScreen>
                             _buildScaleSearching(context)
                                 .then((_) => setState(() {}));
                           }),
-                      if ([BleStatus.unauthorized, BleStatus.poweredOff]
-                          .contains(flutterReactiveBle.status))
-                        const Icon(
-                          Icons.bluetooth_disabled,
-                          color: Colors.grey,
-                        )
-                      else
-                        const Icon(
-                          Icons.bluetooth,
-                          color: HavkaColors.green,
-                        ),
-                      if ([BleStatus.unauthorized, BleStatus.poweredOff]
-                              .contains(flutterReactiveBle.status) ||
-                          flutterReactiveBle.status ==
-                              BleStatus.locationServicesDisabled)
-                        const Icon(
-                          Icons.location_disabled,
-                          color: Colors.grey,
-                        )
-                      else
-                        const Icon(
-                          Icons.my_location,
-                          color: HavkaColors.green,
-                        )
+                      StreamBuilder<BleStatus>(
+                        stream: flutterReactiveBle.statusStream,
+                        builder: (BuildContext context, AsyncSnapshot<BleStatus> snapshot) {
+                          if ([BleStatus.unauthorized, BleStatus.poweredOff]
+                              .contains(snapshot.data)) {
+                            return Row(children: const [
+                              Icon(
+                                Icons.bluetooth_disabled,
+                                color: Colors.grey,
+                              ),
+                              Icon(
+                                Icons.location_disabled,
+                                color: Colors.grey,
+                              )
+                            ]
+                            );
+                          } else {
+                            return Row(children: const [
+                              Icon(
+                                Icons.bluetooth,
+                                color: HavkaColors.green,
+                              ),
+                              Icon(
+                                Icons.my_location,
+                                color: HavkaColors.green,
+                              )
+                            ]);
+                          }
+                        })
                     ],
                   )))
         ]));
