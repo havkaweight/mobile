@@ -27,7 +27,7 @@ class UserProductWeighting {
         userDeviceId = json['user_device_id'] as int,
         userId = json['user_id'] as String,
         userProductWeight = json['weight'] as double,
-        createdAt = DateTime.parse(json['created_at']);
+        createdAt = DateTime.parse(json['created_at'] as String);
 
   Map<String, dynamic> toJson() =>
       {

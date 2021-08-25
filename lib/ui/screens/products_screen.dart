@@ -80,10 +80,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
           },
         )
       else
-        FutureBuilder<dynamic>(
+        FutureBuilder<List<Product>>(
           future:
               _apiRoutes.getProductsBySearchingRequest(searchController.text),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
             print(snapshot);
             if (!snapshot.hasData) {
               return Center(
@@ -95,8 +95,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
               final double mHeight = MediaQuery.of(context).size.height;
               return SizedBox(
                 height: mHeight * 0.73,
-                child: ListView(
-                  children: snapshot.data.map<Widget>((product) {
+                child: ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, index) {
+                    final Product product = snapshot.data[index];
                     return ListTile(
                       title: Text(product.name),
                       subtitle: Text(product.brand),
@@ -105,7 +107,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         Navigator.pop(context);
                       },
                     );
-                  }).toList(),
+                  },
                 ),
               );
             }

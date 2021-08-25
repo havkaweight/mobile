@@ -177,7 +177,7 @@ class ApiRoutes {
     }
   }
 
-  Future<dynamic> getProductsBySearchingRequest(String request) async {
+  Future<List<Product>> getProductsBySearchingRequest(String request) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.productsByRequest}/$request'),
