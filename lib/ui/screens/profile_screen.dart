@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -132,7 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               itemBuilder: (BuildContext context, index) {
                                 final UserDevice userDevice =
                                 snapshot.data[index];
-                                print(userDevice.macAddress);
                                 return ListTile(
                                     title: Text(userDevice.userDeviceName,
                                         style: TextStyle(
@@ -149,10 +150,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 .headline4
                                                 .fontSize)),
                                     trailing: StreamBuilder<ConnectionStateUpdate>(
-                                      stream: flutterReactiveBle.connectToDevice(id: userDevice.macAddress.toUpperCase()),
+                                      stream: flutterReactiveBle.connectToDevice(id: userDevice.macAddress.toUpperCase()).asBroadcastStream(),
                                       builder: (BuildContext context, AsyncSnapshot<ConnectionStateUpdate> snapshot) {
                                         String connectionStateText = 'Disconnected';
-                                        Color connectionStateColor = Colors.red;
+                                        Color connectionStateColor = HavkaColors.bone;
                                         if (snapshot.hasData) {
                                           print(snapshot.data);
                                           if (snapshot.data.connectionState ==
@@ -163,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                           } else {
                                             connectionStateText =
                                             'Disconnected';
-                                            connectionStateColor = Colors.red;
+                                            connectionStateColor = HavkaColors.bone;
                                           }
                                         }
                                         return Text(connectionStateText,
