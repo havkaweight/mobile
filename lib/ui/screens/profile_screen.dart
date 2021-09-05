@@ -145,6 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   builder: (BuildContext context,
                                       AsyncSnapshot<ConnectionStateUpdate>
                                           snapshot) {
+                                    print(snapshot);
                                     String connectionStateText = 'Disconnected';
                                     Color connectionStateColor =
                                         HavkaColors.bone;

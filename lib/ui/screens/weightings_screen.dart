@@ -39,32 +39,39 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
           }
           if (snapshot.hasData) {
             final double mHeight = MediaQuery.of(context).size.height;
-            return SizedBox(
-              height: mHeight * 0.82,
-              child: ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, index) {
-                  final UserProductWeighting userProductWeighting = snapshot.data[index];
-                  final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(userProductWeighting.createdAt);
-                  return ListTile(
-                    title: Text('${userProductWeighting.userProductWeight.toString()} g', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(userProductWeighting.userProductName, style: TextStyle(
-                        fontSize: Theme.of(context)
-                            .textTheme
-                            .headline4
-                            .fontSize)),
-                    trailing: Text(createdAt, style: TextStyle(
-                        fontSize: Theme.of(context)
-                            .textTheme
-                            .headline4
-                            .fontSize)),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  );
-                }
-              ),
-            );
+            if (snapshot.data.isNotEmpty) {
+              return SizedBox(
+                height: mHeight * 0.82,
+                child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, index) {
+                      final UserProductWeighting userProductWeighting = snapshot.data[index];
+                      final createdAt = DateFormat('yyyy-MM-dd kk:mm').format(userProductWeighting.createdAt);
+                      return ListTile(
+                        title: Text('${userProductWeighting.userProductWeight.toString()} g', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(userProductWeighting.userProductName, style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .headline4
+                                .fontSize)),
+                        trailing: Text(createdAt, style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .headline4
+                                .fontSize)),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    }
+                ),
+              );
+            } else {
+              return SizedBox(
+                  height: mHeight * 0.82,
+                  child: const Center(child: Text('History not found'))
+              );
+            }
           }
           return const Center(child: Text('Error internet connection'));
         },
