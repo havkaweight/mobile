@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/product_adding_screen.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/search_textfield.dart';
@@ -31,16 +33,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
-      SearchTextField(
-        hintText: 'Search food',
-        width: 0.9,
-        controller: searchController,
-        icon: const Icon(Icons.search),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SearchTextField(
+            hintText: 'Search food',
+            width: 0.8,
+            controller: searchController,
+            icon: const Icon(Icons.search),
+          ),
+          IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProductAddingScreen()));
+          }, icon: const Icon(Icons.add, color: HavkaColors.green))
+        ],
       ),
       if (searchController.text.isEmpty)
         FutureBuilder<List<Product>>(
           future: _apiRoutes.getProductsList(),
-          builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
             print(snapshot);
             if (!snapshot.hasData) {
               return Center(
@@ -53,27 +64,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
               return SizedBox(
                 height: mHeight * 0.7,
                 child: ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, index) {
-                    final Product product = snapshot.data[index];
-                    return ListTile(
-                      title: Text(product.name, style: TextStyle(
-                          fontSize: Theme.of(context)
-                              .textTheme
-                              .headline3
-                              .fontSize)),
-                      subtitle: Text(product.brand, style: TextStyle(
-                          fontSize: Theme.of(context)
-                              .textTheme
-                              .headline4
-                              .fontSize)),
-                      onTap: () async {
-                        await _apiRoutes.addProduct(product);
-                        Navigator.pop(context);
-                      },
-                    );
-                  }
-                ),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, index) {
+                      final Product product = snapshot.data[index];
+                      return ListTile(
+                        title: Text(product.name,
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .headline3
+                                    .fontSize)),
+                        subtitle: Text(product.brand,
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    .fontSize)),
+                        onTap: () async {
+                          await _apiRoutes.addProduct(product);
+                          Navigator.pop(context);
+                        },
+                      );
+                    }),
               );
             }
             return const Center(child: Text('Error internet connection'));
@@ -83,7 +95,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         FutureBuilder<List<Product>>(
           future:
               _apiRoutes.getProductsBySearchingRequest(searchController.text),
-          builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
             print(snapshot);
             if (!snapshot.hasData) {
               return Center(

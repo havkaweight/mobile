@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
@@ -26,7 +25,7 @@ class _HavkaAppState extends State<HavkaApp> {
   void initState() {
     super.initState();
     Future.delayed(
-      Duration(seconds: 5),
+      const Duration(seconds: 5),
         () {
           Navigator.pushReplacement(
             context,

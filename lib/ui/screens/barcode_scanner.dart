@@ -5,6 +5,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/ui/screens/product_adding_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -63,7 +64,20 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           if (snapshot.hasError) {
-                            return Text(result.code);
+                            return Row(
+                              children: [
+                                const Text('Barcode not found'),
+                                RoundedButton(
+                                    text: 'Add',
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProductAddingScreen()));
+                                    })
+                              ],
+                            );
                           }
                           return Center(
                               child: Container(
