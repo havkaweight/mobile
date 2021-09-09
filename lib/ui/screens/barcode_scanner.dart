@@ -74,7 +74,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  ProductAddingScreen()));
+                                                  ProductAddingScreen.withBarcode(result.code)));
                                     })
                               ],
                             );

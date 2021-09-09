@@ -56,6 +56,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          suffixIcon: widget.icon,
           fillColor: HavkaColors.bone,
           filled: true,
           border: OutlineInputBorder(
