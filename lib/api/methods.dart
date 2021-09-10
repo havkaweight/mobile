@@ -276,7 +276,7 @@ class ApiRoutes {
     return [];
   }
 
-  Future addProduct(Product product) async {
+  Future addUserProduct(Product product) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userProductsAdd}'),
@@ -285,6 +285,20 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         },
         body: jsonEncode(product.productIdToJson())
+    );
+
+    print('${response.statusCode} ${response.body}');
+  }
+
+  Future addProduct(Product product) async {
+    final token = await storage.read(key: 'jwt');
+    final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.productsAdd}'),
+        headers: <String, String>{
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(product.toJson())
     );
 
     print('${response.statusCode} ${response.body}');

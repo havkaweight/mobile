@@ -10,12 +10,12 @@ import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class BarcodeScannerScreen extends StatefulWidget {
+class BarcodeScannerSimpleScreen extends StatefulWidget {
   @override
-  _BarcodeScannerScreenState createState() => _BarcodeScannerScreenState();
+  _BarcodeScannerScreenSimpleState createState() => _BarcodeScannerScreenSimpleState();
 }
 
-class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
+class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode result;
@@ -59,25 +59,12 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   // ? Text(
                   // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
                   // : const Text('Scan a code'),
-                  ? FutureBuilder(
+                    ? FutureBuilder(
                       future: _apiRoutes.getProductByBarcode(result.code),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           if (snapshot.hasError) {
-                            return Row(
-                              children: [
-                                const Text('Barcode not found'),
-                                RoundedButton(
-                                    text: 'Add',
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProductAddingScreen.withBarcode(result.code)));
-                                    })
-                              ],
-                            );
+                            Navigator.pop(context, result.code);
                           }
                           return Center(
                               child: Container(

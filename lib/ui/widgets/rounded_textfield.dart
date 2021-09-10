@@ -6,7 +6,7 @@ class RoundedTextField extends StatefulWidget {
   final String labelText, hintText;
   final double width;
   final Color color;
-  final Icon icon;
+  final IconButton iconButton;
   final bool obscureText;
   final FocusNode focusNode;
   final bool autoFocus;
@@ -20,7 +20,7 @@ class RoundedTextField extends StatefulWidget {
     this.labelText,
     this.hintText,
     this.width = 0.7,
-    this.icon,
+    this.iconButton,
     this.color,
     this.controller,
     this.focusNode,
@@ -46,7 +46,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: TextField(
         onSubmitted: widget.onSubmitted,
         focusNode: widget.focusNode,
@@ -56,7 +56,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-          suffixIcon: widget.icon,
+          suffixIcon: widget.iconButton,
           fillColor: HavkaColors.bone,
           filled: true,
           border: OutlineInputBorder(

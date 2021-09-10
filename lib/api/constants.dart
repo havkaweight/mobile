@@ -7,6 +7,7 @@ class Api {
   static const me = '/users/me';
 
   static const products = '/product';
+  static const productsAdd = '/product/add';
   static const productsByRequest = '/product/searching';
   static const productByBarcode = '/product/barcode';
 

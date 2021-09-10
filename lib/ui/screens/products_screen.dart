@@ -81,7 +81,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     .headline4
                                     .fontSize)),
                         onTap: () async {
-                          await _apiRoutes.addProduct(product);
+                          await _apiRoutes.addUserProduct(product);
                           Navigator.pop(context);
                         },
                       );
@@ -116,7 +116,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       title: Text(product.name),
                       subtitle: Text(product.brand),
                       onTap: () async {
-                        await _apiRoutes.addProduct(product);
+                        await _apiRoutes.addUserProduct(product);
                         Navigator.pop(context);
                       },
                     );
