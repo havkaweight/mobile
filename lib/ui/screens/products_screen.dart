@@ -43,7 +43,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             icon: const Icon(Icons.search),
           ),
           IconButton(onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProductAddingScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductAddingScreen()));
           }, icon: const Icon(Icons.add, color: HavkaColors.green))
         ],
       ),

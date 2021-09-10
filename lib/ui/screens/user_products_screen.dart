@@ -77,63 +77,66 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                 }
                 if (snapshot.hasData) {
                   return Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, index) {
-                        final UserProduct userProduct = snapshot.data[index];
-                        return ListTile(
-                            title: Text(userProduct.productName,
-                                style: TextStyle(
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .headline3
-                                        .fontSize)),
-                            subtitle: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(userProduct.productBrand,
-                                      style: TextStyle(
-                                          fontSize: Theme.of(context)
-                                              .textTheme
-                                              .headline4
-                                              .fontSize)),
-                                  Text(
-                                      '${userProduct.netWeightLeft.round()}g left',
-                                      style: TextStyle(
-                                          fontSize: Theme.of(context)
-                                              .textTheme
-                                              .headline4
-                                              .fontSize))
-                                ]),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => UserProductScreen(
-                                          userProduct: userProduct)));
-                            },
-                            trailing:
-                                Row(mainAxisSize: MainAxisSize.min, children: [
-                              IconButton(
-                                icon: const Icon(Icons.monitor_weight),
-                                onPressed: () {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ScaleScreen(
-                                                  userProduct: userProduct)))
-                                      .then((_) => setState(() {}));
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  await _apiRoutes.deleteUserProduct(userProduct);
-                                  setState(() {});
-                                },
-                              )
-                            ]));
-                      },
+                    child: RefreshIndicator(
+                      onRefresh: _apiRoutes.getUserProductsList,
+                      child: ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, index) {
+                          final UserProduct userProduct = snapshot.data[index];
+                          return ListTile(
+                              title: Text(userProduct.productName,
+                                  style: TextStyle(
+                                      fontSize: Theme.of(context)
+                                          .textTheme
+                                          .headline3
+                                          .fontSize)),
+                              subtitle: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(userProduct.productBrand,
+                                        style: TextStyle(
+                                            fontSize: Theme.of(context)
+                                                .textTheme
+                                                .headline4
+                                                .fontSize)),
+                                    Text(
+                                        '${userProduct.netWeightLeft.round()}g left',
+                                        style: TextStyle(
+                                            fontSize: Theme.of(context)
+                                                .textTheme
+                                                .headline4
+                                                .fontSize))
+                                  ]),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => UserProductScreen(
+                                            userProduct: userProduct)));
+                              },
+                              trailing:
+                                  Row(mainAxisSize: MainAxisSize.min, children: [
+                                IconButton(
+                                  icon: const Icon(Icons.monitor_weight),
+                                  onPressed: () {
+                                    Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ScaleScreen(
+                                                    userProduct: userProduct)))
+                                        .then((_) => setState(() {}));
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () async {
+                                    await _apiRoutes.deleteUserProduct(userProduct);
+                                    setState(() {});
+                                  },
+                                )
+                              ]));
+                        },
+                      ),
                     ),
                   );
                 }
