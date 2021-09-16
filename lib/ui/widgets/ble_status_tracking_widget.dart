@@ -29,7 +29,7 @@ class BleStatusTrackingWidgetState extends State<BleStatusTrackingWidget> {
   String status = 'unk';
 
   PersistentBottomSheetController _controller;
-  GlobalKey<ScaffoldState> _key = GlobalKey();
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override
   void initState() {

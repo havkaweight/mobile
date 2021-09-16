@@ -100,7 +100,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                                                 .headline4
                                                 .fontSize)),
                                     Text(
-                                        '${userProduct.netWeightLeft.round()}g left',
+                                        '${userProduct.netWeightLeft.round()}${userProduct.unit} left',
                                         style: TextStyle(
                                             fontSize: Theme.of(context)
                                                 .textTheme

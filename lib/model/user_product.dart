@@ -9,6 +9,7 @@ class UserProduct {
   final double carbs;
   final double kcal;
   final double netWeightLeft;
+  final String unit;
 
   UserProduct({
     this.id,
@@ -20,7 +21,8 @@ class UserProduct {
     this.fat,
     this.carbs,
     this.kcal,
-    this.netWeightLeft
+    this.netWeightLeft,
+    this.unit
   });
 
   UserProduct.fromJson(Map<String, dynamic> json)
@@ -33,7 +35,8 @@ class UserProduct {
         fat = json['fats'] as double,
         carbs = json['carbs'] as double,
         kcal = json['kcal'] as double,
-        netWeightLeft = json['net_weight_left'] as double;
+        netWeightLeft = json['net_weight_left'] as double,
+        unit = json['unit'] as String;
 
   Map<String, dynamic> toJson() =>
       {
@@ -46,7 +49,8 @@ class UserProduct {
         'fats': fat,
         'carbs': carbs,
         'kcal': kcal,
-        'net_weight_left': netWeightLeft
+        'net_weight_left': netWeightLeft,
+        'unit': unit
       };
 
   Map<String, dynamic> idToJson() =>
