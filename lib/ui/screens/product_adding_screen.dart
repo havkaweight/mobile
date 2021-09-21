@@ -29,6 +29,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   final carbsController = TextEditingController();
   final kcalController = TextEditingController();
   final weightController = TextEditingController();
+  final unitController = TextEditingController();
   final barcodeController = TextEditingController();
   final barcodeFocusNode = FocusNode();
 
@@ -51,11 +52,20 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
           children: [
             RoundedTextField(hintText: 'Name', controller: nameController),
             RoundedTextField(hintText: 'Brand', controller: brandController),
-            RoundedTextField(hintText: 'Protein', controller: proteinController, keyboardType: TextInputType.number),
-            RoundedTextField(hintText: 'Fats', controller: fatsController, keyboardType: TextInputType.number),
-            RoundedTextField(hintText: 'Carbs', controller: carbsController, keyboardType: TextInputType.number),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              RoundedTextField(width: 0.25, hintText: 'Protein', controller: proteinController, keyboardType: TextInputType.number),
+              RoundedTextField(width: 0.25, hintText: 'Fats', controller: fatsController, keyboardType: TextInputType.number),
+              RoundedTextField(width: 0.25, hintText: 'Carbs', controller: carbsController, keyboardType: TextInputType.number)
+            ]),
             RoundedTextField(hintText: 'Kcal', controller: kcalController, keyboardType: TextInputType.number),
-            RoundedTextField(hintText: 'Weight', controller: weightController, keyboardType: TextInputType.number),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              RoundedTextField(width: 0.5, hintText: 'Weight', controller: weightController, keyboardType: TextInputType.number),
+              RoundedTextField(width: 0.2, hintText: 'Units', controller: unitController)
+            ],),
             RoundedTextField(hintText: 'Barcode', controller: barcodeController, keyboardType: TextInputType.number, iconButton: IconButton(icon: const Icon(Icons.qr_code_2), color: HavkaColors.green, onPressed: () {
               _buildBarcodeScanner().then((barcode) => setState(() {
                 barcodeController.text = barcode as String;
@@ -70,6 +80,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                 'carbs': double.parse(carbsController.text),
                 'kcal': double.parse(kcalController.text),
                 'net_weight': double.parse(weightController.text),
+                'unit': unitController.text,
                 'barcode': barcodeController.text,
               });
               _apiRoutes.addProduct(product);

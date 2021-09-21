@@ -14,6 +14,7 @@ class RoundedTextField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
   final void Function(String) onSubmitted;
+  final TextAlign textAlign;
 
   const RoundedTextField({
     Key key,
@@ -28,7 +29,8 @@ class RoundedTextField extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.keyboardType = TextInputType.text,
-    this.onSubmitted
+    this.onSubmitted,
+    this.textAlign = TextAlign.start
   }) : super(key: key);
 
   @override
@@ -46,8 +48,9 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
       child: TextField(
+        textAlign: widget.textAlign,
         onSubmitted: widget.onSubmitted,
         focusNode: widget.focusNode,
         obscureText: widget.obscureText,

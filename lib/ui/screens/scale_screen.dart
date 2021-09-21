@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/api/methods.dart';
@@ -7,6 +8,7 @@ import 'package:health_tracker/constants/utils.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -24,15 +26,31 @@ class ScaleScreen extends StatefulWidget {
 class _ScaleScreenState extends State<ScaleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
+  double weight = 0.0;
+  String prevText = '';
+  final weightController = TextEditingController();
+
   dynamic _subscription;
 
   @override
   void initState() {
     super.initState();
+
+    weightController.addListener(() {
+      if (weightController.text.isNotEmpty) {
+        if (prevText != weightController.text) {
+          prevText = weightController.text;
+          weight = double.parse(weightController.text);
+        }
+      } else {
+        weight = 0.0;
+      }
+    });
   }
 
   @override
   void dispose() {
+    weightController.dispose();
     super.dispose();
     // _subscription.cancel();
   }
@@ -66,29 +84,64 @@ class _ScaleScreenState extends State<ScaleScreen> {
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(
             child: StreamBuilder<List<int>>(
-        stream:
-            flutterReactiveBle.subscribeToCharacteristic(scaleCharacteristic),
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (!snapshot.hasData) {
-            return const HavkaProgressIndicator();
-          } else {
-            final String valueString = utils.listIntToString(snapshot.data);
-            final double weight = double.parse(valueString);
-            final double protein = widget.userProduct.protein * weight / 100;
-            final double fats = widget.userProduct.fat * weight / 100;
-            final double carbs = widget.userProduct.carbs * weight / 100;
-            final double kcal = widget.userProduct.kcal * weight / 100;
-            return Column(
+                stream: flutterReactiveBle
+                    .subscribeToCharacteristic(scaleCharacteristic),
+                builder:
+                    (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+                  if (!snapshot.hasData) {
+                    print(weight);
+                  } else {
+                    final String valueString =
+                        utils.listIntToString(snapshot.data);
+                    weight = double.parse(valueString);
+                  }
+                  weightController.text = '$weight';
+                  final double protein =
+                      widget.userProduct.protein * weight / 100;
+                  final double fats = widget.userProduct.fat * weight / 100;
+                  final double carbs = widget.userProduct.carbs * weight / 100;
+                  final double kcal = widget.userProduct.kcal * weight / 100;
+                  return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         ScreenSubHeader(text: widget.userProduct.productName),
                         ScreenSubHeader(text: widget.userProduct.productBrand),
-                        ScreenHeader(text: '$weight g'),
-                        HavkaText(
-                            text: 'Protein: ${protein.toStringAsFixed(2)} g'),
-                        HavkaText(text: 'Fats: ${fats.toStringAsFixed(2)} g'),
-                        HavkaText(text: 'Carbs: ${carbs.toStringAsFixed(2)} g'),
-                        HavkaText(text: '${kcal.toStringAsFixed(2)} kcal'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundedTextField(
+                                width: 0.5,
+                                controller: weightController,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number),
+                            Text(widget.userProduct.unit)
+                          ]
+                        ),
+                        Table(
+                          defaultColumnWidth: const IntrinsicColumnWidth(),
+                          children: [
+                            TableRow(children: [
+                              const Text('Protein: '),
+                              Text(protein.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(' ${widget.userProduct.unit}')
+                            ]),
+                            TableRow(children: [
+                              const Text('Fats: '),
+                              Text(fats.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(' ${widget.userProduct.unit}')
+                            ]),
+                            TableRow(children: [
+                              const Text('Carbs: '),
+                              Text(carbs.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(' ${widget.userProduct.unit}')
+                            ]),
+                            TableRow(children: [
+                              const Text('Calories: '),
+                              Text(kcal.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text(' kcal')
+                            ])
+                          ],
+                        ),
                         RoundedButton(
                           text: 'Save',
                           onPressed: () {
@@ -98,7 +151,6 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           },
                         )
                       ]);
-          }
-        })));
+                })));
   }
 }
