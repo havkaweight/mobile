@@ -6,17 +6,17 @@ import 'package:health_tracker/ui/widgets/circle_button.dart';
 import 'package:health_tracker/ui/widgets/pie_chart_graph.dart';
 
 class AnalysisScreen extends StatefulWidget {
-
   @override
   _AnalysisScreenState createState() => _AnalysisScreenState();
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  final ApiRoutes _apiRoutes = ApiRoutes();
+  String datePart;
 
   @override
   void initState() {
     super.initState();
+    datePart = 'month';
   }
 
   @override
@@ -27,23 +27,36 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircleButton(text: '1d'),
-                  CircleButton(text: '7d'),
-                  CircleButton(text: '30d'),
-                ]
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              CircleButton(
+                text: 'd',
+                onPressed: () {
+                  setState(() {
+                    datePart = 'day';
+                  });
+                },
               ),
-              BarChart(),
-              PieChart()
-            ],
-          ),
-        ),);
+              CircleButton(
+                text: 'm',
+                onPressed: () {
+                  setState(() {
+                    datePart = 'month';
+                  });
+                },
+              ),
+            ]),
+            BarChart(
+              datePart: datePart,
+            ),
+            PieChart()
+          ],
+        ),
+      ),
+    );
   }
 }

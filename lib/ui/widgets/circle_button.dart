@@ -14,31 +14,29 @@ class CircleButton extends StatelessWidget {
     this.text,
     this.onPressed,
     this.color = HavkaColors.green,
-    this.textColor = Colors.white
+    this.textColor = Colors.white,
   }) : super(key: key);
 
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(50),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-        child: TextButton(
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            // padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-            backgroundColor: color,
-          ),
-          child: Text(
-              text,
-              style: TextStyle(
-                  color: textColor,
-                  fontSize: Theme.of(context).textTheme.button.fontSize
-              )
-          )
-        )
-      )
+      borderRadius: BorderRadius.circular(10),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          shape: const CircleBorder(),
+          // padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+          backgroundColor: color,
+        ),
+        child: Text(
+            text,
+            style: TextStyle(
+                color: textColor,
+                fontSize: Theme.of(context).textTheme.button.fontSize,
+            ),
+        ),
+      ),
     );
   }
 }
