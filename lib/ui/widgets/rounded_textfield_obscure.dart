@@ -69,7 +69,7 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
       width: widget.width * mWidth,
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
       child: TextField(
         obscureText: _isHidden,
         onSubmitted: widget.onSubmitted,

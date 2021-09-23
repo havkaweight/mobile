@@ -23,7 +23,9 @@ class _BarChartState extends State<BarChart> {
       builder: (BuildContext context, AsyncSnapshot<List<UserProductWeighting>> snapshot) {
         final List<BarChartModel> listMetric = [];
         final DateFormat formatter = DateFormat('yy-MM-dd');
-        for (final UserProductWeighting userProductWeighting in snapshot.data) {
+        final userProductWeightingList = snapshot.data;
+        userProductWeightingList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        for (final UserProductWeighting userProductWeighting in userProductWeightingList) {
           listMetric.add(BarChartModel(year: formatter.format(userProductWeighting.createdAt), metric: userProductWeighting.userProductWeight));
         }
 

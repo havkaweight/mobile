@@ -26,7 +26,6 @@ class _PieChartState extends State<PieChart> {
       future: _apiRoutes.getUserProductsList(),
       builder: (BuildContext context, AsyncSnapshot<List<UserProduct>> snapshot) {
         final List<PieChartModel> listMetric = [];
-        // final UserProduct userProduct = snapshot.data[0];
         for (final UserProduct userProduct in snapshot.data) {
           listMetric.add(PieChartModel(year: userProduct.productName, metric: userProduct.protein));
           // listMetric.add(PieChartModel(year: 'Fats', metric: userProduct.fat));
