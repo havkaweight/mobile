@@ -42,80 +42,98 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         Expanded(
           flex: 4,
           child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                  borderColor: HavkaColors.green,
-                  borderRadius: 10,
-                  borderLength: 30,
-                  borderWidth: 20,
-                  cutOutSize: scanArea)),
+            key: qrKey,
+            onQRViewCreated: _onQRViewCreated,
+            overlay: QrScannerOverlayShape(
+              borderColor: HavkaColors.green,
+              borderRadius: 10,
+              borderLength: 30,
+              borderWidth: 20,
+              cutOutSize: scanArea,
+            ),
+          ),
         ),
         Expanded(
           flex: 1,
           child: Center(
-              child: (result != null)
-                  // (result != null)
-                  // ? Text(
-                  // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
-                  // : const Text('Scan a code'),
-                  ? FutureBuilder(
-                      future: _apiRoutes.getProductByBarcode(result.code),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          if (snapshot.hasError) {
-                            return Row(
-                              children: [
-                                const Text('Barcode not found'),
-                                RoundedButton(
-                                    text: 'Add',
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProductAddingScreen.withBarcode(result.code)));
-                                    })
-                              ],
-                            );
-                          }
-                          return Center(
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5.0),
-                                  child: const HavkaProgressIndicator()));
+            child: (result != null)
+                // (result != null)
+                // ? Text(
+                // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
+                // : const Text('Scan a code'),
+                ? FutureBuilder(
+                    future: _apiRoutes.getProductByBarcode(result.code),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData) {
+                        if (snapshot.hasError) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Barcode not found'),
+                              RoundedButton(
+                                text: 'Add',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductAddingScreen.withBarcode(
+                                        result.code,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            ],
+                          );
                         }
-                        if (snapshot.hasData) {
-                          final Product product = snapshot.data as Product;
-                          return ListTile(
-                              title: Text(product.name,
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline3
-                                          .fontSize)),
-                              subtitle: Text(product.brand,
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline4
-                                          .fontSize)),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  RoundedButton(
-                                    text: 'Add',
-                                    onPressed: () async {
-                                      await _apiRoutes.addUserProduct(product);
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              ));
-                        }
-                        return Container();
-                      })
-                  : const Text('Scan a code')),
+                        return Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                            child: const HavkaProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        final Product product = snapshot.data as Product;
+                        return ListTile(
+                          title: Text(
+                            product.name,
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline3
+                                  .fontSize,
+                            ),
+                          ),
+                          subtitle: Text(
+                            product.brand,
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline4
+                                  .fontSize,
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RoundedButton(
+                                text: 'Add',
+                                onPressed: () async {
+                                  await _apiRoutes.addUserProduct(product);
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                : const Text('Scan a code'),
+          ),
         )
       ],
     );
