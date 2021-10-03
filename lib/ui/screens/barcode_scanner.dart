@@ -69,7 +69,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('Barcode not found'),
+                              const Text('Havka not found'),
                               RoundedButton(
                                 text: 'Add',
                                 onPressed: () {

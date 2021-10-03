@@ -40,7 +40,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
               Row(
                 children: [
                   RoundedButton(
-                    text: 'Add food',
+                    text: 'Add havka',
                     onPressed: () {
                       _buildProductsList(context).then((_) => setState(() {}));
                     },
