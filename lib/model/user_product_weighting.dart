@@ -6,6 +6,7 @@ class UserProductWeighting {
   final int userDeviceId;
   final String userId;
   final double userProductWeight;
+  final String userProductUnit;
   final DateTime createdAt;
 
   UserProductWeighting({
@@ -16,6 +17,7 @@ class UserProductWeighting {
     this.userDeviceId,
     this.userId,
     this.userProductWeight,
+    this.userProductUnit,
     this.createdAt
   });
 
@@ -27,6 +29,7 @@ class UserProductWeighting {
         userDeviceId = json['user_device_id'] as int,
         userId = json['user_id'] as String,
         userProductWeight = json['weight'] as double,
+        userProductUnit = json['unit'] as String,
         createdAt = DateTime.parse(json['created_at'] as String);
 
   Map<String, dynamic> toJson() =>
@@ -38,6 +41,7 @@ class UserProductWeighting {
         'user_device_id': userDeviceId,
         'user_id': userId,
         'weight': userProductWeight,
+        'unit': userProductUnit,
         'created_at': createdAt.toString()
       };
 }
