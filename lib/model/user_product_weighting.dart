@@ -1,6 +1,7 @@
 class UserProductWeighting {
   final int id;
   final int userProductId;
+  final int productId;
   final String userProductName;
   final String userProductBrand;
   final int userDeviceId;
@@ -12,6 +13,7 @@ class UserProductWeighting {
   UserProductWeighting({
     this.id,
     this.userProductId,
+    this.productId,
     this.userProductName,
     this.userProductBrand,
     this.userDeviceId,
@@ -24,8 +26,9 @@ class UserProductWeighting {
   UserProductWeighting.fromJson(Map<String, dynamic> json)
       : id = json['id'] as int,
         userProductId = json['user_product_id'] as int,
-        userProductName = json['user_product_name'] as String,
-        userProductBrand = json['user_product_brand'] as String,
+        productId = json['product_id'] as int,
+        userProductName = json['product_name'] as String,
+        userProductBrand = json['product_brand'] as String,
         userDeviceId = json['user_device_id'] as int,
         userId = json['user_id'] as String,
         userProductWeight = json['weight'] as double,
@@ -36,8 +39,9 @@ class UserProductWeighting {
       {
         'id': id,
         'user_product_id': userProductId,
-        'user_product_name': userProductName,
-        'user_product_brand': userProductBrand,
+        'product_id': productId,
+        'product_name': userProductName,
+        'product_brand': userProductBrand,
         'user_device_id': userDeviceId,
         'user_id': userId,
         'weight': userProductWeight,
