@@ -20,5 +20,4 @@ class HavkaProgressIndicator extends StatelessWidget {
     }
     return const CupertinoActivityIndicator();
   }
-
 }

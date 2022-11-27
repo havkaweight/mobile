@@ -83,7 +83,7 @@ class Chat extends StatelessWidget {
                     const SizedBox(width: 15,),
                     FloatingActionButton(
                       onPressed: (){},
-                      child: const Icon(Icons.send,color: Colors.white,size: 18,),
+                      child: const Icon(Icons.send, color: Colors.white, size: 18,),
                       backgroundColor: Colors.blue,
                       elevation: 0,
                     ),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class RoundedTextField extends StatefulWidget {
-  final String labelText, hintText;
+  final String labelText;
+  final String hintText;
   final double width;
   final Color color;
   final IconButton iconButton;

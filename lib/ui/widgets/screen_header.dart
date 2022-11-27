@@ -12,7 +12,7 @@ class ScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: Text(
             text,
             style: TextStyle(
@@ -20,8 +20,8 @@ class ScreenHeader extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 30,
               color: HavkaColors.green,
-            )
-        )
+            ),
+        ),
     );
   }
 }
@@ -35,7 +35,7 @@ class ScreenSubHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
         child: Text(
             text,
             style: TextStyle(
