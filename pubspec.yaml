@@ -36,7 +36,7 @@ dependencies:
   qr_code_scanner: ^0.5.2
   flutter_reactive_ble: ^4.0.0
   charts_flutter: ^0.11.0
-  fl_chart: ^0.36.1
+  fl_chart: ^0.55.2
   flutter_launcher_icons: ^0.9.0
   google_sign_in:
     path: ./lib/addons/google_sign_in/google_sign_in

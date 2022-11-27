@@ -146,9 +146,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       AsyncSnapshot<ConnectionStateUpdate>
                                           snapshot) {
                                     print(snapshot);
-                                    String connectionStateText = 'Disconnected';
+                                    String connectionStateText = 'Connected';
                                     Color connectionStateColor =
-                                        HavkaColors.bone;
+                                        HavkaColors.green;
                                     if (snapshot.hasData) {
                                       print(snapshot.data);
                                       if (snapshot.data.connectionState ==

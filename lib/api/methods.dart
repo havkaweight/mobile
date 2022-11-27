@@ -127,8 +127,8 @@ class ApiRoutes {
         Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }
+          'Authorization': 'Bearer $token',
+        },
     );
     if(response.statusCode == 200) {
       final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
@@ -313,7 +313,6 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    print(utf8.decode(response.bodyBytes));
     if(response.statusCode == 200) {
       final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
       final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
@@ -324,7 +323,11 @@ class ApiRoutes {
     return [];
   }
 
-  Future addUserProductWeighting(UserProduct userProduct, UserDevice userDevice, double netWeight) async {
+  Future addUserProductWeighting(
+      double netWeight,
+      UserProduct userProduct, {
+      UserDevice userDevice,
+  }) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
@@ -333,8 +336,8 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         },
         body: jsonEncode({
+          'product_id': userProduct.productId,
           'user_product_id': userProduct.id,
-          'user_device_id': 1,
           // 'user_device_id': userDevice.id,
           'weight': netWeight
         })

@@ -26,27 +26,41 @@ class ScaleScreen extends StatefulWidget {
 class _ScaleScreenState extends State<ScaleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  double weight = 0.0;
+  double weight;
+  double protein;
+  double fats;
+  double carbs;
+  double kcal;
+
   String prevText = '';
   final weightController = TextEditingController();
-
   dynamic _subscription;
+
+  void _changeNutritionValues() {
+    if (weightController.text.isNotEmpty) {
+      if (prevText != weightController.text) {
+        prevText = weightController.text;
+        weight = double.parse(weightController.text);
+      }
+    } else {
+      weight = 0.0;
+    }
+    setState((){});
+  }
 
   @override
   void initState() {
     super.initState();
 
-    weightController.addListener(() {
-      if (weightController.text.isNotEmpty) {
-        if (prevText != weightController.text) {
-          prevText = weightController.text;
-          weight = double.parse(weightController.text);
-        }
-      } else {
-        weight = 0.0;
-      }
-    });
+    weight = 0.0;
+    protein = 0.0;
+    fats = 0.0;
+    carbs = 0.0;
+    kcal = 0.0;
+
+    weightController.addListener(_changeNutritionValues);
   }
+
 
   @override
   void dispose() {
@@ -68,6 +82,11 @@ class _ScaleScreenState extends State<ScaleScreen> {
         characteristicId: scaleCharacteristicId,
         deviceId: '7C:9E:BD:F4:5B:1A');
 
+    protein = widget.userProduct.protein * weight / 100;
+    fats = widget.userProduct.fat * weight / 100;
+    carbs = widget.userProduct.carbs * weight / 100;
+    kcal = widget.userProduct.kcal * weight / 100;
+
     // _subscription = flutterReactiveBle
     //     .readCharacteristic(scaleCharacteristic)
     //     .then((valueList) {
@@ -76,32 +95,28 @@ class _ScaleScreenState extends State<ScaleScreen> {
     //   print(weight);
     // }, onError: (Object error) {});
 
-    // final double protein = widget.userProduct.protein * weight / 100;
-    // final double fats = widget.userProduct.fat * weight / 100;
-    // final double carbs = widget.userProduct.carbs * weight / 100;
-    // final double kcal = widget.userProduct.kcal * weight / 100;
     return Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(
-            child: StreamBuilder<List<int>>(
-                stream: flutterReactiveBle
-                    .subscribeToCharacteristic(scaleCharacteristic),
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-                  if (!snapshot.hasData) {
-                    print(weight);
-                  } else {
-                    final String valueString =
-                        utils.listIntToString(snapshot.data);
-                    weight = double.parse(valueString);
-                  }
-                  weightController.text = '$weight';
-                  final double protein =
-                      widget.userProduct.protein * weight / 100;
-                  final double fats = widget.userProduct.fat * weight / 100;
-                  final double carbs = widget.userProduct.carbs * weight / 100;
-                  final double kcal = widget.userProduct.kcal * weight / 100;
-                  return Column(
+            child:
+            // StreamBuilder<List<int>>(
+            //     stream: flutterReactiveBle
+            //         .subscribeToCharacteristic(scaleCharacteristic),
+            //     builder:
+            //         (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+            //       if (!snapshot.hasData) {
+            //         print(weight);
+            //       } else {
+            //         final String valueString =
+            //             utils.listIntToString(snapshot.data);
+            //         weight = double.parse(valueString);
+            //       }
+            //       weightController.text = '$weight';
+            //       final protein = widget.userProduct.protein * weight / 100;
+            //       final fats = widget.userProduct.fat * weight / 100;
+            //       final carbs = widget.userProduct.carbs * weight / 100;
+            //       final kcal = widget.userProduct.kcal * weight / 100;
+                  Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         ScreenSubHeader(text: widget.userProduct.productName),
@@ -113,31 +128,56 @@ class _ScaleScreenState extends State<ScaleScreen> {
                                 width: 0.5,
                                 controller: weightController,
                                 textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number),
+                                keyboardType: TextInputType.number,
+                            ),
                             Text(widget.userProduct.unit)
-                          ]
+                          ],
                         ),
                         Table(
                           defaultColumnWidth: const IntrinsicColumnWidth(),
                           children: [
                             TableRow(children: [
-                              const Text('Protein: '),
-                              Text(protein.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text('Protein '),
+                              Text(
+                                protein.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
                               Text(' ${widget.userProduct.unit}')
                             ]),
                             TableRow(children: [
-                              const Text('Fats: '),
-                              Text(fats.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text('Fats '),
+                              Text(
+                                fats.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
                               Text(' ${widget.userProduct.unit}')
                             ]),
                             TableRow(children: [
-                              const Text('Carbs: '),
-                              Text(carbs.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text('Carbs '),
+                              Text(
+                                carbs.toStringAsFixed(2),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
                               Text(' ${widget.userProduct.unit}')
                             ]),
                             TableRow(children: [
-                              const Text('Calories: '),
-                              Text(kcal.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text('Calories '),
+                              Text(
+                                kcal.toStringAsFixed(2),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
                               const Text(' kcal')
                             ])
                           ],
@@ -146,11 +186,15 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           text: 'Save',
                           onPressed: () {
                             _apiRoutes.addUserProductWeighting(
-                                widget.userProduct, widget.userDevice, weight);
+                              weight,
+                              widget.userProduct,
+                              // userDevice: widget.userDevice,
+                            );
                             Navigator.pop(context);
                           },
                         )
-                      ]);
-                })));
+                      ])
+                // })
+  ));
   }
 }
