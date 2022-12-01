@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/constants/scale.dart';
-import 'package:health_tracker/constants/utils.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../constants/scale.dart';
+import '../../constants/utils.dart';
+import '../../model/device_service.dart';
+import '../../model/user_device.dart';
+import '../../ui/screens/profile_screen.dart';
+import '../../ui/widgets/rounded_button.dart';
 
 Stream stream;
 QualifiedCharacteristic characteristic;

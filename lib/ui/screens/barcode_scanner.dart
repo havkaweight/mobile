@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/ui/screens/product_adding_screen.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../model/product.dart';
+import '../../ui/screens/product_adding_screen.dart';
+import '../../ui/widgets/progress_indicator.dart';
+import '../../ui/widgets/rounded_button.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   @override

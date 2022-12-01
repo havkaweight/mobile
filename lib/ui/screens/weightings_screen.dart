@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/model/user_product_weighting.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
+
+import '../../api/methods.dart';
+import '../../model/user_product_weighting.dart';
+import '../../ui/widgets/progress_indicator.dart';
 
 class WeightingsScreen extends StatefulWidget {
   @override

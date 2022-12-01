@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
+import '../../ui/screens/profile_screen.dart';
+import '../../ui/screens/scale_screen.dart';
+import '../../ui/screens/user_products_screen.dart';
 
 import 'analysis_screen.dart';
 

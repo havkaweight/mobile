@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/screens/child_widget.dart';
+import '../../ui/screens/child_widget.dart';
 
 
 class MainScreen extends StatefulWidget {

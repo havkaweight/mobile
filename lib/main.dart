@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/theme.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/widgets/app_icon.dart';
-import 'package:health_tracker/constants/assets.dart';
+
+import 'constants/assets.dart';
+import 'constants/theme.dart';
+import 'ui/screens/sign_in_screen.dart';
+import 'ui/widgets/app_icon.dart';
 
 void main() {
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import '../../model/user_product.dart';
+import '../../ui/screens/scale_screen.dart';
+import '../../ui/widgets/rounded_button.dart';
+import '../../ui/widgets/screen_header.dart';
 
 class UserProductScreen extends StatefulWidget {
   final UserProduct userProduct;

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/ui/widgets/bar_chart_graph.dart';
-import 'package:health_tracker/ui/widgets/circle_button.dart';
-import 'package:health_tracker/ui/widgets/pie_chart_graph.dart';
+import '../../api/methods.dart';
+import '../widgets/bar_chart_graph.dart';
+import '../widgets/circle_button.dart';
+import '../widgets/pie_chart_graph.dart';
 
 class AnalysisScreen extends StatefulWidget {
   @override

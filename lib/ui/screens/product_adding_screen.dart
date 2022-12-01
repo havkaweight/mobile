@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../model/product.dart';
+import '../../ui/widgets/rounded_button.dart';
+import '../../ui/widgets/rounded_textfield.dart';
 
 import 'barcode_scanner.dart';
 import 'barcode_scanner_simple.dart';

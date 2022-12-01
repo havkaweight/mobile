@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import '../ui/widgets/rounded_button.dart';
+import '../ui/widgets/screen_header.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String username;

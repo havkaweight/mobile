@@ -1,13 +1,12 @@
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/bar_chart.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:fl_chart/fl_chart.dart';
-import 'package:health_tracker/model/user_product_weighting.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
+
+import '../../api/methods.dart';
+import '../../model/bar_chart.dart';
+import '../../model/user_product_weighting.dart';
+import '../../ui/widgets/progress_indicator.dart';
 
 class BarChart extends StatefulWidget {
   final String datePart;

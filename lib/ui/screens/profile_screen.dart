@@ -5,22 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/components/profile.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/weightings_screen.dart';
-import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
 
+import '../../api/methods.dart';
+import '../../components/profile.dart';
+import '../../constants/colors.dart';
+import '../../model/device_service.dart';
 import '../../model/user.dart';
+import '../../model/user_device.dart';
+import '../../ui/screens/sign_in_screen.dart';
+import '../../ui/screens/weightings_screen.dart';
+import '../../ui/widgets/holder.dart';
+import '../../ui/widgets/progress_indicator.dart';
+import '../../ui/widgets/rounded_button.dart';
+import '../../ui/widgets/screen_header.dart';
 import 'authorization.dart';
 import 'devices_screen.dart';
-import 'products_screen.dart';
 
 final flutterReactiveBle = FlutterReactiveBle();
 

@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:health_tracker/preferences/preferences.dart';
-import 'package:health_tracker/utils/routes.dart';
-import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:health_tracker/constants/assets.dart';
+
+import '../constants/assets.dart';
+import '../preferences/preferences.dart';
+import '../ui/widgets/app_icon.dart';
+import '../utils/routes.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key key}) : super(key: key);

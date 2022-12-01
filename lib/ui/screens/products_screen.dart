@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/constants.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/product_adding_screen.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/search_textfield.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-import 'authorization.dart';
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../model/product.dart';
+import '../../ui/screens/product_adding_screen.dart';
+import '../../ui/widgets/progress_indicator.dart';
+import '../../ui/widgets/search_textfield.dart';
 
 class ProductsScreen extends StatefulWidget {
   @override

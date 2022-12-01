@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/products_screen.dart';
-import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/screens/user_product_screen.dart';
-import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
-import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../model/user_product.dart';
+import '../../ui/screens/products_screen.dart';
+import '../../ui/screens/scale_screen.dart';
+import '../../ui/screens/user_product_screen.dart';
+import '../../ui/widgets/ble_status_tracking_widget.dart';
+import '../../ui/widgets/holder.dart';
+import '../../ui/widgets/progress_indicator.dart';
+import '../../ui/widgets/rounded_button.dart';
+import '../../ui/widgets/screen_header.dart';
 
 import 'barcode_scanner.dart';
 

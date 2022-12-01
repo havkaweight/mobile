@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:health_tracker/constants/colors.dart';
+import '../../constants/colors.dart';
 
 class Popup extends StatelessWidget {
   final String text;

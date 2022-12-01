@@ -1,21 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Havka/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
-import 'package:health_tracker/api/constants.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/ui/screens/main_screen.dart';
-import 'package:health_tracker/ui/screens/sign_up_screen.dart';
-import 'package:health_tracker/ui/widgets/popup.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
+
+import '../../api/constants.dart';
+import '../../api/methods.dart';
+import '../../constants/colors.dart';
+import '../../ui/screens/authorization.dart';
+import '../../ui/screens/main_screen.dart';
+import '../../ui/screens/sign_up_screen.dart';
+import '../../ui/widgets/popup.dart';
+import '../../ui/widgets/progress_indicator.dart';
+import '../../ui/widgets/rounded_button.dart';
+import '../../ui/widgets/rounded_textfield.dart';
+import '../../ui/widgets/rounded_textfield_obscure.dart';
+import '../../ui/widgets/screen_header.dart';
 
 bool futureSignIn = true;
 enum SignInStatus { notLoggedIn, logging, loggedIn }
