@@ -4,15 +4,14 @@ import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/bar_chart.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:fl_chart/fl_chart.dart';
 import 'package:health_tracker/model/user_product_weighting.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
 
 class BarChart extends StatefulWidget {
-
   final String datePart;
-
-  BarChart({this.datePart = 'month'});
+  const BarChart({this.datePart = 'month'});
 
   @override
   _BarChartState createState() => _BarChartState();
@@ -54,6 +53,7 @@ class _BarChartState extends State<BarChart> {
             charts.Series(
               id: "Weightings history",
               data: listMetric,
+
               domainFn: (BarChartModel timeline, _) => timeline.year,
               measureFn: (BarChartModel timeline, _) => timeline.metric,
               colorFn: (BarChartModel timeline, _) =>

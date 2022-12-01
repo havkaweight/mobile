@@ -1,6 +1,5 @@
 class Api {
   Api._();
-
   static const host = 'havka.one';
   static const prefix = '/api/v1';
 

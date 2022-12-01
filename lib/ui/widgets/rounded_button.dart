@@ -7,7 +7,8 @@ import 'package:health_tracker/constants/theme.dart';
 class RoundedButton extends StatelessWidget {
   final String text;
   final void Function() onPressed;
-  final Color color, textColor;
+  final Color color;
+  final Color textColor;
   final FocusNode focusNode;
 
   const RoundedButton({
@@ -48,7 +49,8 @@ class RoundedButton extends StatelessWidget {
 
 class RoundedIconButton extends StatelessWidget {
   final void Function() onPressed;
-  final Color color, iconColor;
+  final Color color;
+  final Color iconColor;
   final Icon icon;
   final FaIcon faIcon;
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:health_tracker/model/device_service.dart';
@@ -23,8 +24,6 @@ class ApiRoutes {
   }
 
   Future<bool> signIn(String email, String password) async {
-    final pwdBytes = utf8.encode(password);
-    var pwdHashed = sha256.convert(pwdBytes);
     final Map map = <String, dynamic>{};
     map['username'] = email;
     map['password'] = password;
@@ -127,17 +126,17 @@ class ApiRoutes {
         Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }
+          'Authorization': 'Bearer $token',
+        },
     );
-    if(response.statusCode == 200) {
-      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-      final List<UserProduct> productsList = products.map<UserProduct>((json) {
-        return UserProduct.fromJson(json as Map<String, dynamic>);
-      }).toList();
-      return productsList;
+    if(response.statusCode != 200) {
+      return [];
     }
-    return [];
+    final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<UserProduct> productsList = products.map<UserProduct>((json) {
+      return UserProduct.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return productsList;
   }
 
   Future<String> deleteUserProduct(UserProduct userProduct) async {
@@ -152,9 +151,8 @@ class ApiRoutes {
 
     if(response.statusCode == 200) {
       return 'success';
-    } else {
-      return 'bad';
     }
+    return 'bad';
   }
 
   Future<dynamic> getProductByBarcode(String barcode) async {
@@ -164,17 +162,18 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
+        },
     );
     print(response.statusCode);
-    if(response.statusCode == 200) {
-      final productJson = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-      final Product product = Product.fromJson(productJson);
-      return product;
-    }
     if (response.statusCode == 404) {
       throw Exception('Not found');
     }
+    if(response.statusCode != 200) {
+      return;
+    }
+    final productJson = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final Product product = Product.fromJson(productJson);
+    return product;
   }
 
   Future<List<Product>> getProductsBySearchingRequest(String request) async {
@@ -187,17 +186,17 @@ class ApiRoutes {
         }
     );
 
-    if(response.statusCode == 200) {
-      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-      final List<Product> productsList = products.map<Product>((json) {
-        return Product.fromJson(json as Map<String, dynamic>);
-      }).toList();
-
-      return productsList;
-    }
     if (response.statusCode == 404) {
       throw Exception('Not found');
     }
+    if(response.statusCode != 200) {
+      return [];
+    }
+    final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<Product> productsList = products.map<Product>((json) {
+      return Product.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return productsList;
   }
 
   Future<List<UserDevice>> getUserDevicesList() async {
@@ -209,14 +208,14 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    if (response.statusCode == 200) {
-      final devices = jsonDecode(response.body) as List;
-      final List<UserDevice> devicesList = devices.map<UserDevice>((json) {
-        return UserDevice.fromJson(json as Map<String, dynamic>);
-      }).toList();
-      return devicesList;
+    if (response.statusCode != 200) {
+      return [];
     }
-    return [];
+    final devices = jsonDecode(response.body) as List;
+    final List<UserDevice> devicesList = devices.map<UserDevice>((json) {
+      return UserDevice.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return devicesList;
   }
 
   Future<List<DeviceService>> getDevicesServicesList() async {
@@ -228,18 +227,18 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    if (response.statusCode == 200) {
-      final devicesServices = jsonDecode(response.body) as List;
-      final List<DeviceService> devicesServicesList = devicesServices.map<DeviceService>((json) {
-        return DeviceService.fromJson(json as Map<String, dynamic>);
-      }).toList();
-      return devicesServicesList;
+    if (response.statusCode != 200) {
+      return [];
     }
-    return [];
+    final devicesServices = jsonDecode(response.body) as List;
+    final List<DeviceService> devicesServicesList = devicesServices.map<DeviceService>((json) {
+      return DeviceService.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return devicesServicesList;
   }
 
   Future<UserDevice> userDeviceAdd(String serialId) async {
-    print(serialId);
+    debugPrint(serialId);
     final token = await getToken();
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
@@ -249,7 +248,7 @@ class ApiRoutes {
         },
         body: jsonEncode(<String, String> {
           'serial_id': serialId
-        })
+        }),
     );
 
     if (response.statusCode == 201) {
@@ -266,14 +265,14 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    if(response.statusCode == 200) {
-      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-      final List<Product> productsList = products.map<Product>((json) {
-        return Product.fromJson(json as Map<String, dynamic>);
-      }).toList();
-      return productsList;
+    if(response.statusCode != 200) {
+      return [];
     }
-    return [];
+    final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<Product> productsList = products.map<Product>((json) {
+      return Product.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return productsList;
   }
 
   Future addUserProduct(Product product) async {
@@ -284,10 +283,10 @@ class ApiRoutes {
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(product.productIdToJson())
+        body: jsonEncode(product.productIdToJson()),
     );
 
-    print('${response.statusCode} ${response.body}');
+    debugPrint('${response.statusCode} ${response.body}');
   }
 
   Future addProduct(Product product) async {
@@ -301,7 +300,7 @@ class ApiRoutes {
         body: jsonEncode(product.toJson())
     );
 
-    print('${response.statusCode} ${response.body}');
+    debugPrint('${response.statusCode} ${response.body}');
   }
 
   Future<List<UserProductWeighting>> getWeightingsHistory() async {
@@ -311,20 +310,24 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
+        },
     );
-    print(utf8.decode(response.bodyBytes));
-    if(response.statusCode == 200) {
-      final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-      final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
-        return UserProductWeighting.fromJson(json as Map<String, dynamic>);
-      }).toList();
-      return userProductsWeightingsList;
+
+    if(response.statusCode != 200) {
+      return [];
     }
-    return [];
+    final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
+      return UserProductWeighting.fromJson(json as Map<String, dynamic>);
+    }).toList();
+    return userProductsWeightingsList;
   }
 
-  Future addUserProductWeighting(UserProduct userProduct, UserDevice userDevice, double netWeight) async {
+  Future addUserProductWeighting(
+      double netWeight,
+      UserProduct userProduct, {
+      UserDevice userDevice,
+  }) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
@@ -333,14 +336,13 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         },
         body: jsonEncode({
+          'product_id': userProduct.productId,
           'user_product_id': userProduct.id,
-          'user_device_id': 1,
           // 'user_device_id': userDevice.id,
           'weight': netWeight
-        })
+        }),
     );
 
-    print('${response.statusCode} ${response.body}');
+    debugPrint('${response.statusCode} ${response.body}');
   }
-
 }

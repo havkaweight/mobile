@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class RoundedTextFieldObscured extends StatefulWidget {
-  final String labelText, hintText;
+  final String labelText;
+  final String hintText;
   final double width;
   final Color color;
   final Icon icon;
@@ -50,7 +51,7 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
     }
   }
 
-  _checkField() {
+  void _checkField() {
     setState(() {
       widget.controller.text.isNotEmpty
           ? _isIconShown = true
@@ -92,13 +93,13 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
                 onPressed: _togglePasswordView,
               )
             : null,
-          fillColor: Color(0xFFEDE88E),
+          fillColor: const Color(0xFFEDE88E),
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(10.0),
           ),
-          focusColor: Color(0xFFFFFFFF),
+          focusColor: const Color(0xFFFFFFFF),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Color(0xFF5BBE78), width: 3.0),
             borderRadius: BorderRadius.circular(10.0),
@@ -114,7 +115,7 @@ class _RoundedTextFieldObscuredState extends State<RoundedTextFieldObscured> {
           hintText: widget.controller.text.isEmpty ? widget.hintText : widget.controller.text,
           errorText: widget.errorText,
           // labelText: controller.text.isEmpty ? labelText : controller.text,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Color(0x7A66550B),
             // fontWeight: FontWeight.bold,
             fontSize: 16
