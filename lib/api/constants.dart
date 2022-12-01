@@ -1,7 +1,7 @@
 class Api {
   Api._();
 
-  static const host = 'nameless-retreat-98318.herokuapp.com';
+  static const host = 'havka.one';
   static const prefix = '/api/v1';
 
   static const me = '/users/me';
