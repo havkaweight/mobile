@@ -1,18 +1,15 @@
 import 'dart:convert';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/model/user.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/model/user_product_weighting.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:http/http.dart' as http;
+
+import '../model/device_service.dart';
+import '../model/product.dart';
+import '../model/user.dart';
+import '../model/user_device.dart';
+import '../model/user_product.dart';
+import '../model/user_product_weighting.dart';
+import '../ui/screens/authorization.dart';
 import 'constants.dart';
 
 class ApiRoutes {
