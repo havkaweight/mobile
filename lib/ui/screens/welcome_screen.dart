@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/assets.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/onboarding.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
+import 'package:health_tracker/ui/widgets/button.dart';
 
 
 // import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
@@ -35,6 +37,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget welcomeWidget(BuildContext context) {
+    const double horizontalPadding = 24;
+    const double verticalPadding = 36;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
@@ -45,58 +49,58 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const Center(
               child: AppIcon(image: Assets.appLogo),
             ),
-            const SizedBox(height: 50),
-            const Text(
-              'Welcome to Havka!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: HavkaColors.green,
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: verticalPadding),
+            const Padding(
+              padding: EdgeInsets.all(horizontalPadding),
+              child: Text(
+                'Welcome to Havka!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: HavkaColors.green,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            // const SizedBox(height: 50),
+            // const SizedBox(height: verticalPadding),
             Padding(
-              padding: const EdgeInsets.all(50),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: HavkaColors.green,
-                          gradient: LinearGradient(
-                            colors: <Color>[
-                              Color(0xFF5BBE78),
-                              Color(0xFF5BBE78),
-                              Color(0xFF5BBE78),
-                            ],
-                          ),
-                        ),
+              padding: const EdgeInsets.all(horizontalPadding),
+              child: HavkaButton(
+                fontSize: 20,
+                child: const Align(child: Text('Get Started')),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => OnboardingScreen()),
+                  );
+                  },
+              ),
+            ),
+            const SizedBox(height: verticalPadding),
+            Padding(
+              padding: const EdgeInsets.all(horizontalPadding),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                      'Already have an account?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: HavkaColors.green,
+                        fontSize: 16,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        alignment: Alignment.center,
-                        foregroundColor: Colors.white,
-                        textStyle: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => OnboardingScreen()),
-                        );
-                      },
-                      child: const Align(
-                        child: Text('Get Started'),
-                      )
-                    ),
-                  ],
-                ),
+                  HavkaButton(
+                    child: const Align(child: Text('Log In')),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignInScreen()),
+                      );
+                    },
+                  )
+                ]
               ),
             ),
           ],

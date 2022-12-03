@@ -12,6 +12,7 @@ import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/weightings_screen.dart';
+import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -103,6 +104,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                   removeToken();
                   final GoogleSignIn _googleSignIn = GoogleSignIn();
                   _googleSignIn.disconnect();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  );
                 });
               }),
           Row(

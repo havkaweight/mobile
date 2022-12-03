@@ -59,12 +59,21 @@ class _OnboardingState extends State<OnboardingScreen> {
         );
       },
       globalBackgroundColor: Theme.of(context).backgroundColor,
-      baseBtnStyle: TextButton.styleFrom(
-        backgroundColor: Colors.grey.shade200,
+      // baseBtnStyle: TextButton.styleFrom(
+      //   backgroundColor: Colors.grey.shade200,
+      // ),
+      skipStyle: TextButton.styleFrom(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
       ),
-      skipStyle: TextButton.styleFrom(primary: Colors.red),
-      doneStyle: TextButton.styleFrom(primary: Colors.green),
-      nextStyle: TextButton.styleFrom(primary: Colors.blue),
+      doneStyle: TextButton.styleFrom(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+      ),
+      nextStyle: TextButton.styleFrom(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
     )
     ;
   }

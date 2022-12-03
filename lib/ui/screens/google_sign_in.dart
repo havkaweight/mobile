@@ -29,7 +29,7 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
   void initState() {
     super.initState();
 
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
         // isLoggedIn = true;

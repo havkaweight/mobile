@@ -25,6 +25,8 @@ class _HavkaAppState extends State<HavkaApp> {
   @override
   void initState() {
     super.initState();
+    // check is logged in
+
     Future.delayed(
         const Duration(seconds: 2),
             () {
@@ -34,7 +36,7 @@ class _HavkaAppState extends State<HavkaApp> {
 
               PageRouteBuilder(
                 pageBuilder: (_, __, ___) => WelcomeScreen(),
-                transitionDuration: Duration(seconds: 1, milliseconds: 500),
+                transitionDuration: Duration(seconds: 1),
                 transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
               ),
           );
