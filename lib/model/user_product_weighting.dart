@@ -1,14 +1,14 @@
 class UserProductWeighting {
-  final int id;
-  final int userProductId;
-  final int productId;
-  final String userProductName;
-  final String userProductBrand;
-  final int userDeviceId;
-  final String userId;
-  final double userProductWeight;
-  final String userProductUnit;
-  final DateTime createdAt;
+  final int? id;
+  final int? userProductId;
+  final int? productId;
+  final String? userProductName;
+  final String? userProductBrand;
+  final int? userDeviceId;
+  final String? userId;
+  final double? userProductWeight;
+  final String? userProductUnit;
+  final DateTime? createdAt;
 
   UserProductWeighting({
     this.id,

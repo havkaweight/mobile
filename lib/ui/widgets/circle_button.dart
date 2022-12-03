@@ -5,12 +5,12 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/theme.dart';
 
 class CircleButton extends StatelessWidget {
-  final String text;
-  final void Function() onPressed;
+  final String? text;
+  final void Function()? onPressed;
   final Color color, textColor;
 
   const CircleButton({
-    Key key,
+    Key? key,
     this.text,
     this.onPressed,
     this.color = HavkaColors.green,
@@ -30,10 +30,10 @@ class CircleButton extends StatelessWidget {
           backgroundColor: color,
         ),
         child: Text(
-            text,
+            text!,
             style: TextStyle(
                 color: textColor,
-                fontSize: Theme.of(context).textTheme.button.fontSize,
+                fontSize: Theme.of(context).textTheme.button!.fontSize,
             ),
         ),
       ),

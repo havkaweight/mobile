@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class Popup extends StatelessWidget {
-  final String text;
+  final String? text;
 
   const Popup({
-    Key key,
+    Key? key,
     this.text
   }) : super(key: key);
 
@@ -22,7 +23,7 @@ class Popup extends StatelessWidget {
         ),
         child: Center(
             child: Text(
-                text,
+                text!,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 12,
@@ -39,11 +40,15 @@ Future showPopUp(BuildContext context, String text) {
   return showGeneralDialog(
     barrierLabel: "Label",
     barrierDismissible: true,
-    barrierColor: null, //Colors.black.withOpacity(0.5),
+    barrierColor: Colors.black.withOpacity(0.5),
     transitionDuration: const Duration(seconds: 1),
     context: context,
     pageBuilder: (context, anim1, anim2) {
       Future.delayed(const Duration(seconds: 3), () {
+        // To safely refer to a widget's ancestor in its dispose() method,
+        // save a reference to the ancestor by calling
+        // dependOnInheritedWidgetOfExactType() in the
+        // widget's didChangeDependencies() method.
         Navigator.of(context).pop(true);
       });
       return Popup(text: text);

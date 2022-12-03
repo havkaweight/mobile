@@ -30,7 +30,7 @@ class _PieChartState extends State<PieChart> {
           return const HavkaProgressIndicator();
         } else {
           final List<PieChartModel> listMetric = [];
-          for (final UserProduct userProduct in snapshot.data) {
+          for (final UserProduct userProduct in snapshot.data!) {
             // listMetric.add(PieChartModel(
                 // year: userProduct.productName, metric: userProduct.protein));
             listMetric.add(PieChartModel(year: userProduct.productName, metric: userProduct.fat));
@@ -41,7 +41,7 @@ class _PieChartState extends State<PieChart> {
             charts.Series(
               id: "Metric",
               data: listMetric,
-              domainFn: (PieChartModel data, _) => data.year,
+              domainFn: (PieChartModel data, _) => data.year!,
               measureFn: (PieChartModel data, _) => data.metric,
               colorFn: (PieChartModel data, _) =>
                   charts.Color(r: data.color.red,

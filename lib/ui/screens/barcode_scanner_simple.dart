@@ -18,8 +18,8 @@ class BarcodeScannerSimpleScreen extends StatefulWidget {
 class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode result;
-  QRViewController controller;
+  Barcode? result;
+  QRViewController? controller;
 
   // @override
   // void reassemble() {
@@ -60,11 +60,11 @@ class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen>
                   // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
                   // : const Text('Scan a code'),
                     ? FutureBuilder(
-                      future: _apiRoutes.getProductByBarcode(result.code),
+                      future: _apiRoutes.getProductByBarcode(result!.code),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           if (snapshot.hasError) {
-                            Navigator.pop(context, result.code);
+                            Navigator.pop(context, result!.code);
                           }
                           return Center(
                               child: Container(
@@ -75,17 +75,17 @@ class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen>
                         if (snapshot.hasData) {
                           final Product product = snapshot.data as Product;
                           return ListTile(
-                              title: Text(product.name,
+                              title: Text(product.name!,
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
-                                          .headline3
+                                          .headline3!
                                           .fontSize)),
-                              subtitle: Text(product.brand,
+                              subtitle: Text(product.brand!,
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
-                                          .headline4
+                                          .headline4!
                                           .fontSize)),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,

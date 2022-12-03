@@ -7,11 +7,11 @@ import 'analysis_screen.dart';
 
 class ChildWidget extends StatelessWidget {
   final AvailableScreen screen;
-  const ChildWidget({Key key, this.screen}) : super(key: key);
+  const ChildWidget({Key? key, required this.screen}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Widget widget;
+    Widget? widget;
     if (screen == AvailableScreen.profile) {
       widget = ProfileScreen();
     } else if (screen == AvailableScreen.fridge) {

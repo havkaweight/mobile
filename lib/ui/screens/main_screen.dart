@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   );
   int currentIndex = 1;
 
-  Widget childWidget = const ChildWidget(
+  Widget? childWidget = const ChildWidget(
     screen: AvailableScreen.fridge,
   );
 

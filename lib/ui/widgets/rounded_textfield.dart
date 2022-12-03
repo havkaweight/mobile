@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class RoundedTextField extends StatefulWidget {
-  final String labelText;
-  final String hintText;
-  final double width;
-  final Color color;
-  final IconButton iconButton;
-  final bool obscureText;
-  final FocusNode focusNode;
-  final bool autoFocus;
-  final String errorText;
-  final TextEditingController controller;
-  final TextInputType keyboardType;
-  final void Function(String) onSubmitted;
-  final TextAlign textAlign;
+  final String? labelText;
+  final String? hintText;
+  final double? width;
+  final Color? color;
+  final IconButton? iconButton;
+  final bool? obscureText;
+  final FocusNode? focusNode;
+  final bool? autoFocus;
+  final String? errorText;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
+  final void Function(String)? onSubmitted;
+  final TextAlign? textAlign;
 
   const RoundedTextField({
-    Key key,
+    Key? key,
     this.labelText,
     this.hintText,
     this.width = 0.7,
@@ -48,15 +48,15 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
   Widget build(BuildContext context) {
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: widget.width * mWidth,
+      width: widget.width! * mWidth,
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
       child: TextField(
-        textAlign: widget.textAlign,
+        textAlign: widget.textAlign!,
         onSubmitted: widget.onSubmitted,
         focusNode: widget.focusNode,
-        obscureText: widget.obscureText,
+        obscureText: widget.obscureText!,
         keyboardType: widget.keyboardType,
-        autofocus: widget.autoFocus,
+        autofocus: widget.autoFocus!,
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
@@ -80,7 +80,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
             borderSide: const BorderSide(color: Color(0xFFFF0000), width: 2.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          hintText: widget.controller.text.isEmpty ? widget.hintText : widget.controller.text,
+          hintText: widget.controller!.text.isEmpty ? widget.hintText : widget.controller!.text,
           errorText: widget.errorText,
           // labelText: controller.text.isEmpty ? labelText : controller.text,
           hintStyle: const TextStyle(

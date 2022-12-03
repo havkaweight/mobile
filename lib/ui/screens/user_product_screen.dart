@@ -8,8 +8,8 @@ class UserProductScreen extends StatefulWidget {
   final UserProduct userProduct;
 
   const UserProductScreen({
-    Key key,
-    @required this.userProduct
+    Key? key,
+    required this.userProduct
   }) : super(key: key);
 
   @override
@@ -25,8 +25,8 @@ class _UserProductScreenState extends State<UserProductScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ScreenSubHeader(text: widget.userProduct.productName),
-            ScreenSubHeader(text: widget.userProduct.productBrand),
+            ScreenSubHeader(text: widget.userProduct.productName!),
+            ScreenSubHeader(text: widget.userProduct.productBrand!),
             RoundedButton(
               text: 'Weigh',
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: widget.userProduct)))

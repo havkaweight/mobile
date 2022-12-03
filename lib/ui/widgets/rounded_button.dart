@@ -5,14 +5,14 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/theme.dart';
 
 class RoundedButton extends StatelessWidget {
-  final String text;
-  final void Function() onPressed;
-  final Color color;
-  final Color textColor;
-  final FocusNode focusNode;
+  final String? text;
+  final void Function()? onPressed;
+  final Color? color;
+  final Color? textColor;
+  final FocusNode? focusNode;
 
   const RoundedButton({
-    Key key,
+    Key? key,
     this.text,
     this.onPressed,
     this.color = HavkaColors.green,
@@ -35,10 +35,10 @@ class RoundedButton extends StatelessWidget {
             backgroundColor: color,
           ),
           child: Text(
-              text,
+              text!,
               style: TextStyle(
                   color: textColor,
-                  fontSize: Theme.of(context).textTheme.button.fontSize
+                  fontSize: Theme.of(context).textTheme.button!.fontSize
               )
           )
         )
@@ -48,14 +48,14 @@ class RoundedButton extends StatelessWidget {
 }
 
 class RoundedIconButton extends StatelessWidget {
-  final void Function() onPressed;
-  final Color color;
-  final Color iconColor;
-  final Icon icon;
-  final FaIcon faIcon;
+  final void Function()? onPressed;
+  final Color? color;
+  final Color? iconColor;
+  final Icon? icon;
+  final FaIcon? faIcon;
 
   const RoundedIconButton({
-    Key key,
+    required Key key,
     this.icon,
     this.faIcon,
     this.onPressed,
@@ -76,7 +76,7 @@ class RoundedIconButton extends StatelessWidget {
           child: IconButton(
             padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             onPressed: onPressed,
-            icon: icon ?? faIcon
+            icon: icon ?? faIcon!
           )
       )
     );

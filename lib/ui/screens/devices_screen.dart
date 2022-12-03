@@ -11,8 +11,8 @@ import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
-Stream stream;
-QualifiedCharacteristic characteristic;
+Stream? stream;
+QualifiedCharacteristic? characteristic;
 
 Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
 Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
@@ -36,13 +36,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   List<Uuid> servicesUuidList = [];
 
-  StreamSubscription<DiscoveredDevice> _subscription;
+  StreamSubscription<DiscoveredDevice>? _subscription;
 
   @override
   void initState() {
     super.initState();
     servicesUuidList = widget.servicesList.map((deviceService) {
-      return Uuid.parse(deviceService.serviceUuid);
+      return Uuid.parse(deviceService.serviceUuid!);
     }).toList();
     servicesUuidList.add(Uuid.parse('0000181b-0000-1000-8000-00805f9b34fb'));
   }
@@ -50,7 +50,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   @override
   void dispose() {
     super.dispose();
-    _subscription.cancel();
+    _subscription!.cancel();
   }
 
   Future connectToDevice(DiscoveredDevice device) async {
@@ -58,9 +58,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
     await _subscription?.cancel();
     final DeviceService service = widget.servicesList.singleWhere(
         (serviceItem) =>
-            Uuid.parse(serviceItem.serviceUuid) == device.serviceUuids[0]);
-    final Uuid serviceUuid = Uuid.parse(service.serviceUuid);
-    final Uuid characteristicUuid = Uuid.parse(service.characteristicUuid);
+            Uuid.parse(serviceItem.serviceUuid!) == device.serviceUuids[0]);
+    final Uuid serviceUuid = Uuid.parse(service.serviceUuid!);
+    final Uuid characteristicUuid = Uuid.parse(service.characteristicUuid!);
     // stream = flutterReactiveBle.connectToDevice(id: device.id);
     final _connectionStateUpdateSubscription = flutterReactiveBle.connectToDevice(id: device.id).listen(null);
     characteristic = QualifiedCharacteristic(
@@ -68,7 +68,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
         characteristicId: characteristicUuid,
         deviceId: device.id);
     final List<int> serialIdRaw =
-        await flutterReactiveBle.readCharacteristic(characteristic);
+        await flutterReactiveBle.readCharacteristic(characteristic!);
     final String serialId = utils.listIntToString(serialIdRaw);
     print(serialIdRaw);
     print(serialId);

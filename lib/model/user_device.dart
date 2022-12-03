@@ -1,11 +1,11 @@
 class UserDevice {
-  final int id;
-  final int deviceId;
-  final String serialId;
-  final String macAddress;
-  final String userDeviceName;
-  final String userId;
-  final String firmwareVersion;
+  final int? id;
+  final int? deviceId;
+  final String? serialId;
+  final String? macAddress;
+  final String? userDeviceName;
+  final String? userId;
+  final String? firmwareVersion;
 
   UserDevice({
     this.id,

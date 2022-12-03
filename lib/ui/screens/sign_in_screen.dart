@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
+// import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
@@ -17,7 +17,7 @@ import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
 
-bool futureSignIn = true;
+bool? futureSignIn;
 enum SignInStatus { notLoggedIn, logging, loggedIn }
 
 SignInStatus signInStatus = SignInStatus.notLoggedIn;
@@ -32,14 +32,14 @@ class _SignInScreenState extends State<SignInScreen> {
   final passwordController = TextEditingController();
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  Widget body;
+  Widget? body;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<String> resetPassword(String email) async {
+  Future<dynamic> resetPassword(String email) async {
     final Map map = <String, dynamic>{};
     map['email'] = email;
     final http.Response response = await http.post(
@@ -66,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Future<String> googleSignIn(String username, String password) async {
+  Future<Future> googleSignIn(String username, String password) async {
     final Map<String, dynamic> queryParameters = <String, dynamic>{};
     queryParameters['authentication_backend'] = 'jwt';
     queryParameters['scopes'] = ['email', 'profile'];
@@ -86,10 +86,12 @@ class _SignInScreenState extends State<SignInScreen> {
       if (data.containsKey('access_token') != null) {
         setToken(data['access_token'] as String);
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen()));
       } else {
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignInScreen()));
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()));
       }
     } else {
       print(response.body);
@@ -105,7 +107,7 @@ class _SignInScreenState extends State<SignInScreen> {
         await _apiRoutes.signIn(emailController.text, passwordController.text);
     // print('res $futureSignIn');
     setState(() {
-      if (futureSignIn) {
+      if (futureSignIn!) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushReplacement(
             context,
@@ -192,39 +194,39 @@ class _SignInScreenState extends State<SignInScreen> {
               ],
             ),
           ),
-          RoundedButton(
-            text: 'Continue with Google',
-            color: HavkaColors.cream,
-            textColor: Theme.of(context).colorScheme.secondary,
-            onPressed: () async {
-              final GoogleSignIn _googleSignIn =
-                  GoogleSignIn(scopes: ['email', 'profile']);
-
-              final result = await _googleSignIn.signIn();
-              final ggAuth = await result.authentication;
-
-              final idToken = ggAuth.idToken;
-              final accessToken = ggAuth.accessToken;
-              final serverAuthCode = ggAuth.serverAuthCode;
-
-              print('id $idToken');
-              print('acs $accessToken');
-              print('code $serverAuthCode');
-
-              futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
-              print('res $futureSignIn');
-              setState(() {
-                if (futureSignIn) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
-                    );
-                  });
-                }
-              });
-            },
-          )
+          // RoundedButton(
+          //   text: 'Continue with Google',
+          //   color: HavkaColors.cream,
+          //   textColor: Theme.of(context).colorScheme.secondary,
+          //   onPressed: () async {
+          //     final GoogleSignIn _googleSignIn =
+          //         GoogleSignIn(scopes: ['email', 'profile']);
+          //
+          //     final result = await _googleSignIn.signIn();
+          //     final ggAuth = await result.authentication;
+          //
+          //     final idToken = ggAuth.idToken;
+          //     final accessToken = ggAuth.accessToken;
+          //     final serverAuthCode = ggAuth.serverAuthCode;
+          //
+          //     print('id $idToken');
+          //     print('acs $accessToken');
+          //     print('code $serverAuthCode');
+          //
+          //     futureSignIn = await _apiRoutes.googleCallback(serverAuthCode);
+          //     print('res $futureSignIn');
+          //     setState(() {
+          //       if (futureSignIn!) {
+          //         WidgetsBinding.instance.addPostFrameCallback((_) {
+          //           Navigator.pushReplacement(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => MainScreen()),
+          //           );
+          //         });
+          //       }
+          //     });
+          //   },
+          // )
         ],
       );
     } else {

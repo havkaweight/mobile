@@ -4,11 +4,11 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class ProfileHeader extends StatelessWidget {
-  final String username;
-  final double height;
-  final double weight;
-  final String photoUrl;
-  final void Function() onPressed;
+  final String? username;
+  final double? height;
+  final double? weight;
+  final String? photoUrl;
+  final void Function()? onPressed;
 
   const ProfileHeader(
       {this.username, this.height, this.weight, this.photoUrl, this.onPressed});
@@ -21,7 +21,7 @@ class ProfileHeader extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(1000),
               child: Image.network(
-                photoUrl,
+                photoUrl!,
                 width: MediaQuery.of(context).size.width * 0.3,
               )),
           Container(
@@ -29,7 +29,7 @@ class ProfileHeader extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(username,
+                  Text(username!,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     'Height: ${height.toString()}',

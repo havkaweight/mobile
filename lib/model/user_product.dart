@@ -1,15 +1,15 @@
 class UserProduct {
-  final int id;
-  final int productId;
-  final String productName;
-  final String productBrand;
-  final String userId;
-  final double protein;
-  final double fat;
-  final double carbs;
-  final double kcal;
-  final double netWeightLeft;
-  final String unit;
+  final int? id;
+  final int? productId;
+  final String? productName;
+  final String? productBrand;
+  final String? userId;
+  final double? protein;
+  final double? fat;
+  final double? carbs;
+  final double? kcal;
+  final double? netWeightLeft;
+  final String? unit;
 
   UserProduct({
     this.id,

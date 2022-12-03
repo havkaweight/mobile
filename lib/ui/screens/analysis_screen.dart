@@ -11,7 +11,7 @@ class AnalysisScreen extends StatefulWidget {
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  String datePart;
+  String ?datePart;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               ),
             ]),
             BarChart(
-              datePart: datePart,
+              datePart: datePart!,
             ),
             PieChart()
           ],

@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HavkaProgressIndicator extends StatelessWidget {
-  final Color color;
+  final Color? color;
 
   const HavkaProgressIndicator({
-    Key key,
+    Key? key,
     this.color
   }) : super(key: key);
 
