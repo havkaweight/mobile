@@ -14,7 +14,7 @@ class TestScreen extends StatefulWidget {
 }
 
 class _TestScreenState extends State<TestScreen> {
-  List<Chart> data;
+  List<Chart>? data;
   var r = Random();
   @override
   void initState() {
@@ -38,14 +38,14 @@ class _TestScreenState extends State<TestScreen> {
     List<charts.Series<Chart, String>> series = [
       charts.Series(
         id: 'Label',
-        data: data,
-        domainFn: (Chart series, _) => series.name,
+        data: data!,
+        domainFn: (Chart series, _) => series.name!,
         measureFn: (Chart series, _) => series.value,
-        colorFn: (Chart series, _) => series.color
+        colorFn: (Chart series, _) => series.color!
       )
     ];
-    final dataValues = data.map((x) => x.value);
-    final String val = (dataValues.first/dataValues.reduce((a, b) => a + b) * 100).toStringAsFixed(0);
+    final dataValues = data!.map((x) => x.value);
+    final String val = (dataValues.first!/dataValues.reduce((a, b) => a! + b!)! * 100).toStringAsFixed(0);
     return Scaffold (
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(

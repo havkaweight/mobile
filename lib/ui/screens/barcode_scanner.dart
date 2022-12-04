@@ -17,8 +17,8 @@ class BarcodeScannerScreen extends StatefulWidget {
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode result;
-  QRViewController controller;
+  Barcode? result;
+  QRViewController? controller;
 
   // @override
   // void reassemble() {
@@ -61,7 +61,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
                 // : const Text('Scan a code'),
                 ? FutureBuilder(
-                    future: _apiRoutes.getProductByBarcode(result.code),
+                    future: _apiRoutes.getProductByBarcode(result!.code),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
                         if (snapshot.hasError) {
@@ -77,7 +77,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           ProductAddingScreen.withBarcode(
-                                        result.code,
+                                        result!.code,
                                       ),
                                     ),
                                   );
@@ -97,21 +97,21 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                         final Product product = snapshot.data as Product;
                         return ListTile(
                           title: Text(
-                            product.name,
+                            product.name!,
                             style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .headline3
-                                  .fontSize,
+                                  ?.fontSize,
                             ),
                           ),
                           subtitle: Text(
-                            product.brand,
+                            product.brand!,
                             style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .headline4
-                                  .fontSize,
+                                  ?.fontSize,
                             ),
                           ),
                           trailing: Row(

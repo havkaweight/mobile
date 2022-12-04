@@ -21,7 +21,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  Future<String> _futureSignUp;
+  Future<dynamic>? _futureSignUp;
   bool _userExists = false;
   String buttonText = 'Sign Up';
 
@@ -58,8 +58,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     emailController.addListener(_checkEmail);
   }
 
-  Future<String> signUp(String email, String password) async {
-    final pwdBytes = utf8.encode(password);
+  Future<dynamic> signUp(String? email, String? password) async {
+    final pwdBytes = utf8.encode(password!);
     final pwdHashed = sha256.convert(pwdBytes);
     print(pwdHashed);
     // var url = 'https://maupars.ru/signup.php?username=$username&password=$pwdHashed';
@@ -72,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8'
       },
-      body: jsonEncode(<String, String>{"email": email, "password": password}),
+      body: jsonEncode(<String, String>{"email": email!, "password": password}),
       // body: map
     );
 
@@ -103,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             hintText: 'Email',
                             controller: emailController,
                             errorText:
-                                _userExists ? 'User already exists' : null,
+                                _userExists ? 'User already exists' : '',
                           ),
                           RoundedTextFieldObscured(
                             hintText: 'Password',
@@ -158,11 +158,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           //   },
                           // )
                         ])
-                  : FutureBuilder<String>(
+                  : FutureBuilder<dynamic>(
                       future: _futureSignUp,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return Text(snapshot.data,
+                          return Text(snapshot.data!.toString(),
                               style: const TextStyle(
                                   color: Color(0xFF5BBE78), fontSize: 25));
                         } else if (snapshot.hasError) {

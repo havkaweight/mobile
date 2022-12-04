@@ -18,8 +18,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final searchController = TextEditingController();
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode result;
-  QRViewController controller;
+  Barcode? result;
+  QRViewController? controller;
 
   @override
   void initState() {
@@ -60,21 +60,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
               return SizedBox(
                 height: mHeight * 0.7,
                 child: ListView.builder(
-                    itemCount: snapshot.data.length,
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (BuildContext context, index) {
-                      final Product product = snapshot.data[index];
+                      final Product product = snapshot.data![index];
                       return ListTile(
-                        title: Text(product.name,
+                        title: Text(product.name!,
                             style: TextStyle(
                                 fontSize: Theme.of(context)
                                     .textTheme
-                                    .headline3
+                                    .headline3!
                                     .fontSize)),
-                        subtitle: Text(product.brand,
+                        subtitle: Text(product.brand!,
                             style: TextStyle(
                                 fontSize: Theme.of(context)
                                     .textTheme
-                                    .headline4
+                                    .headline4!
                                     .fontSize)),
                         onTap: () async {
                           await _apiRoutes.addUserProduct(product);
@@ -105,12 +105,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
               return SizedBox(
                 height: mHeight * 0.73,
                 child: ListView.builder(
-                  itemCount: snapshot.data.length,
+                  itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, index) {
-                    final Product product = snapshot.data[index];
+                    final Product product = snapshot.data![index];
                     return ListTile(
-                      title: Text(product.name),
-                      subtitle: Text(product.brand),
+                      title: Text(product.name!),
+                      subtitle: Text(product.brand!),
                       onTap: () async {
                         await _apiRoutes.addUserProduct(product);
                         Navigator.pop(context);

@@ -14,9 +14,9 @@ import '../../ui/widgets/screen_header.dart';
 import 'holder.dart';
 
 class BleStatusTrackingWidget extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
 
-  const BleStatusTrackingWidget({Key key, this.child}) : super(key: key);
+  const BleStatusTrackingWidget({Key? key, this.child}) : super(key: key);
 
   @override
   BleStatusTrackingWidgetState createState() => BleStatusTrackingWidgetState();
@@ -27,7 +27,7 @@ class BleStatusTrackingWidgetState extends State<BleStatusTrackingWidget> {
   String macAddress = 'macAddress';
   String status = 'unk';
 
-  PersistentBottomSheetController _controller;
+  PersistentBottomSheetController? _controller;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override

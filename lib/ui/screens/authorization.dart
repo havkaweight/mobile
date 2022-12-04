@@ -7,8 +7,8 @@ Future<bool> setToken(String value) async {
   return storage.containsKey(key: 'jwt');
 }
 
-Future<String> getToken() async {
-  final String token = await storage.read(key: 'jwt');
+Future<String?> getToken() async {
+  final String? token = await storage.read(key: 'jwt');
   return token;
 }
 

@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 
 class SearchTextField extends StatefulWidget {
-  final String labelText;
-  final String hintText;
-  final double width;
-  final Color color;
-  final Icon icon;
-  final bool obscureText;
-  final bool autoFocus;
-  final String errorText;
-  final TextEditingController controller;
-  final TextInputType keyboardType;
+  final String? labelText;
+  final String? hintText;
+  final double? width;
+  final Color? color;
+  final Icon? icon;
+  final bool? obscureText;
+  final bool? autoFocus;
+  final String? errorText;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
 
   const SearchTextField({
-    Key key,
+    Key? key,
     this.labelText,
     this.hintText,
     this.width = 0.7,
@@ -42,12 +42,12 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
   Widget build(BuildContext context) {
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: widget.width * mWidth,
+      width: widget.width! * mWidth,
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: TextField(
-        obscureText: widget.obscureText,
+        obscureText: widget.obscureText!,
         keyboardType: widget.keyboardType,
-        autofocus: widget.autoFocus,
+        autofocus: widget.autoFocus!,
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -70,7 +70,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
             borderSide: const BorderSide(color: Color(0xFFFF0000), width: 2.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          hintText: widget.controller.text.isEmpty ? widget.hintText : widget.controller.text,
+          hintText: widget.controller!.text.isEmpty ? widget.hintText : widget.controller!.text,
           errorText: widget.errorText,
           prefixIcon: widget.icon,
           hintStyle: const TextStyle(

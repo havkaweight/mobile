@@ -11,7 +11,7 @@ import 'barcode_scanner_simple.dart';
 
 class ProductAddingScreen extends StatefulWidget {
 
-  final String barcode;
+  final String? barcode;
 
   const ProductAddingScreen({this.barcode = ''});
   const ProductAddingScreen.withBarcode(this.barcode);
@@ -38,7 +38,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   @override
   void initState() {
     super.initState();
-    barcodeController.text = widget.barcode;
+    barcodeController.text = widget.barcode!;
   }
 
   @override

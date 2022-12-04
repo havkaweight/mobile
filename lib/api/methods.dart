@@ -20,7 +20,7 @@ class ApiRoutes {
     }
   }
 
-  Future<bool> signIn(String email, String password) async {
+  Future<bool?> signIn(String email, String password) async {
     final Map map = <String, dynamic>{};
     map['username'] = email;
     map['password'] = password;
@@ -48,7 +48,7 @@ class ApiRoutes {
     }
   }
 
-  Future<String> googleAuthorize() async {
+  Future<String?> googleAuthorize() async {
     final queryParameters = {
       'authentication_backend': 'jwt'
     };
@@ -70,7 +70,7 @@ class ApiRoutes {
     }
   }
 
-  Future<bool> googleCallback(String serverAuthCode) async {
+  Future<bool?> googleCallback(String serverAuthCode) async {
     final state = await googleAuthorize();
     final queryParameters = {
       'code': serverAuthCode,
@@ -152,7 +152,7 @@ class ApiRoutes {
     return 'bad';
   }
 
-  Future<dynamic> getProductByBarcode(String barcode) async {
+  Future<dynamic> getProductByBarcode(String? barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.productByBarcode}/$barcode'),
@@ -234,7 +234,7 @@ class ApiRoutes {
     return devicesServicesList;
   }
 
-  Future<UserDevice> userDeviceAdd(String serialId) async {
+  Future<UserDevice?> userDeviceAdd(String serialId) async {
     debugPrint(serialId);
     final token = await getToken();
     final http.Response response = await http.post(
@@ -323,7 +323,7 @@ class ApiRoutes {
   Future addUserProductWeighting(
       double netWeight,
       UserProduct userProduct, {
-      UserDevice userDevice,
+      UserDevice? userDevice,
   }) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(

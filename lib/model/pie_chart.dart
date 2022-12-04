@@ -4,8 +4,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import '../constants/colors.dart';
 
 class PieChartModel {
-  String year;
-  double metric;
+  String? year;
+  double? metric;
   final Color color;
 
   PieChartModel({

@@ -36,13 +36,13 @@ class _BarChartState extends State<BarChart> {
             formatter = DateFormat('yy-MM-dd');
           }
           final userProductWeightingList = snapshot.data;
-          userProductWeightingList
-              .sort((a, b) => a.createdAt.compareTo(b.createdAt));
+          userProductWeightingList!
+              .sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
           for (final UserProductWeighting userProductWeighting
           in userProductWeightingList) {
             listMetric.add(
               BarChartModel(
-                year: formatter.format(userProductWeighting.createdAt),
+                year: formatter.format(userProductWeighting.createdAt!),
                 metric: userProductWeighting.userProductWeight,
               ),
             );
@@ -53,7 +53,7 @@ class _BarChartState extends State<BarChart> {
               id: "Weightings history",
               data: listMetric,
 
-              domainFn: (BarChartModel timeline, _) => timeline.year,
+              domainFn: (BarChartModel timeline, _) => timeline.year!,
               measureFn: (BarChartModel timeline, _) => timeline.metric,
               colorFn: (BarChartModel timeline, _) =>
                   charts.Color(

@@ -23,8 +23,11 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ProfileScreen())),
+      onWillPop: () => Future<bool>(() {
+        Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+        return true;
+      }),
       child: Scaffold(
           backgroundColor: Theme.of(context).backgroundColor,
           body: Center(
@@ -50,12 +53,12 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
                     if (snapshot.data.runtimeType == List) {
                       return Expanded(
                           child: ListView.builder(
-                              itemCount: snapshot.data.length,
+                              itemCount: snapshot.data!.length,
                               itemBuilder: (BuildContext context, index) {
                                 final UserDevice userDevice =
-                                    snapshot.data[index];
+                                    snapshot.data![index];
                                 return ListTile(
-                                  title: Text(userDevice.userDeviceName),
+                                  title: Text(userDevice.userDeviceName!),
                                   subtitle:
                                       Text(userDevice.deviceId.toString()),
                                 );

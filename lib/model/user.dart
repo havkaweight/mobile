@@ -1,7 +1,7 @@
 class User {
-  final String id;
-  final String email;
-  final bool isActive, isSuperuser, isVerified;
+  final String? id;
+  final String? email;
+  final bool? isActive, isSuperuser, isVerified;
 
   User({
     this.id,

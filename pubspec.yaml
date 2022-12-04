@@ -1,5 +1,5 @@
-name: Havka
-description: More than nutrition
+name: health_tracker
+description: A new Flutter application.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -18,10 +18,9 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  platform: ^3.1.0
   flutter:
     sdk: flutter
   sqflite: ^2.0.0+3
@@ -32,17 +31,20 @@ dependencies:
   crypto: ^3.0.1
   google_fonts: any
   shared_preferences: ^2.0.5
-  flutter_secure_storage: ^6.1.0
+  flutter_secure_storage: ^5.0.0
   flutter_barcode_scanner: ^2.0.0
-  qr_code_scanner: ^1.0.1
-  flutter_reactive_ble: ^5.0.2
-  charts_flutter: ^0.11.0
-  fl_chart: ^0.55.2
+  qr_code_scanner: ^1.0.0
+  flutter_reactive_ble: ^4.0.0
+  charts_flutter: ^0.12.0
+  fl_chart: ^0.36.1
   flutter_launcher_icons: ^0.9.0
-  google_sign_in:
-    path: ./lib/addons/google_sign_in/google_sign_in
+  google_sign_in: ^5.4.2
+#  google_sign_in:
+#    path: ./lib/addons/google_sign_in/google_sign_in
   font_awesome_flutter: ^9.0.0
   pull_to_refresh: ^2.0.0
+  onboarding: ^3.1.0
+  introduction_screen: ^3.1.1
 
   lint: ^1.5.3
 

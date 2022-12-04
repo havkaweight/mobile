@@ -4,7 +4,7 @@ import '../../constants/colors.dart';
 import '../../constants/font_family.dart';
 
 class ScreenHeader extends StatelessWidget {
-  final String text;
+  final String? text;
   const ScreenHeader({
     this.text
   });
@@ -14,7 +14,7 @@ class ScreenHeader extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: Text(
-            text,
+            text!,
             style: TextStyle(
               fontFamily: FontFamily.roboto,
               fontWeight: FontWeight.bold,
@@ -27,7 +27,7 @@ class ScreenHeader extends StatelessWidget {
 }
 
 class ScreenSubHeader extends StatelessWidget {
-  final String text;
+  final String? text;
   const ScreenSubHeader({
     this.text
   });
@@ -37,7 +37,7 @@ class ScreenSubHeader extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
         child: Text(
-            text,
+            text!,
             style: TextStyle(
               fontFamily: FontFamily.roboto,
               fontWeight: FontWeight.bold,
@@ -50,7 +50,7 @@ class ScreenSubHeader extends StatelessWidget {
 }
 
 class HavkaText extends StatelessWidget {
-  final String text;
+  final String? text;
   const HavkaText({
     this.text
   });
@@ -60,7 +60,7 @@ class HavkaText extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Text(
-          text,
+          text!,
           style: const TextStyle(
             fontSize: 15,
             color: HavkaColors.green

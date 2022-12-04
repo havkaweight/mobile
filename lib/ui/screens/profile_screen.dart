@@ -5,21 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/components/profile.dart';
+import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/device_service.dart';
+import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/weightings_screen.dart';
+import 'package:health_tracker/ui/screens/welcome_screen.dart';
+import 'package:health_tracker/ui/widgets/holder.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 
-import '../../api/methods.dart';
-import '../../components/profile.dart';
-import '../../constants/colors.dart';
-import '../../model/device_service.dart';
 import '../../model/user.dart';
-import '../../model/user_device.dart';
-import '../../ui/screens/sign_in_screen.dart';
-import '../../ui/screens/weightings_screen.dart';
-import '../../ui/widgets/holder.dart';
-import '../../ui/widgets/progress_indicator.dart';
-import '../../ui/widgets/rounded_button.dart';
-import '../../ui/widgets/screen_header.dart';
 import 'authorization.dart';
 import 'devices_screen.dart';
+import 'products_screen.dart';
 
 final flutterReactiveBle = FlutterReactiveBle();
 
@@ -61,13 +63,14 @@ class _ProfileScreenState extends State<ProfileScreen>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         body: Center(
           child: FutureBuilder<User>(
             future: _apiRoutes.getMe(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              Widget widget;
+              Widget? widget;
               if (!snapshot.hasData) {
                 widget = const Center(child: HavkaProgressIndicator());
               } else if (snapshot.hasData) {
@@ -79,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       MaterialPageRoute(builder: (context) => SignInScreen()));
                 });
               }
-              return widget;
+              return widget!;
             },
           ),
         ));
@@ -101,6 +104,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                   removeToken();
                   final GoogleSignIn _googleSignIn = GoogleSignIn();
                   _googleSignIn.disconnect();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  );
                 });
               }),
           Row(
@@ -125,20 +132,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                 if (snapshot.hasData) {
                   return Expanded(
                       child: ListView.builder(
-                          itemCount: snapshot.data.length,
+                          itemCount: snapshot.data!.length,
                           itemBuilder: (BuildContext context, index) {
-                            final UserDevice userDevice = snapshot.data[index];
+                            final UserDevice userDevice = snapshot.data![index];
                             return ListTile(
-                                title: Text(userDevice.userDeviceName,
+                                title: Text(userDevice.userDeviceName!,
                                     style: TextStyle(
                                         fontSize: Theme.of(context)
                                             .textTheme
-                                            .headline3
+                                            .headline3!
                                             .fontSize)),
                                 trailing: StreamBuilder<ConnectionStateUpdate>(
                                   stream: flutterReactiveBle
                                       .connectToDevice(
-                                          id: userDevice.macAddress
+                                          id: userDevice.macAddress!
                                               .toUpperCase())
                                       .asBroadcastStream(),
                                   builder: (BuildContext context,
@@ -150,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         HavkaColors.green;
                                     if (snapshot.hasData) {
                                       print(snapshot.data);
-                                      if (snapshot.data.connectionState ==
+                                      if (snapshot.data!.connectionState ==
                                           DeviceConnectionState.connected) {
                                         connectionStateText = 'Connected';
                                         connectionStateColor =
@@ -166,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             fontWeight: FontWeight.bold,
                                             fontSize: Theme.of(context)
                                                 .textTheme
-                                                .headline4
+                                                .headline4!
                                                 .fontSize));
                                   },
                                 ));
@@ -246,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  Future<Widget> _buildScaleSearching(BuildContext context) async {
+  Future<dynamic> _buildScaleSearching(BuildContext context) async {
     final List<DeviceService> servicesList =
         await _apiRoutes.getDevicesServicesList();
     return showModalBottomSheet(
@@ -273,9 +280,9 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  Future<bool> isDeviceConnected(UserDevice userDevice) async {
+  Future<void> isDeviceConnected(UserDevice userDevice) async {
     flutterReactiveBle
-        .connectToDevice(id: userDevice.serialId)
+        .connectToDevice(id: userDevice.serialId!)
         .listen((update) {
       bool status = false;
       if (update.connectionState == DeviceConnectionState.connected) {
@@ -284,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         status = false;
       }
       ;
-      return status;
+      // return status;
     });
   }
 }

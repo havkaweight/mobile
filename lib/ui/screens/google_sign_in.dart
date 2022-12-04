@@ -18,16 +18,16 @@ class SignInGoogleScreen extends StatefulWidget {
 
 class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
 
-  GoogleSignInAccount _currentUser;
-  String idToken;
-  String accessToken;
-  String serverAuthCode;
+  GoogleSignInAccount? _currentUser;
+  String? idToken;
+  String? accessToken;
+  String? serverAuthCode;
 
   @override
   void initState() {
     super.initState();
 
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
         // isLoggedIn = true;
@@ -44,7 +44,7 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   Widget _buildBody() {
-    GoogleSignInAccount user = _currentUser;
+    GoogleSignInAccount? user = _currentUser;
     if (user != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

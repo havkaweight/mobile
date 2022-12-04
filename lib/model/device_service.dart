@@ -1,10 +1,10 @@
 class DeviceService {
-  final int id;
-  final int deviceCatalogId;
-  final String serviceUuid;
-  final String serviceName;
-  final String characteristicUuid;
-  final String characteristicName;
+  final int? id;
+  final int? deviceCatalogId;
+  final String? serviceUuid;
+  final String? serviceName;
+  final String? characteristicUuid;
+  final String? characteristicName;
 
   DeviceService({
     this.id,

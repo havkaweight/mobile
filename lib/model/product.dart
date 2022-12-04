@@ -1,13 +1,13 @@
 class Product {
-  final int id;
-  final String name;
-  final String brand;
-  final double protein;
-  final double fat;
-  final double carbs;
-  final double kcal;
-  final double baseValue;
-  final String barcode;
+  final int? id;
+  final String? name;
+  final String? brand;
+  final double? protein;
+  final double? fat;
+  final double? carbs;
+  final double? kcal;
+  final double? baseValue;
+  final String? barcode;
 
   Product({
     this.id,

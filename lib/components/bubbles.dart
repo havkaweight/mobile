@@ -9,8 +9,8 @@ class Bubbles extends StatefulWidget {
 }
 
 class _BubblesState extends State<Bubbles> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  List<Bubble> bubbles;
+  AnimationController? _controller;
+  List<Bubble>? bubbles;
   final int numberOfBubbles = 100;
   final Color color = HavkaColors.green;
   final Color bgColor = HavkaColors.cream;
@@ -24,22 +24,22 @@ class _BubblesState extends State<Bubbles> with SingleTickerProviderStateMixin {
     bubbles = [];
     int i = numberOfBubbles;
     while (i > 0) {
-      bubbles.add(Bubble(color, maxBubbleSize));
+      bubbles!.add(Bubble(color, maxBubbleSize));
       i--;
     }
 
     // Init animation controller
     _controller = AnimationController(
         duration: const Duration(seconds: 1000), vsync: this);
-    _controller.addListener(() {
+    _controller!.addListener(() {
       updateBubblePosition();
     });
-    _controller.forward();
+    _controller!.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -57,20 +57,20 @@ class _BubblesState extends State<Bubbles> with SingleTickerProviderStateMixin {
   }
 
   void updateBubblePosition() {
-    bubbles.forEach((it) => it.updatePosition());
+    bubbles!.forEach((it) => it.updatePosition());
     setState(() {});
   }
 }
 
 class BubblePainter extends CustomPainter {
-  List<Bubble> bubbles;
-  AnimationController controller;
+  List<Bubble>? bubbles;
+  AnimationController? controller;
 
   BubblePainter({this.bubbles, this.controller});
 
   @override
   void paint(Canvas canvas, Size canvasSize) {
-    bubbles.forEach((it) => it.draw(canvas, canvasSize));
+    bubbles!.forEach((it) => it.draw(canvas, canvasSize));
   }
 
   @override
@@ -80,12 +80,12 @@ class BubblePainter extends CustomPainter {
 }
 
 class Bubble {
-  Color color;
-  double direction;
-  double speed;
-  double radius;
-  double x;
-  double y;
+  Color? color;
+  double? direction;
+  double? speed;
+  double? radius;
+  double? x;
+  double? y;
 
   Bubble(Color color, double maxBubbleSize) {
     this.color = color.withOpacity(Random().nextDouble());
@@ -96,7 +96,7 @@ class Bubble {
 
   draw(Canvas canvas, Size canvasSize) {
     Paint paint = new Paint()
-      ..color = color
+      ..color = color!
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.fill;
 
@@ -104,7 +104,7 @@ class Bubble {
 
     randomlyChangeDirectionIfEdgeReached(canvasSize);
 
-    canvas.drawCircle(Offset(x, y), radius, paint);
+    canvas.drawCircle(Offset(x!, y!), radius!, paint);
   }
 
   void assignRandomPositionIfUninitialized(Size canvasSize) {
@@ -118,17 +118,17 @@ class Bubble {
   }
 
   updatePosition() {
-    var a = 180 - (direction + 90);
-    direction > 0 && direction < 180
-        ? x += speed * sin(direction) / sin(speed)
-        : x -= speed * sin(direction) / sin(speed);
-    direction > 90 && direction < 270
-        ? y += speed * sin(a) / sin(speed)
-        : y -= speed * sin(a) / sin(speed);
+    var a = 180 - (direction! + 90);
+    direction! > 0 && direction! < 180
+        ? x = x! + speed! * sin(direction!) / sin(speed!)
+        : x = x! - speed! * sin(direction!) / sin(speed!);
+    direction! > 90 && direction! < 270
+        ? y = y! + speed! * sin(a) / sin(speed!)
+        : y = y! - speed! * sin(a) / sin(speed!);
   }
 
   randomlyChangeDirectionIfEdgeReached(Size canvasSize) {
-    if (x > canvasSize.width || x < 0 || y > canvasSize.height || y < 0) {
+    if (x! > canvasSize.width || x! < 0 || y! > canvasSize.height || y! < 0) {
       direction = Random().nextDouble() * 360;
     }
   }

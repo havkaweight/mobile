@@ -88,16 +88,16 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                   child: RefreshIndicator(
                     onRefresh: _apiRoutes.getUserProductsList,
                     child: ListView.builder(
-                      itemCount: snapshot.data.length,
+                      itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, index) {
-                        final UserProduct userProduct = snapshot.data[index];
+                        final UserProduct userProduct = snapshot.data![index];
                         return ListTile(
                           title: Text(
-                            userProduct.productName,
+                            userProduct.productName!,
                             style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
-                                  .headline3
+                                  .headline3!
                                   .fontSize,
                             ),
                           ),
@@ -105,20 +105,20 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                userProduct.productBrand,
+                                userProduct.productBrand!,
                                 style: TextStyle(
                                   fontSize: Theme.of(context)
                                       .textTheme
-                                      .headline4
+                                      .headline4!
                                       .fontSize,
                                 ),
                               ),
                               Text(
-                                '${userProduct.netWeightLeft.round()}${userProduct.unit} left',
+                                '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
                                 style: TextStyle(
                                   fontSize: Theme.of(context)
                                       .textTheme
-                                      .headline4
+                                      .headline4!
                                       .fontSize,
                                 ),
                               )
@@ -199,7 +199,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
     );
   }
 
-  Future<Widget> _buildProductsList(BuildContext context) {
+  Future<dynamic> _buildProductsList(BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
       backgroundColor: Theme.of(context).backgroundColor,

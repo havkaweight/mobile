@@ -12,8 +12,8 @@ import '../../ui/widgets/rounded_textfield.dart';
 import '../../ui/widgets/screen_header.dart';
 
 class ScaleScreen extends StatefulWidget {
-  final UserProduct userProduct;
-  final UserDevice userDevice;
+  final UserProduct? userProduct;
+  final UserDevice? userDevice;
 
   const ScaleScreen({this.userProduct, this.userDevice});
 
@@ -24,11 +24,11 @@ class ScaleScreen extends StatefulWidget {
 class _ScaleScreenState extends State<ScaleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  double weight;
-  double protein;
-  double fats;
-  double carbs;
-  double kcal;
+  double? weight;
+  double? protein;
+  double? fats;
+  double? carbs;
+  double? kcal;
 
   String prevText = '';
   final weightController = TextEditingController();
@@ -80,10 +80,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
         characteristicId: scaleCharacteristicId,
         deviceId: '7C:9E:BD:F4:5B:1A');
 
-    protein = widget.userProduct.protein * weight / 100;
-    fats = widget.userProduct.fat * weight / 100;
-    carbs = widget.userProduct.carbs * weight / 100;
-    kcal = widget.userProduct.kcal * weight / 100;
+    protein = widget.userProduct!.protein! * weight! / 100;
+    fats = widget.userProduct!.fat! * weight! / 100;
+    carbs = widget.userProduct!.carbs! * weight! / 100;
+    kcal = widget.userProduct!.kcal! * weight! / 100;
 
     // _subscription = flutterReactiveBle
     //     .readCharacteristic(scaleCharacteristic)
@@ -117,8 +117,8 @@ class _ScaleScreenState extends State<ScaleScreen> {
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        ScreenSubHeader(text: widget.userProduct.productName),
-                        ScreenSubHeader(text: widget.userProduct.productBrand),
+                        ScreenSubHeader(text: widget.userProduct!.productName!),
+                        ScreenSubHeader(text: widget.userProduct!.productBrand!),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -128,7 +128,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                             ),
-                            Text(widget.userProduct.unit)
+                            Text(widget.userProduct!.unit!)
                           ],
                         ),
                         Table(
@@ -137,40 +137,40 @@ class _ScaleScreenState extends State<ScaleScreen> {
                             TableRow(children: [
                               const Text('Protein '),
                               Text(
-                                protein.toStringAsFixed(2),
+                                protein!.toStringAsFixed(2),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                                 textAlign: TextAlign.right,
                               ),
-                              Text(' ${widget.userProduct.unit}')
+                              Text(' ${widget.userProduct!.unit}')
                             ]),
                             TableRow(children: [
                               const Text('Fats '),
                               Text(
-                                fats.toStringAsFixed(2),
+                                fats!.toStringAsFixed(2),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                                 textAlign: TextAlign.right,
                               ),
-                              Text(' ${widget.userProduct.unit}')
+                              Text(' ${widget.userProduct!.unit}')
                             ]),
                             TableRow(children: [
                               const Text('Carbs '),
                               Text(
-                                carbs.toStringAsFixed(2),
+                                carbs!.toStringAsFixed(2),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                 ),
                                 textAlign: TextAlign.right,
                               ),
-                              Text(' ${widget.userProduct.unit}')
+                              Text(' ${widget.userProduct!.unit}')
                             ]),
                             TableRow(children: [
                               const Text('Calories '),
                               Text(
-                                kcal.toStringAsFixed(2),
+                                kcal!.toStringAsFixed(2),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                 ),
@@ -184,8 +184,8 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           text: 'Save',
                           onPressed: () {
                             _apiRoutes.addUserProductWeighting(
-                              weight,
-                              widget.userProduct,
+                              weight!,
+                              widget.userProduct!,
                               // userDevice: widget.userDevice,
                             );
                             Navigator.pop(context);
