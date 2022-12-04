@@ -43,16 +43,16 @@ class _MainScreenState extends State<MainScreen> {
             _pageController.jumpToPage(value);
           },
           items: [
+            // BottomNavigationBarItem(
+            //     icon: currentIndex==0 ? const Icon(Icons.assessment) : const Icon(Icons.assessment_outlined),
+            //     label: 'Analysis'
+            // ),
             BottomNavigationBarItem(
-                icon: currentIndex==0 ? const Icon(Icons.assessment) : const Icon(Icons.assessment_outlined),
-                label: 'Analysis'
-            ),
-            BottomNavigationBarItem(
-                icon: currentIndex==1 ? const Icon(Icons.kitchen) : const Icon(Icons.kitchen_outlined),
+                icon: currentIndex==0 ? const Icon(Icons.kitchen) : const Icon(Icons.kitchen_outlined),
                 label: 'Fridge'
             ),
             BottomNavigationBarItem(
-                icon: currentIndex==2 ? const Icon(Icons.person) : const Icon(Icons.person_outline),
+                icon: currentIndex==1 ? const Icon(Icons.person) : const Icon(Icons.person_outline),
                 label: 'Me'
             )
           ],
@@ -67,7 +67,7 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           children: const <Widget>[
-            ChildWidget(screen: AvailableScreen.analysis),
+            // ChildWidget(screen: AvailableScreen.analysis),
             ChildWidget(screen: AvailableScreen.fridge),
             ChildWidget(screen: AvailableScreen.profile)
           ]

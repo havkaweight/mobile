@@ -16,8 +16,8 @@ class ChildWidget extends StatelessWidget {
       widget = ProfileScreen();
     } else if (screen == AvailableScreen.fridge) {
       widget = UserProductsScreen();
-    } else if (screen == AvailableScreen.analysis) {
-      widget = AnalysisScreen();
+    // } else if (screen == AvailableScreen.analysis) {
+    //   widget = AnalysisScreen();
     }
 
     return SafeArea(

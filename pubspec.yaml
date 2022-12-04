@@ -31,10 +31,10 @@ dependencies:
   crypto: ^3.0.1
   google_fonts: any
   shared_preferences: ^2.0.5
-  flutter_secure_storage: ^5.0.0
+  flutter_secure_storage: ^6.1.0
   flutter_barcode_scanner: ^2.0.0
   qr_code_scanner: ^1.0.0
-  flutter_reactive_ble: ^4.0.0
+  flutter_reactive_ble: ^5.0.2
   charts_flutter: ^0.12.0
   fl_chart: ^0.36.1
   flutter_launcher_icons: ^0.9.0
