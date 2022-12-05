@@ -90,3 +90,93 @@ class HavkaButton extends StatelessWidget {
   //   );
   // }
 }
+
+
+class GoogleSignInButton extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return HavkaButton(
+      child: Container(
+        height: 40,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Image.asset(
+              'assets/icons/google.webp',
+              fit: BoxFit.fill,
+            ),
+            Text('Continue with Google'),
+            ],
+        ),
+      ),
+      onPressed: () {
+        print('Button pressed ...');
+      },
+    );
+    // return Align(
+    //   alignment: AlignmentDirectional(0, 0),
+    //   child: Container(
+    //     width: 230,
+    //     height: 44,
+    //     child: Stack(
+    //       children: [
+    //         Align(
+    //           alignment: AlignmentDirectional(0, 0),
+    //           child: HavkaButton(
+    //             onPressed: () {
+    //               print('Button pressed ...');
+    //             },
+    //             child: Row(
+    //               children: [
+    //                 Text('Sign in with Google'),
+    //                 Image.asset(
+    //                   'assets/icons/google.webp',
+    //                   fit: BoxFit.contain,
+    //                 ),
+    //               ]
+    //             )
+    //             // icon: Icon(
+    //             //   Icons.add,
+    //             //   color: Colors.transparent,
+    //             //   size: 20,
+    //             // ),
+    //             // options: FFButtonOptions(
+    //             //   width: 230,
+    //             //   height: 44,
+    //             //   color: Colors.white,
+    //             //   textStyle: GoogleFonts.getFont(
+    //             //     'Roboto',
+    //             //     color: Color(0xFF606060),
+    //             //     fontSize: 17,
+    //             //   ),
+    //             //   elevation: 4,
+    //             //   borderSide: BorderSide(
+    //             //     color: Colors.transparent,
+    //             //     width: 0,
+    //             //   ),
+    //             ),
+    //           ),
+    //         // ),
+    //         // Align(
+    //         //   alignment: AlignmentDirectional(-0.83, 0),
+    //         //   child: Container(
+    //         //     width: 22,
+    //         //     height: 22,
+    //         //     clipBehavior: Clip.antiAlias,
+    //         //     decoration: BoxDecoration(
+    //         //       shape: BoxShape.circle,
+    //         //     ),
+    //         //     child: Image.asset(
+    //         //       'assets/icons/google.webp',
+    //         //       fit: BoxFit.contain,
+    //         //     ),
+    //         //   ),
+    //         // ),
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+  }
+}

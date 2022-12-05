@@ -104,7 +104,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   removeToken();
                   final GoogleSignIn _googleSignIn = GoogleSignIn();
                   _googleSignIn.disconnect();
-                  Navigator.push(
+                  // clear Navigator queue
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => WelcomeScreen()),
                   );

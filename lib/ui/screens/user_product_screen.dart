@@ -28,7 +28,7 @@ class _UserProductScreenState extends State<UserProductScreen> {
             ScreenSubHeader(text: widget.userProduct.productName!),
             ScreenSubHeader(text: widget.userProduct.productBrand!),
             RoundedButton(
-              text: 'Weigh',
+              text: 'Weight',
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: widget.userProduct)))
             )
           ]

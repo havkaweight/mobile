@@ -6,6 +6,7 @@ import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
+import 'package:health_tracker/ui/widgets/fridgeitem.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -91,76 +92,78 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, index) {
                         final UserProduct userProduct = snapshot.data![index];
-                        return ListTile(
-                          title: Text(
-                            userProduct.productName!,
-                            style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .headline3!
-                                  .fontSize,
-                            ),
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                userProduct.productBrand!,
-                                style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .headline4!
-                                      .fontSize,
-                                ),
-                              ),
-                              Text(
-                                '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
-                                style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .headline4!
-                                      .fontSize,
-                                ),
-                              )
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProductScreen(
-                                  userProduct: userProduct,
-                                ),
-                              ),
-                            );
-                          },
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.monitor_weight),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ScaleScreen(
-                                        userProduct: userProduct,
-                                      ),
-                                    ),
-                                  ).then((_) => setState(() {}));
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  await _apiRoutes
-                                      .deleteUserProduct(userProduct);
-                                  setState(() {});
-                                },
-                              )
-                            ],
-                          ),
-                        );
+                        return FridgeItem(userProduct: userProduct);
+
+                        // return ListTile(
+                        //   title: Text(
+                        //     userProduct.productName!,
+                        //     style: TextStyle(
+                        //       fontSize: Theme.of(context)
+                        //           .textTheme
+                        //           .headline3!
+                        //           .fontSize,
+                        //     ),
+                        //   ),
+                        //   subtitle: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: [
+                        //       Text(
+                        //         userProduct.productBrand!,
+                        //         style: TextStyle(
+                        //           fontSize: Theme.of(context)
+                        //               .textTheme
+                        //               .headline4!
+                        //               .fontSize,
+                        //         ),
+                        //       ),
+                        //       Text(
+                        //         '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
+                        //         style: TextStyle(
+                        //           fontSize: Theme.of(context)
+                        //               .textTheme
+                        //               .headline4!
+                        //               .fontSize,
+                        //         ),
+                        //       )
+                        //     ],
+                        //   ),
+                        //   onTap: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => UserProductScreen(
+                        //           userProduct: userProduct,
+                        //         ),
+                        //       ),
+                        //     );
+                        //   },
+                        //   trailing: Row(
+                        //     mainAxisSize: MainAxisSize.min,
+                        //     children: [
+                        //       IconButton(
+                        //         icon: const Icon(Icons.monitor_weight),
+                        //         onPressed: () {
+                        //           Navigator.push(
+                        //             context,
+                        //             MaterialPageRoute(
+                        //               builder: (context) => ScaleScreen(
+                        //                 userProduct: userProduct,
+                        //               ),
+                        //             ),
+                        //           ).then((_) => setState(() {}));
+                        //         },
+                        //       ),
+                        //       IconButton(
+                        //         icon: const Icon(Icons.delete),
+                        //         onPressed: () async {
+                        //           await _apiRoutes
+                        //               .deleteUserProduct(userProduct);
+                        //           setState(() {});
+                        //         },
+                        //       )
+                        //     ],
+                        //   ),
+                        // );
                       },
                     ),
                   ),

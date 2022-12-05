@@ -1,14 +1,16 @@
 class User {
   final String? id;
   final String? email;
-  final bool? isActive, isSuperuser, isVerified;
+  final bool? isActive;
+  final bool? isSuperuser;
+  final bool? isVerified;
 
   User({
     this.id,
     this.email,
     this.isActive,
     this.isSuperuser,
-    this.isVerified
+    this.isVerified,
   });
 
   factory User.fromJson(Map<String, dynamic> data) => User(
@@ -16,7 +18,7 @@ class User {
     email: data['email'] as String,
     isActive: data['is_active'] as bool,
     isSuperuser: data['is_superuser'] as bool,
-    isVerified: data['is_verified'] as bool
+    isVerified: data['is_verified'] as bool,
   );
 
   Map<String, dynamic> toJson() => {
