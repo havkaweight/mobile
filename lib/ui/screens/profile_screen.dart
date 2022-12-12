@@ -103,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 setState(() {
                   removeToken();
                   final GoogleSignIn _googleSignIn = GoogleSignIn();
+                  _googleSignIn.signOut();
                   _googleSignIn.disconnect();
+
                   // clear Navigator queue
                   Navigator.pushReplacement(
                     context,

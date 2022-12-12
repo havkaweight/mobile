@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
+
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:health_tracker/ui/screens/main_screen.dart';
 
 
 class HavkaButton extends StatelessWidget {
@@ -92,7 +96,60 @@ class HavkaButton extends StatelessWidget {
 }
 
 
+final FirebaseAuth authInstance = FirebaseAuth.instance;
+
 class GoogleSignInButton extends StatelessWidget {
+  // const GoogleSignInButton({Key? key}) : super(key: key);
+
+
+  Future<void> _googleSignIn(BuildContext context) async {
+    final googleSignIn = GoogleSignIn(scopes: ['email', 'profile'],
+        clientId: '201798139028-bpkn1mc26nijusmpkluaescoonmkfd8u.apps.googleusercontent.com');
+    final googleAccount = await googleSignIn.signIn();
+    if (googleAccount != null) {
+      final googleAuth = await googleAccount.authentication;
+      if (googleAuth.accessToken != null && googleAuth.idToken != null) {
+        print(googleAuth.accessToken);
+        print(googleAuth.idToken);
+        final authResult = await authInstance.signInWithCredential(
+          GoogleAuthProvider.credential(
+              idToken: googleAuth.idToken,
+              accessToken: googleAuth.accessToken,
+          ),
+        );
+        print(authResult.user!);
+
+        print(authResult.user!.uid);
+        print(authResult.user!.displayName);
+        print(authResult.user!.email);
+
+        print(authResult.additionalUserInfo!);
+
+        if (authResult.additionalUserInfo!.isNewUser) {
+          // await FirebaseFirestore.instance
+          //     .collection('users')
+          //     .doc(authResult.user!.uid)
+          //     .set({
+          //   'id': authResult.user!.uid,
+          //   'name': authResult.user!.displayName,
+          //   'email': authResult.user!.email,
+          //   'shipping-address': '',
+          //   'userWish': [],
+          //   'userCart': [],
+          //   'createdAt': Timestamp.now(),
+          // });
+          // add user to our base
+          // firestore is a paid NoSQL database
+        }
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MainScreen(),
+          ),
+        );
+
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,11 +164,11 @@ class GoogleSignInButton extends StatelessWidget {
               fit: BoxFit.fill,
             ),
             Text('Continue with Google'),
-            ],
+          ],
         ),
       ),
       onPressed: () {
-        print('Button pressed ...');
+        _googleSignIn(context);
       },
     );
     // return Align(
@@ -177,6 +234,5 @@ class GoogleSignInButton extends StatelessWidget {
     //     ),
     //   ),
     // );
-
   }
 }

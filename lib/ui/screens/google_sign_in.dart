@@ -98,7 +98,7 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
     try{
       // await _googleSignIn.signIn();
       final result = await _googleSignIn.signIn();
-      final ggAuth = await result.authentication;
+      final ggAuth = await result?.authentication;
       //
       // final token = ggAuth.accessToken;
       // final data = await http.get(
@@ -109,9 +109,9 @@ class _SignInGoogleScreenState extends State<SignInGoogleScreen> {
       //     }
       //     );
       // print(data.body);
-      idToken = ggAuth.idToken;
-      accessToken = ggAuth.accessToken;
-      serverAuthCode = ggAuth.serverAuthCode;
+      idToken = ggAuth?.idToken;
+      accessToken = ggAuth?.accessToken;
+      serverAuthCode = ggAuth?.serverAuthCode;
 
 
 
