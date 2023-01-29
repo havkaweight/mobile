@@ -112,7 +112,7 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         }
     );
-    // isAuthorized(response);
+    isAuthorized(response);
     final user = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     return user;
   }
@@ -126,6 +126,8 @@ class ApiRoutes {
           'Authorization': 'Bearer $token',
         },
     );
+    // if 403 - logout
+
     if(response.statusCode != 200) {
       return [];
     }

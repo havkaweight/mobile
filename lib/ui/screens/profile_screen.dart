@@ -38,11 +38,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
+    // WidgetsBinding.instance.removeObserver(this);
   }
 
   // AppLifecycleState _notification;
@@ -57,12 +59,15 @@ class _ProfileScreenState extends State<ProfileScreen>
     setState(() {
       removeToken();
       final GoogleSignIn _googleSignIn = GoogleSignIn();
+      _googleSignIn.signOut();
       _googleSignIn.disconnect();
-      Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+
+      // clear Navigator queue
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
       );
-    });
+    })
   }
 
   @override
@@ -76,27 +81,27 @@ class _ProfileScreenState extends State<ProfileScreen>
     ]);
 
     return Scaffold(
-    backgroundColor: Theme.of(context).backgroundColor,
-    body: Center(
-      child: FutureBuilder<User>(
-        future: _apiRoutes.getMe(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          Widget? widget;
-          if (!snapshot.hasData) {
-            widget = const Center(child: HavkaProgressIndicator());
-          } else if (snapshot.hasData) {
-            widget = _buildProfileScreen(snapshot);
-          }
-          if (snapshot.hasError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()));
-            });
-          }
-          return widget!;
-        },
-      ),
-    ));
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Center(
+          child: FutureBuilder<User>(
+            future: _apiRoutes.getMe(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              Widget? widget;
+              if (!snapshot.hasData) {
+                widget = const Center(child: HavkaProgressIndicator());
+              } else if (snapshot.hasData) {
+                widget = _buildProfileScreen(snapshot);
+              }
+              if (snapshot.hasError) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => SignInScreen()));
+                });
+              }
+              return widget!;
+            },
+          ),
+        ));
   }
 
   Widget _buildProfileScreen(AsyncSnapshot snapshot) {
@@ -115,5 +120,73 @@ class _ProfileScreenState extends State<ProfileScreen>
           RoundedButton(text: 'Log out', onPressed: logout)
           // UserDeviceList()
         ]));
+  }
+
+  Future _buildWeightingsHistory() {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Theme.of(context).backgroundColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        context: context,
+        builder: (BuildContext builder) {
+          final double mHeight = MediaQuery.of(context).size.height;
+          return SizedBox(
+            height: mHeight * 0.85,
+            child: Column(children: [
+              Holder(),
+              Center(
+                  child: Column(
+                children: [
+                  WeightingsScreen(),
+                ],
+              ))
+            ]),
+          );
+        });
+  }
+
+  Future<dynamic> _buildScaleSearching(BuildContext context) async {
+    final List<DeviceService> servicesList =
+        await _apiRoutes.getDevicesServicesList();
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Theme.of(context).backgroundColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        context: context,
+        builder: (builder) {
+          final double mHeight = MediaQuery.of(context).size.height;
+          return ClipRRect(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)),
+            child: SizedBox(
+                height: mHeight * 0.85,
+                child: Column(children: [
+                  Holder(),
+                  Center(child: DevicesScreen(servicesList))
+                ])),
+          );
+        });
+  }
+
+  Future<void> isDeviceConnected(UserDevice userDevice) async {
+    flutterReactiveBle
+        .connectToDevice(id: userDevice.serialId!)
+        .listen((update) {
+      bool status = false;
+      if (update.connectionState == DeviceConnectionState.connected) {
+        status = true;
+      } else {
+        status = false;
+      }
+      ;
+      // return status;
+    });
   }
 }

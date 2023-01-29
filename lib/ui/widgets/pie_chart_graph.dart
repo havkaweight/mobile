@@ -49,13 +49,16 @@ class _PieChartState extends State<PieChart> {
           ];
 
           return Expanded(
-            child: charts.PieChart(
-              data,
-              animate: true,
-              defaultRenderer: charts.ArcRendererConfig(
-                arcWidth: 60,
-                arcRendererDecorators: [charts.ArcLabelDecorator()],),
-            ),
+            child: ListView(
+              shrinkWrap: true,
+              children: [charts.PieChart(
+                data,
+                animate: true,
+                defaultRenderer: charts.ArcRendererConfig(
+                  arcWidth: 60,
+                  arcRendererDecorators: [charts.ArcLabelDecorator()],),
+              ),
+            ]),
           );
         }
       },

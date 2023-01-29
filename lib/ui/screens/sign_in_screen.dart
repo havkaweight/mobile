@@ -9,6 +9,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/sign_up_screen.dart';
+import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/popup.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -168,6 +169,7 @@ class _SignInScreenState extends State<SignInScreen> {
       return Column(
         children: [
           RoundedButton(text: 'Sign In', onPressed: _signIn),
+          GoogleSignInButton(),
           Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
