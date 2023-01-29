@@ -2,6 +2,7 @@ class Api {
   Api._();
   static const host = 'havka.one';
   static const prefix = '/api/v1';
+  static const prefixMongo = '/api/v2/mongo';
 
   static const me = '/users/me';
 

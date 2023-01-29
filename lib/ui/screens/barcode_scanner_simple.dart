@@ -100,7 +100,7 @@ class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen>
                         }
                         return Container();
                       })
-                  : const Text('Scan a code')),
+                  : const Text('Scan a barcode')),
         )
       ],
     );

@@ -131,7 +131,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       return Container();
                     },
                   )
-                : const Text('Scan a code'),
+                : const Text('Scan a barcode'),
           ),
         )
       ],

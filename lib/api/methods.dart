@@ -255,19 +255,23 @@ class ApiRoutes {
 
   Future<List<Product>> getProductsList() async {
     final token = await storage.read(key: 'jwt');
+    debugPrint('${Api.prefixMongo}${Api.products}');
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.products}'),
+        Uri.https(Api.host, '${Api.prefixMongo}${Api.products}'),
         headers: <String, String>{
           'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
+          // 'Authorization': 'Bearer $token'
         }
     );
+    debugPrint(response.body);
     if(response.statusCode != 200) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<Product> productsList = products.map<Product>((json) {
-      return Product.fromJson(json as Map<String, dynamic>);
+      Product prod = Product.fromJson(json as Map<String, dynamic>);
+      print(prod.toJson());
+      return prod;
     }).toList();
     return productsList;
   }
@@ -309,7 +313,6 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         },
     );
-
     if(response.statusCode != 200) {
       return [];
     }

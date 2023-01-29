@@ -70,7 +70,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     .textTheme
                                     .headline3!
                                     .fontSize)),
-                        subtitle: Text(product.brand!,
+                        subtitle: Text(product.brand ?? 'not found',
                             style: TextStyle(
                                 fontSize: Theme.of(context)
                                     .textTheme

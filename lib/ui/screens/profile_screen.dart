@@ -38,13 +38,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    // WidgetsBinding.instance.removeObserver(this);
   }
 
   // AppLifecycleState _notification;
@@ -54,6 +52,18 @@ class _ProfileScreenState extends State<ProfileScreen>
   //   setState(() { _notification = state; });
   //   print(_notification);
   // }
+
+  void logout() {
+    setState(() {
+      removeToken();
+      final GoogleSignIn _googleSignIn = GoogleSignIn();
+      _googleSignIn.disconnect();
+      Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,51 +76,43 @@ class _ProfileScreenState extends State<ProfileScreen>
     ]);
 
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
-        body: Center(
-          child: FutureBuilder<User>(
-            future: _apiRoutes.getMe(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              Widget? widget;
-              if (!snapshot.hasData) {
-                widget = const Center(child: HavkaProgressIndicator());
-              } else if (snapshot.hasData) {
-                widget = _buildProfileScreen(snapshot);
-              }
-              if (snapshot.hasError) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => SignInScreen()));
-                });
-              }
-              return widget!;
-            },
-          ),
-        ));
+    backgroundColor: Theme.of(context).backgroundColor,
+    body: Center(
+      child: FutureBuilder<User>(
+        future: _apiRoutes.getMe(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          Widget? widget;
+          if (!snapshot.hasData) {
+            widget = const Center(child: HavkaProgressIndicator());
+          } else if (snapshot.hasData) {
+            widget = _buildProfileScreen(snapshot);
+          }
+          if (snapshot.hasError) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => SignInScreen()));
+            });
+          }
+          return widget!;
+        },
+      ),
+    ));
   }
 
   Widget _buildProfileScreen(AsyncSnapshot snapshot) {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-            Widget>[
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
           ProfileHeader(
               username: '${snapshot.data.email}',
               height: 163,
               weight: 67,
               photoUrl:
                   'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
-              onPressed: () {
-                setState(() {
-                  removeToken();
-                  final GoogleSignIn _googleSignIn = GoogleSignIn();
-                  _googleSignIn.disconnect();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
-                  );
-                });
-              }),
+          ),
+          RoundedButton(text: 'Log out', onPressed: logout)
           // UserDeviceList()
         ]));
   }

@@ -18,19 +18,19 @@ class Product {
     this.carbs,
     this.kcal,
     this.baseValue,
-    this.barcode
+    this.barcode,
   });
 
   Product.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as int,
+      : id = json['_id'] as int?,
         name = json['name'] as String,
-        brand = json['brand'] as String,
-        protein = json['proteins'] as double,
-        fat = json['fats'] as double,
-        carbs = json['carbs'] as double,
-        kcal = json['kcal'] as double,
-        baseValue = json['net_weight'] as double,
-        barcode = json['barcode'] as String;
+        brand = json['brand'] as String?,
+        protein = json['proteins'] as double?,
+        fat = json['fats'] as double?,
+        carbs = json['carbs'] as double?,
+        kcal = json['kcal'] as double?,
+        baseValue = json['net_weight'] as double?,
+        barcode = json['barcode'] as String?;
 
   Map<String, dynamic> toJson() =>
       {

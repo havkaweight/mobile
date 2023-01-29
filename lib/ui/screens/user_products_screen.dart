@@ -10,6 +10,7 @@ import '../../ui/widgets/holder.dart';
 import '../../ui/widgets/progress_indicator.dart';
 import '../../ui/widgets/rounded_button.dart';
 import '../../ui/widgets/screen_header.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'barcode_scanner.dart';
 
@@ -18,6 +19,14 @@ List<Map<String, String>> userProductsList = [];
 class UserProductsScreen extends StatefulWidget {
   @override
   _UserProductsScreenState createState() => _UserProductsScreenState();
+}
+
+class CustomBehavior extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
+  }
 }
 
 class _UserProductsScreenState extends State<UserProductsScreen> {
@@ -48,7 +57,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.qr_code_2, color: HavkaColors.green),
+                    icon: const FaIcon(FontAwesomeIcons.barcode, color: HavkaColors.green),
                     onPressed: () {
                       _buildBarcodeScanner().then((_) => setState(() {}));
                     },
@@ -87,7 +96,9 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                 return Expanded(
                   child: RefreshIndicator(
                     onRefresh: _apiRoutes.getUserProductsList,
-                    child: ListView.builder(
+                    child: ScrollConfiguration(
+                      behavior: CustomBehavior(),
+                      child: ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, index) {
                         final UserProduct userProduct = snapshot.data![index];
@@ -162,7 +173,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                           ),
                         );
                       },
-                    ),
+                    )),
                   ),
                 );
               }
