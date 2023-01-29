@@ -178,7 +178,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       },
                     )),
                   ),
-                ));
+                );
               }
               return Container();
             },

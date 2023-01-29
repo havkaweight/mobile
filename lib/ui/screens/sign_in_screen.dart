@@ -110,9 +110,10 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       if (futureSignIn!) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => MainScreen()),
+              (r) => false
           );
         });
       }
