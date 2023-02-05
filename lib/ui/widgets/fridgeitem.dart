@@ -52,32 +52,6 @@ class FridgeItem extends StatelessWidget {
               ],
           ),
         ),
-        // leading: Container(
-        //   width: 50,
-        //   height: 50,
-        //   decoration: const BoxDecoration(
-        //     shape: BoxShape.circle,
-        //   ),
-        //   child: CustomPaint(
-        //     painter: CircleProgressBar(Random().nextDouble()),
-        //     child: Container(
-        //       width: 100.0,
-        //       height: 100.0,
-        //       decoration: BoxDecoration(
-        //         color: const Color(0xff7c94b6),
-        //         image: const DecorationImage(
-        //           image: NetworkImage('https://cdn.havka.one/test.jpg'),
-        //           fit: BoxFit.cover,
-        //         ),
-        //         borderRadius: const BorderRadius.all( Radius.circular(50.0)),
-        //         border: Border.all(
-        //           color: HavkaColors.cream,
-        //           width: 3,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
         title: Text(
           userProduct.productName!,
           style: TextStyle(

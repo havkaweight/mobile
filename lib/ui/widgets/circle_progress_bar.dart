@@ -2,40 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class CircleProgressBar extends CustomPainter {
-  final double value;
-  Color color = Colors.grey;
-
-  CircleProgressBar(this.value);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final area = Rect.fromCircle(
-        center: size.center(Offset.zero),
-        radius: size.width / 1,
-    );
-
-    if(value > 0.8) {
-      color = Colors.green;
-    } else if(value > 0.5) {
-      color = Colors.amber;
-    } else {
-      color = Colors.red;
-    }
-
-    canvas.drawArc(
-        area,
-        -pi / 2,
-        2 * pi * value,
-        true,
-        Paint()..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
 class CircularProgressBar extends StatefulWidget {
   final double value;
 
