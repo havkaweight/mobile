@@ -12,6 +12,9 @@ import '../model/user_product_weighting.dart';
 import '../ui/screens/authorization.dart';
 import 'constants.dart';
 
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
+
 class ApiRoutes {
 
   void isAuthorized(http.Response response) {
@@ -118,20 +121,31 @@ class ApiRoutes {
   }
 
   Future<List<UserProduct>> getUserProductsList() async {
+    final Dio dio = Dio();
+    final DioCacheManager dioCacheManager = DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
+    dio.interceptors.add(dioCacheManager.interceptor as Interceptor);
     final token = await storage.read(key: 'jwt');
-    final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+    dio.options.headers = <String, String>{
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    final Response response = await dio.get(
+      'https://${Api.host}${Api.prefix}${Api.userProducts}',
+      options: buildCacheOptions(const Duration(days: 7), forceRefresh: true),
     );
-    // if 403 - logout
+
+    // final http.Response response = await http.get(
+    //     Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
+    //     headers: <String, String>{
+    //       'Content-type': 'application/json',
+    //       'Authorization': 'Bearer $token',
+    //     },
+    // );
 
     if(response.statusCode != 200) {
       return [];
     }
-    final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final products = response.data as List;
     final List<UserProduct> productsList = products.map<UserProduct>((json) {
       return UserProduct.fromJson(json as Map<String, dynamic>);
     }).toList();

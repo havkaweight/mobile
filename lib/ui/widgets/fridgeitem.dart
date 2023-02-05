@@ -13,9 +13,9 @@ class FridgeItem extends StatelessWidget {
   final UserProduct userProduct;
 
   const FridgeItem({
-    Key? key,
+    super.key,
     required this.userProduct,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

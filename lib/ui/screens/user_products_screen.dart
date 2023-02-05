@@ -34,6 +34,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   final barcodeController = TextEditingController();
 
   final ApiRoutes _apiRoutes = ApiRoutes();
+  late List<UserProduct> userProducts;
 
   @override
   void initState() {
@@ -94,15 +95,16 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                 );
               }
               if (snapshot.hasData) {
+                userProducts = snapshot.data!;
                 return Expanded(
                   child: RefreshIndicator(
-                    onRefresh: _apiRoutes.getUserProductsList,
+                    onRefresh: _pullRefresh,
                     child: ScrollConfiguration(
                       behavior: CustomBehavior(),
                       child: ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, index) {
-                        final UserProduct userProduct = snapshot.data![index];
+                        final UserProduct userProduct = userProducts[index];
                         return FridgeItem(userProduct: userProduct);
 
                         // return ListTile(
@@ -186,6 +188,13 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _pullRefresh() async {
+    final newUserProducts = await _apiRoutes.getUserProductsList();
+      setState(() {
+        userProducts = newUserProducts;
+      });
   }
 
   Future<dynamic> _buildBarcodeScanner() {
