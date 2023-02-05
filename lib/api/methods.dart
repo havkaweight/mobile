@@ -272,7 +272,7 @@ class ApiRoutes {
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<Product> productsList = products.map<Product>((json) {
       Product prod = Product.fromJson(json as Map<String, dynamic>);
-      print(prod.toJson());
+      print(prod);
       return prod;
     }).toList();
     return productsList;

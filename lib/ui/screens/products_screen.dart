@@ -64,6 +64,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     itemBuilder: (BuildContext context, index) {
                       final Product product = snapshot.data![index];
                       return ListTile(
+                        leading: Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff7c94b6),
+                            image: DecorationImage(
+                              image: NetworkImage(product.img ?? 'https://cdn.havka.one/test.jpg') ,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: const BorderRadius.all( Radius.circular(50.0)),
+                            border: Border.all(
+                              color: HavkaColors.cream,
+                              width: 3,
+                            ),
+                          ),
+                        ),
                         title: Text(product.name!,
                             style: TextStyle(
                                 fontSize: Theme.of(context)
@@ -109,6 +125,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   itemBuilder: (BuildContext context, index) {
                     final Product product = snapshot.data![index];
                     return ListTile(
+                      leading: Container(
+                        width: 100.0,
+                        height: 100.0,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff7c94b6),
+                          image: const DecorationImage(
+                            image: NetworkImage('https://cdn.havka.one/test.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: const BorderRadius.all( Radius.circular(50.0)),
+                          border: Border.all(
+                            color: HavkaColors.cream,
+                            width: 3,
+                          ),
+                        ),
+                      ),
                       title: Text(product.name!),
                       subtitle: Text(product.brand!),
                       onTap: () async {
