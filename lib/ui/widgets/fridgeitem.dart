@@ -26,7 +26,32 @@ class FridgeItem extends StatelessWidget {
           side: const BorderSide(color: HavkaColors.green, width: 1),
           borderRadius: BorderRadius.circular(50),
         ),
-        leading: CircularProgressBar(value: Random().nextDouble()),
+        leading: SizedBox(
+          width: 50,
+          height: 50,
+          child: Stack(
+              children: <Widget>[
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
+                    color: Color(0xff7c94b6),
+                    image: DecorationImage(
+                      image: NetworkImage('https://cdn.havka.one/test.jpg') ,
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                  ),
+                ),
+                SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressBar(value: Random().nextDouble())
+                )
+              ],
+          ),
+        ),
         // leading: Container(
         //   width: 50,
         //   height: 50,

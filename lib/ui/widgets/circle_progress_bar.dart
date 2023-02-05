@@ -38,6 +38,7 @@ class CircleProgressBar extends CustomPainter {
 
 class CircularProgressBar extends StatefulWidget {
   final double value;
+
   const CircularProgressBar({
     super.key,
     required this.value,
@@ -50,20 +51,26 @@ class CircularProgressBar extends StatefulWidget {
 class _CircularProgressBar extends State<CircularProgressBar>
     with TickerProviderStateMixin {
   late AnimationController controller;
-  double currentValue = 0;
+  late final Color color;
   @override
   void initState() {
+    if(widget.value > 0.8) {
+      color = Colors.green;
+    } else if(widget.value > 0.5) {
+      color = Colors.amber;
+    } else {
+      color = Colors.red;
+    }
     controller = AnimationController(
-      value: currentValue,
+      value: 0,
+      upperBound: widget.value,
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds:  600),
     )
       ..addListener(() {
-        setState(() {
-          currentValue = currentValue < widget.value ? currentValue += 1 : widget.value;
-        });
+        setState(() {});
       });
-    controller.repeat();
+    controller.forward();
     super.initState();
   }
 
@@ -76,8 +83,10 @@ class _CircularProgressBar extends State<CircularProgressBar>
   @override
   Widget build(BuildContext context) {
     return CircularProgressIndicator(
-        value: controller.value,
-        semanticsLabel: 'Circular progress indicator',
+      color: color,
+      value: controller.value,
+      strokeWidth: 3,
+      semanticsLabel: 'Circular progress indicator',
     );
   }
 }
