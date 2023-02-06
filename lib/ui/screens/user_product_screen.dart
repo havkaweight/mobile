@@ -8,9 +8,9 @@ class UserProductScreen extends StatefulWidget {
   final UserProduct userProduct;
 
   const UserProductScreen({
-    Key? key,
+    super.key,
     required this.userProduct
-  }) : super(key: key);
+  });
 
   @override
   _UserProductScreenState createState() => _UserProductScreenState();
@@ -25,8 +25,31 @@ class _UserProductScreenState extends State<UserProductScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ScreenSubHeader(text: widget.userProduct.productName!),
-            ScreenSubHeader(text: widget.userProduct.productBrand!),
+            Hero(
+              tag: 'productImage-${widget.userProduct.id}',
+              child: Container(
+                width: 300,
+                height: 300,
+                margin: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                  color: Color(0xff7c94b6),
+                  image: DecorationImage(
+                    image: NetworkImage('https://cdn.havka.one/test.jpg') ,
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                ),
+              ),
+            ),
+            Text(
+              widget.userProduct.productName!,
+              style: const TextStyle(
+                color: Colors.black,
+                decoration: TextDecoration.none,
+                fontWeight: FontWeight.normal,
+                fontSize: 16,
+              ),
+            ),
             RoundedButton(
               text: 'Weight',
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScaleScreen(userProduct: widget.userProduct)))

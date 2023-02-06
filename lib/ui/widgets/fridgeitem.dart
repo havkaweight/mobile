@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/circle_progress_bar.dart';
 
@@ -20,28 +21,31 @@ class FridgeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: ListTile(
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: HavkaColors.green, width: 1),
-          borderRadius: BorderRadius.circular(50),
+          side: const BorderSide(color: HavkaColors.bone),
+          borderRadius: BorderRadius.circular(20),
         ),
         leading: SizedBox(
           width: 50,
           height: 50,
           child: Stack(
               children: <Widget>[
-                Container(
-                  width: 50,
-                  height: 50,
-                  margin: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    color: Color(0xff7c94b6),
-                    image: DecorationImage(
-                      image: NetworkImage('https://cdn.havka.one/test.jpg') ,
-                      fit: BoxFit.cover,
+                Hero(
+                  tag: 'productImage-${userProduct.id}',
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    margin: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Color(0xff7c94b6),
+                      image: DecorationImage(
+                        image: NetworkImage('https://cdn.havka.one/test.jpg') ,
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   ),
                 ),
                 SizedBox(
@@ -55,6 +59,9 @@ class FridgeItem extends StatelessWidget {
         title: Text(
           userProduct.productName!,
           style: TextStyle(
+            color: Colors.black,
+            decoration: TextDecoration.none,
+            fontWeight: FontWeight.normal,
             fontSize: Theme.of(context)
                 .textTheme
                 .headline3!
@@ -67,6 +74,9 @@ class FridgeItem extends StatelessWidget {
             Text(
               userProduct.productBrand!,
               style: TextStyle(
+                color: Colors.black,
+                decoration: TextDecoration.none,
+                fontWeight: FontWeight.normal,
                 fontSize: Theme.of(context)
                     .textTheme
                     .headline4!
