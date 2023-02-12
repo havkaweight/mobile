@@ -6,7 +6,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
-import 'package:health_tracker/ui/widgets/circle_progress_bar.dart';
+import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 
 import '../screens/scale_screen.dart';
 
@@ -130,6 +130,66 @@ class FridgeItem extends StatelessWidget {
         //     )
         //   ],
         // ),
+      ),
+    );
+  }
+}
+
+class EmptyFridgeItem extends StatelessWidget {
+
+  const EmptyFridgeItem({
+    super.key
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(color: HavkaColors.bone),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        leading: SizedBox(
+          width: 50,
+          height: 50,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                width: 50,
+                height: 50,
+                margin: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                  color: Color(0xff7c94b6),
+                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                ),
+              ),
+              const SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressBar(value: -1)
+              )
+            ],
+          ),
+        ),
+        title: const SizedBox(
+          width: 30,
+          height: 12,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              color: Colors.green,
+            ),
+          ),
+        ),
+        subtitle: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            color: Colors.green,
+          ),
+          width: 20,
+          height: 9,
+        ),
       ),
     );
   }

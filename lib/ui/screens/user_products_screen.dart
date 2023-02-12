@@ -13,6 +13,7 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../widgets/shimmer.dart';
 import 'barcode_scanner.dart';
 
 List<Map<String, String>> userProductsList = [];
@@ -88,10 +89,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
             ) {
               if (!snapshot.hasData) {
                 return Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 40.0),
-                    child: const HavkaProgressIndicator(),
-                  ),
+                  child: getShimmerLoading(),
                 );
               }
               if (snapshot.hasData) {

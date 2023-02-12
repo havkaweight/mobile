@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../api/methods.dart';
@@ -28,7 +29,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
+    return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -99,6 +100,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       );
                     }),
               );
+
             }
             return const Center(child: Text('Error internet connection'));
           },

@@ -5,6 +5,7 @@ import 'package:health_tracker/ui/screens/onboarding.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
+import 'package:lottie/lottie.dart';
 
 
 // import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
@@ -46,8 +47,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Center(
-              child: AppIcon(image: Assets.appLogo),
+            Center(
+              child: Hero(
+                tag: "splash-animation",
+                child: Lottie.network('https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json'),
+              ),
             ),
             const SizedBox(height: verticalPadding),
             const Padding(

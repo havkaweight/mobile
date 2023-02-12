@@ -29,14 +29,18 @@ class _CircularProgressBar extends State<CircularProgressBar>
     }
     controller = AnimationController(
       value: 0,
-      upperBound: widget.value,
+      upperBound: widget.value.abs(),
       vsync: this,
-      duration: const Duration(milliseconds:  600),
+      duration: Duration(milliseconds:  widget.value == -1 ? 2000 : 600),
     )
       ..addListener(() {
         setState(() {});
       });
-    controller.forward();
+    if(widget.value == -1) {
+      controller.repeat();
+    } else {
+      controller.forward();
+    }
     super.initState();
   }
 

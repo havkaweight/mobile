@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../ui/screens/child_widget.dart';
+import 'package:health_tracker/ui/screens/child_widget.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -14,9 +14,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
   }
 
-  final PageController _pageController = PageController(
-    initialPage: 1,
-  );
+  final PageController _pageController = PageController(initialPage: 1);
   int currentIndex = 1;
 
   Widget? childWidget = const ChildWidget(
@@ -34,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold (
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Theme.of(context).backgroundColor,
-          selectedItemColor: Theme.of(context).accentColor,
+          selectedItemColor: Theme.of(context).colorScheme.secondary,
           unselectedItemColor: const Color(0x885BBE78),
           type: BottomNavigationBarType.fixed,
           currentIndex: currentIndex,
@@ -48,12 +46,14 @@ class _MainScreenState extends State<MainScreen> {
             //     label: 'Analysis'
             // ),
             BottomNavigationBarItem(
-                icon: currentIndex==0 ? const Icon(Icons.kitchen) : const Icon(Icons.kitchen_outlined),
-                label: 'Fridge'
+                icon: GestureDetector(
+                  child: currentIndex==0 ? const Icon(Icons.kitchen) : const Icon(Icons.kitchen_outlined),
+                ),
+                label: 'Fridge',
             ),
             BottomNavigationBarItem(
                 icon: currentIndex==1 ? const Icon(Icons.person) : const Icon(Icons.person_outline),
-                label: 'Me'
+                label: 'Me',
             )
           ],
         ),
@@ -69,9 +69,9 @@ class _MainScreenState extends State<MainScreen> {
           children: const <Widget>[
             // ChildWidget(screen: AvailableScreen.analysis),
             ChildWidget(screen: AvailableScreen.fridge),
-            ChildWidget(screen: AvailableScreen.profile)
-          ]
-        )
+            ChildWidget(screen: AvailableScreen.profile),
+          ],
+        ),
       );
   }
 }

@@ -1,13 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/assets.dart';
 import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
-import 'package:health_tracker/ui/widgets/app_icon.dart';
-import 'package:health_tracker/ui/screens/app_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/utils/auth.dart';
+import 'package:lottie/lottie.dart';
 
 // https://stackoverflow.com/questions/49040779/how-to-handle-a-different-login-navigation-flow
 void main() {
@@ -86,7 +84,7 @@ class _HavkaAppState extends State<HavkaApp> {
       future: authService.isLoggedIn(),
       builder: (BuildContext context, AsyncSnapshot snapshot){
         if(snapshot.connectionState == ConnectionState.waiting) {
-          return StartScreen();
+          return SplashScreen();
         } else {
           if (snapshot.data == true) {
             return MainScreen();
@@ -100,13 +98,39 @@ class _HavkaAppState extends State<HavkaApp> {
   }
 }
 
-class StartScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+  with TickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this)
+    ..addListener(() {
+      if(_controller.value > 0.5) {
+        _controller.value = 0.5;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: const Center(
-          child: AppIcon(image: Assets.appLogo)
+      body: Center(
+          child: Hero(
+            tag: "splash-animation",
+            child: Lottie.asset(
+                'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
+                controller: _controller,
+            ),
+          ),
+          // child: AppIcon(image: Assets.appLogo),
       ),
     );
   }
