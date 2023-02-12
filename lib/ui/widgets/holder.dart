@@ -16,9 +16,9 @@ class Holder extends StatelessWidget {
               child: Container(
                   width: mWidth * 0.1,
                   height: mHeight * 0.007,
-                  decoration: const BoxDecoration(
-                      color: HavkaColors.bone,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0))
+                  decoration: BoxDecoration(
+                      color: HavkaColors.bone[100]!,
+                      borderRadius: const BorderRadius.all(Radius.circular(5.0))
                   )
               ),
             )

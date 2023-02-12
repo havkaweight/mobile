@@ -18,7 +18,7 @@ class RoundedTextField extends StatefulWidget {
   final TextAlign? textAlign;
 
   const RoundedTextField({
-    Key? key,
+    super.key,
     this.labelText,
     this.hintText,
     this.width = 0.7,
@@ -32,7 +32,7 @@ class RoundedTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.onSubmitted,
     this.textAlign = TextAlign.start
-  }) : super(key: key);
+  });
 
   @override
   RoundedTextFieldState createState() => RoundedTextFieldState();
@@ -61,7 +61,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
           suffixIcon: widget.iconButton,
-          fillColor: HavkaColors.bone,
+          fillColor: HavkaColors.bone[100],
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,

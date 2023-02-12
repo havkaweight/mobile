@@ -24,7 +24,7 @@ class FridgeItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: ListTile(
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: HavkaColors.bone),
+          side: BorderSide(color: HavkaColors.bone[100]!),
           borderRadius: BorderRadius.circular(20),
         ),
         leading: SizedBox(
@@ -147,7 +147,7 @@ class EmptyFridgeItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: ListTile(
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: HavkaColors.bone),
+          side: BorderSide(color: HavkaColors.bone[100]!),
           borderRadius: BorderRadius.circular(20),
         ),
         leading: SizedBox(

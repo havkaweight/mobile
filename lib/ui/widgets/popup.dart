@@ -18,7 +18,7 @@ class Popup extends StatelessWidget {
         height: 40,
         margin: const EdgeInsets.only(top: 40, left: 30, right: 30),
         decoration: BoxDecoration(
-          color: HavkaColors.bone,
+          color: HavkaColors.bone[100],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(

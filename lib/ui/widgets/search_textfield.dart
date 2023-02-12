@@ -51,7 +51,7 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-          fillColor: HavkaColors.bone,
+          fillColor: HavkaColors.bone[100],
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,

@@ -180,7 +180,7 @@ class UserDeviceListState<T extends UserDeviceList> extends State<UserDeviceList
                                           HavkaColors.green;
                                     }  else {
                                       connectionStateText = 'Disconnected';
-                                      connectionStateColor = HavkaColors.bone;
+                                      connectionStateColor = HavkaColors.bone[100]!;
                                     }
                                   }
                                   return Text(connectionStateText,
