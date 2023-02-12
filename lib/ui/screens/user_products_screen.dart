@@ -26,7 +26,10 @@ class UserProductsScreen extends StatefulWidget {
 class CustomBehavior extends ScrollBehavior {
   @override
   Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
+      BuildContext context,
+      Widget child,
+      ScrollableDetails details,
+      ) {
     return child;
   }
 }
@@ -36,6 +39,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
 
   final ApiRoutes _apiRoutes = ApiRoutes();
   late List<UserProduct> userProducts;
+  late Widget childWidget;
 
   @override
   void initState() {
@@ -65,123 +69,44 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                       _buildBarcodeScanner().then((_) => setState(() {}));
                     },
                   ),
-                  // RoundedIconButton(
-                  //     faIcon: FaIcon(
-                  //       FontAwesomeIcons.barcode,
-                  //       color: Color(0xFFFFFFFF),
-                  //     ),
-                  //     onPressed: () => _apiRoutes.scanBarcode()
-                  // )
                 ],
               ),
-              // RoundedIconButton(
-              //   icon: Icon(Icons.qr_code, color: Color(0xFFFFFFFF)),
-              //   color: Theme.of(context).backgroundColor,
-              //   onPressed: _scanQRCode
-              // ),
             ],
           ),
-          FutureBuilder<List<UserProduct>>(
-            future: _apiRoutes.getUserProductsList(),
-            builder: (
-              BuildContext context,
-              AsyncSnapshot<List<UserProduct>> snapshot,
-            ) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: getShimmerLoading(),
-                );
-              }
-              if (snapshot.hasData) {
-                userProducts = snapshot.data!;
-                return Expanded(
-                  child: RefreshIndicator(
+          Expanded(
+            child: FutureBuilder<List<UserProduct>>(
+              future: _apiRoutes.getUserProductsList(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<UserProduct>> snapshot,
+              ) {
+                if (!snapshot.hasData) {
+                  childWidget = Center(
+                    child: getShimmerLoading(),
+                  );
+                }
+                if (snapshot.hasData) {
+                  userProducts = snapshot.data!;
+                  childWidget = RefreshIndicator(
                     onRefresh: _pullRefresh,
                     child: ScrollConfiguration(
                       behavior: CustomBehavior(),
                       child: ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext context, index) {
-                        final UserProduct userProduct = userProducts[index];
-                        return FridgeItem(userProduct: userProduct);
-
-                        // return ListTile(
-                        //   title: Text(
-                        //     userProduct.productName!,
-                        //     style: TextStyle(
-                        //       fontSize: Theme.of(context)
-                        //           .textTheme
-                        //           .headline3!
-                        //           .fontSize,
-                        //     ),
-                        //   ),
-                        //   subtitle: Row(
-                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //     children: [
-                        //       Text(
-                        //         userProduct.productBrand!,
-                        //         style: TextStyle(
-                        //           fontSize: Theme.of(context)
-                        //               .textTheme
-                        //               .headline4!
-                        //               .fontSize,
-                        //         ),
-                        //       ),
-                        //       Text(
-                        //         '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
-                        //         style: TextStyle(
-                        //           fontSize: Theme.of(context)
-                        //               .textTheme
-                        //               .headline4!
-                        //               .fontSize,
-                        //         ),
-                        //       )
-                        //     ],
-                        //   ),
-                        //   onTap: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (context) => UserProductScreen(
-                        //           userProduct: userProduct,
-                        //         ),
-                        //       ),
-                        //     );
-                        //   },
-                        //   trailing: Row(
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: [
-                        //       IconButton(
-                        //         icon: const Icon(Icons.monitor_weight),
-                        //         onPressed: () {
-                        //           Navigator.push(
-                        //             context,
-                        //             MaterialPageRoute(
-                        //               builder: (context) => ScaleScreen(
-                        //                 userProduct: userProduct,
-                        //               ),
-                        //             ),
-                        //           ).then((_) => setState(() {}));
-                        //         },
-                        //       ),
-                        //       IconButton(
-                        //         icon: const Icon(Icons.delete),
-                        //         onPressed: () async {
-                        //           await _apiRoutes
-                        //               .deleteUserProduct(userProduct);
-                        //           setState(() {});
-                        //         },
-                        //       )
-                        //     ],
-                        //   ),
-                        // );
-                      },
-                    )),
-                  ),
+                        itemCount: userProducts.length,
+                        itemBuilder: (BuildContext context, index) {
+                          final UserProduct userProduct = userProducts[index];
+                          return FridgeItem(userProduct: userProduct);
+                        },
+                      )
+                    ),
+                  );
+                }
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: childWidget,
                 );
-              }
-              return Container();
-            },
+              },
+            ),
           ),
         ],
       ),
