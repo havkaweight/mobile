@@ -22,114 +22,116 @@ class FridgeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(color: HavkaColors.bone[100]!),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: HavkaColors.bone[100]!),
         ),
-        leading: SizedBox(
-          width: 50,
-          height: 50,
-          child: Stack(
-              children: <Widget>[
-                Hero(
-                  tag: 'productImage-${userProduct.id}',
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    margin: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Color(0xff7c94b6),
-                      image: DecorationImage(
-                        image: NetworkImage('https://cdn.havka.one/test.jpg') ,
-                        fit: BoxFit.cover,
+        child: ListTile(
+          leading: SizedBox(
+            width: 50,
+            height: 50,
+            child: Stack(
+                children: <Widget>[
+                  Hero(
+                    tag: 'productImage-${userProduct.id}',
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      margin: const EdgeInsets.all(5),
+                      decoration: const BoxDecoration(
+                        color: Color(0xff7c94b6),
+                        image: DecorationImage(
+                          image: NetworkImage('https://cdn.havka.one/test.jpg') ,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
                     ),
                   ),
+                  SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressBar(value: Random().nextDouble())
+                  )
+                ],
+            ),
+          ),
+          title: Text(
+            userProduct.productName!,
+            style: TextStyle(
+              color: Colors.black,
+              decoration: TextDecoration.none,
+              fontWeight: FontWeight.normal,
+              fontSize: Theme.of(context)
+                  .textTheme
+                  .headline3!
+                  .fontSize,
+            ),
+          ),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                userProduct.productBrand!,
+                style: TextStyle(
+                  color: Colors.black,
+                  decoration: TextDecoration.none,
+                  fontWeight: FontWeight.normal,
+                  fontSize: Theme.of(context)
+                      .textTheme
+                      .headline4!
+                      .fontSize,
                 ),
-                SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressBar(value: Random().nextDouble())
-                )
-              ],
+              ),
+              Text(
+                '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
+                style: TextStyle(
+                  fontSize: Theme.of(context)
+                      .textTheme
+                      .headline4!
+                      .fontSize,
+                ),
+              )
+            ],
           ),
-        ),
-        title: Text(
-          userProduct.productName!,
-          style: TextStyle(
-            color: Colors.black,
-            decoration: TextDecoration.none,
-            fontWeight: FontWeight.normal,
-            fontSize: Theme.of(context)
-                .textTheme
-                .headline3!
-                .fontSize,
-          ),
-        ),
-        subtitle: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              userProduct.productBrand!,
-              style: TextStyle(
-                color: Colors.black,
-                decoration: TextDecoration.none,
-                fontWeight: FontWeight.normal,
-                fontSize: Theme.of(context)
-                    .textTheme
-                    .headline4!
-                    .fontSize,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserProductScreen(
+                  userProduct: userProduct,
+                ),
               ),
-            ),
-            Text(
-              '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
-              style: TextStyle(
-                fontSize: Theme.of(context)
-                    .textTheme
-                    .headline4!
-                    .fontSize,
-              ),
-            )
-          ],
+            );
+          },
+          // trailing: Row(
+          //   mainAxisSize: MainAxisSize.min,
+          //   children: [
+          //     IconButton(
+          //       icon: const Icon(Icons.monitor_weight),
+          //       onPressed: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => ScaleScreen(
+          //               userProduct: userProduct,
+          //             ),
+          //           ),
+          //         ).then((_) => setState(() {}));
+          //       },
+          //     ),
+          //     IconButton(
+          //       icon: const Icon(Icons.delete),
+          //       onPressed: () async {
+          //         await _apiRoutes
+          //             .deleteUserProduct(userProduct);
+          //         setState(() {});
+          //       },
+          //     )
+          //   ],
+          // ),
         ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserProductScreen(
-                userProduct: userProduct,
-              ),
-            ),
-          );
-        },
-        // trailing: Row(
-        //   mainAxisSize: MainAxisSize.min,
-        //   children: [
-        //     IconButton(
-        //       icon: const Icon(Icons.monitor_weight),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(
-        //             builder: (context) => ScaleScreen(
-        //               userProduct: userProduct,
-        //             ),
-        //           ),
-        //         ).then((_) => setState(() {}));
-        //       },
-        //     ),
-        //     IconButton(
-        //       icon: const Icon(Icons.delete),
-        //       onPressed: () async {
-        //         await _apiRoutes
-        //             .deleteUserProduct(userProduct);
-        //         setState(() {});
-        //       },
-        //     )
-        //   ],
-        // ),
       ),
     );
   }
@@ -145,50 +147,52 @@ class EmptyFridgeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(color: HavkaColors.bone[100]!),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: HavkaColors.bone[100]!),
         ),
-        leading: SizedBox(
-          width: 50,
-          height: 50,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                width: 50,
-                height: 50,
-                margin: const EdgeInsets.all(5),
-                decoration: const BoxDecoration(
-                  color: Color(0xff7c94b6),
-                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                ),
-              ),
-              const SizedBox(
+        child: ListTile(
+          leading: SizedBox(
+            width: 50,
+            height: 50,
+            child: Stack(
+              children: <Widget>[
+                Container(
                   width: 50,
                   height: 50,
-                  child: CircularProgressBar(value: -1)
-              )
-            ],
+                  margin: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
+                    color: Color(0xff7c94b6),
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                  ),
+                ),
+                const SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressBar(value: -1)
+                )
+              ],
+            ),
           ),
-        ),
-        title: const SizedBox(
-          width: 30,
-          height: 12,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
+          title: const SizedBox(
+            width: 30,
+            height: 12,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.green,
+              ),
+            ),
+          ),
+          subtitle: Container(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(20)),
               color: Colors.green,
             ),
+            width: 20,
+            height: 9,
           ),
-        ),
-        subtitle: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.green,
-          ),
-          width: 20,
-          height: 9,
         ),
       ),
     );
