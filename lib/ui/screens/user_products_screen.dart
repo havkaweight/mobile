@@ -102,7 +102,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                   );
                 }
                 return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 200),
                   child: childWidget,
                 );
               },
