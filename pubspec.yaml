@@ -47,7 +47,7 @@ dependencies:
   google_sign_in: ^5.4.2
 #  google_sign_in:
 #    path: ./lib/addons/google_sign_in/google_sign_in
-  font_awesome_flutter: ^10.3.0
+  font_awesome_flutter: ^10.4.0
   pull_to_refresh: ^2.0.0
   onboarding: ^3.1.0
   introduction_screen: ^3.1.1

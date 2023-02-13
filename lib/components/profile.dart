@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:health_tracker/constants/colors.dart';
 import '../ui/widgets/rounded_button.dart';
 import '../ui/widgets/screen_header.dart';
 
@@ -43,33 +45,46 @@ class ProfileHeader extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
                           children: <Widget>[
-                            const Icon(
-                              Icons.height_outlined,
-                              size: 25,
+                            Row(
+                              children: [
+                                const FaIcon(
+                                  FontAwesomeIcons.rulerVertical,
+                                  color: Colors.black,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(8, 0, 20, 0),
+                                  child: Text(
+                                    '${height.toString()} cm',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                                '${height.toString()} cm',
-                              style: const TextStyle(
-                                fontSize: 17,
-                              ),
+                            Row(
+                              children: <Widget>[
+                                const FaIcon(
+                                  FontAwesomeIcons.weightScale,
+                                  color: Colors.black,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                                  child: Text(
+                                    '${weight.toString()} kg',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ]
-                      ),
-                      Row(
-                          children: <Widget>[
-                            const Icon(
-                              Icons.monitor_weight_outlined,
-                              size: 25,
-                            ),
-                            Text(
-                              '${weight.toString()} kg',
-                              style: const TextStyle(
-                                fontSize: 17,
-                              ),
-                            ),
-                          ]
+                          ],
+                        ),
                       ),
                     ]
                   ),
