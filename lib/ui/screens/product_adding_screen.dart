@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../api/methods.dart';
 import '../../constants/colors.dart';
 import '../../model/product.dart';
@@ -44,49 +45,61 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RoundedTextField(hintText: 'Name', controller: nameController),
-            RoundedTextField(hintText: 'Brand', controller: brandController),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              RoundedTextField(width: 0.25, hintText: 'Protein', controller: proteinController, keyboardType: TextInputType.number),
-              RoundedTextField(width: 0.25, hintText: 'Fats', controller: fatsController, keyboardType: TextInputType.number),
-              RoundedTextField(width: 0.25, hintText: 'Carbs', controller: carbsController, keyboardType: TextInputType.number)
-            ]),
-            RoundedTextField(hintText: 'Kcal', controller: kcalController, keyboardType: TextInputType.number),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              RoundedTextField(width: 0.5, hintText: 'Weight', controller: weightController, keyboardType: TextInputType.number),
-              RoundedTextField(width: 0.2, hintText: 'Units', controller: unitController)
-            ],),
-            RoundedTextField(hintText: 'Barcode', controller: barcodeController, keyboardType: TextInputType.number, iconButton: IconButton(icon: const Icon(Icons.qr_code_2), color: HavkaColors.green, onPressed: () {
-              _buildBarcodeScanner().then((barcode) => setState(() {
-                barcodeController.text = barcode as String;
-              }));
-            })),
-            RoundedButton(text: 'Done', onPressed: () {
-              final Product product = Product.fromJson({
-                'name': nameController.text,
-                'brand': brandController.text,
-                'proteins': double.parse(proteinController.text),
-                'fats': double.parse(fatsController.text),
-                'carbs': double.parse(carbsController.text),
-                'kcal': double.parse(kcalController.text),
-                'net_weight': double.parse(weightController.text),
-                'unit': unitController.text,
-                'barcode': barcodeController.text,
-              });
-              _apiRoutes.addProduct(product);
-              Navigator.pop(context);
-            })
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Hero(
+                  tag: "product-add",
+                  child: FaIcon(
+                    FontAwesomeIcons.cartPlus,
+                    color: HavkaColors.green,
+                    size: 80,
+                  ),
+                ),
+              ),
+              RoundedTextField(hintText: 'Name', controller: nameController),
+              RoundedTextField(hintText: 'Brand', controller: brandController),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                RoundedTextField(width: 0.3, hintText: 'Protein', controller: proteinController, keyboardType: TextInputType.number),
+                RoundedTextField(width: 0.3, hintText: 'Fats', controller: fatsController, keyboardType: TextInputType.number),
+                RoundedTextField(width: 0.3, hintText: 'Carbs', controller: carbsController, keyboardType: TextInputType.number)
+              ]),
+              RoundedTextField(hintText: 'Kcal', controller: kcalController, keyboardType: TextInputType.number),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                RoundedTextField(width: 0.6, hintText: 'Weight', controller: weightController, keyboardType: TextInputType.number),
+                RoundedTextField(width: 0.3, hintText: 'Units', controller: unitController)
+              ],),
+              RoundedTextField(hintText: 'Barcode', controller: barcodeController, keyboardType: TextInputType.number, iconButton: IconButton(icon: const Icon(Icons.qr_code_2), color: HavkaColors.green, onPressed: () {
+                _buildBarcodeScanner().then((barcode) => setState(() {
+                  barcodeController.text = barcode as String;
+                }));
+              })),
+              RoundedButton(text: 'Done', onPressed: () {
+                final Product product = Product.fromJson({
+                  'name': nameController.text,
+                  'brand': brandController.text,
+                  'proteins': double.parse(proteinController.text),
+                  'fats': double.parse(fatsController.text),
+                  'carbs': double.parse(carbsController.text),
+                  'kcal': double.parse(kcalController.text),
+                  'net_weight': double.parse(weightController.text),
+                  'unit': unitController.text,
+                  'barcode': barcodeController.text,
+                });
+                _apiRoutes.addProduct(product);
+                Navigator.pop(context);
+              })
+            ],
+          ),
         ),
       )
     );

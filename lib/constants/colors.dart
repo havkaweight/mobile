@@ -6,8 +6,14 @@ class HavkaColors {
   static const Color green = Color(0xFF5BBE78);
   static const Color cream = Color(0xFFFFFdd0);
   static const Map<int, Color> bone = <int, Color> {
+    50: Color(0x88EDE88E),
     100: Color(0xFFEDE88E),
     200: Color(0xFFFFFF99),
+  };
+
+  static const Map<int, Color> grey = <int, Color> {
+    50: Color(0x88E1EDEB),
+    100: Color(0xFFE1EDEB),
   };
 
   // static const Map<int, Color> green = const <int, Color>{

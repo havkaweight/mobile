@@ -22,14 +22,17 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-        child: Row(children: <Widget>[
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
           ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                photoUrl!,
-                width: MediaQuery.of(context).size.width * 0.3,
-              )),
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              photoUrl!,
+              width: MediaQuery.of(context).size.width * 0.3,
+            ),
+          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
@@ -46,7 +49,7 @@ class ProfileHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Row(
                           children: <Widget>[
                             Row(
@@ -54,13 +57,14 @@ class ProfileHeader extends StatelessWidget {
                                 const FaIcon(
                                   FontAwesomeIcons.rulerVertical,
                                   color: Colors.black,
+                                  size: 20,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(8, 0, 20, 0),
                                   child: Text(
                                     '${height.toString()} cm',
                                     style: const TextStyle(
-                                      fontSize: 17,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ),
@@ -71,13 +75,14 @@ class ProfileHeader extends StatelessWidget {
                                 const FaIcon(
                                   FontAwesomeIcons.weightScale,
                                   color: Colors.black,
+                                  size: 20,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                                   child: Text(
                                     '${weight.toString()} kg',
                                     style: const TextStyle(
-                                      fontSize: 17,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ),

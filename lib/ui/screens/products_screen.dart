@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -39,9 +40,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
             controller: searchController,
             icon: const Icon(Icons.search),
           ),
-          IconButton(onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductAddingScreen()));
-          }, icon: const Icon(Icons.add, color: HavkaColors.green))
+          Hero(
+            tag: "product-add",
+            child: IconButton(
+              icon: const FaIcon(
+                FontAwesomeIcons.plus,
+                color: HavkaColors.green,
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductAddingScreen()));
+              },
+            ),
+          ),
         ],
       ),
       if (searchController.text.isEmpty)

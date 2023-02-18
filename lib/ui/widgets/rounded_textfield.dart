@@ -21,7 +21,7 @@ class RoundedTextField extends StatefulWidget {
     super.key,
     this.labelText,
     this.hintText,
-    this.width = 0.7,
+    this.width = 1,
     this.iconButton,
     this.color,
     this.controller,

@@ -47,12 +47,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Hero(
-                tag: "splash-animation",
-                child: Lottie.network('https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json'),
-              ),
-            ),
+            // Center(
+            //   child: Hero(
+            //     tag: "splash-animation",
+            //     child: Lottie.network('https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json'),
+            //   ),
+            // ),
             const SizedBox(height: verticalPadding),
             const Padding(
               padding: EdgeInsets.all(horizontalPadding),

@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
+import 'package:health_tracker/ui/screens/onboarding.dart';
+import 'package:health_tracker/ui/screens/onboarding_screens.dart';
+import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/utils/auth.dart';
@@ -80,6 +83,7 @@ class _HavkaAppState extends State<HavkaApp> {
   // https://api.flutter.dev/flutter/widgets/Navigator/pushReplacement.html
   @override
   Widget build(BuildContext context) {
+    return StoryPage();
     return FutureBuilder(
       future: authService.isLoggedIn(),
       builder: (BuildContext context, AsyncSnapshot snapshot){
@@ -89,7 +93,8 @@ class _HavkaAppState extends State<HavkaApp> {
           if (snapshot.data == true) {
             return MainScreen();
           } else {
-            return WelcomeScreen();
+            // return WelcomeScreen();
+            return StoryPage();
           }
         }
       },
@@ -123,13 +128,13 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
-          child: Hero(
-            tag: "splash-animation",
-            child: Lottie.asset(
-                'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
-                controller: _controller,
-            ),
-          ),
+          // child: Hero(
+          //   tag: "splash-animation",
+          //   child: Lottie.asset(
+          //       'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
+          //       controller: _controller,
+          //   ),
+          // ),
           // child: AppIcon(image: Assets.appLogo),
       ),
     );

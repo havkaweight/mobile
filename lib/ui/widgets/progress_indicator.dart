@@ -15,7 +15,7 @@ class HavkaProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       return CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)
+          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
       );
     }
     return const CupertinoActivityIndicator();
