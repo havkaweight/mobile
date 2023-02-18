@@ -47,11 +47,14 @@ class OnboardingScreen3 extends StatelessWidget {
     return Scaffold(
       backgroundColor: HavkaColors.bone[100],
       body: const Center(
-        child: Text(
-          "Third Tip",
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
+        child: Hero(
+          tag: "get-started",
+          child: Text(
+            "Third Tip",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

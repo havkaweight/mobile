@@ -10,6 +10,7 @@ import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/linear_progress_bar.dart';
 
 import '../widgets/story_bars.dart';
+import 'main_screen.dart';
 
 class StoryPage extends StatefulWidget {
   @override
@@ -44,8 +45,8 @@ class _StoryPageState extends State<StoryPage> {
   void _startWatching() {
     Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
-        if(percentWatched[currentStoryIndex] + 0.001 < 1) {
-          percentWatched[currentStoryIndex] += 0.001;
+        if(percentWatched[currentStoryIndex] + 0.01 < 1) {
+          percentWatched[currentStoryIndex] += 0.01;
         }
         else {
           percentWatched[currentStoryIndex] = 1;
@@ -54,6 +55,14 @@ class _StoryPageState extends State<StoryPage> {
           if(currentStoryIndex < stories.length - 1) {
             currentStoryIndex ++;
             _startWatching();
+          }
+          else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return SignInScreen();
+              },
+            ), (route) => false);
           }
         }
       });

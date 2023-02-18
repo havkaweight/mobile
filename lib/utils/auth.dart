@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const storage = FlutterSecureStorage();
 // bool isLoggedIn = false;
@@ -38,6 +39,8 @@ class AuthService {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
   Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool("skipOnboarding", true);
     try {
       await _apiRoutes.getMe();
     }

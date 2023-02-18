@@ -9,16 +9,17 @@ import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/utils/auth.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // https://stackoverflow.com/questions/49040779/how-to-handle-a-different-login-navigation-flow
-void main() {
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  //   statusBarColor: Colors.transparent,
-  // ));
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final bool skipOnboarding = prefs.getBool("skipOnboarding") ?? false;
   runApp(
       MaterialApp(
           theme: themeData,
-          home: HavkaApp(),
+          home: skipOnboarding ? HavkaApp() : StoryPage(),
       ),
   );
 }
@@ -83,23 +84,16 @@ class _HavkaAppState extends State<HavkaApp> {
   // https://api.flutter.dev/flutter/widgets/Navigator/pushReplacement.html
   @override
   Widget build(BuildContext context) {
-    return StoryPage();
     return FutureBuilder(
       future: authService.isLoggedIn(),
-      builder: (BuildContext context, AsyncSnapshot snapshot){
-        if(snapshot.connectionState == ConnectionState.waiting) {
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return SplashScreen();
         } else {
-          if (snapshot.data == true) {
-            return MainScreen();
-          } else {
-            // return WelcomeScreen();
-            return StoryPage();
-          }
+          return MainScreen();
         }
       },
     );
-
   }
 }
 
@@ -128,13 +122,13 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
-          // child: Hero(
-          //   tag: "splash-animation",
-          //   child: Lottie.asset(
-          //       'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
-          //       controller: _controller,
-          //   ),
-          // ),
+          child: Hero(
+            tag: "splash-animation",
+            child: Lottie.asset(
+                'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
+                controller: _controller,
+            ),
+          ),
           // child: AppIcon(image: Assets.appLogo),
       ),
     );

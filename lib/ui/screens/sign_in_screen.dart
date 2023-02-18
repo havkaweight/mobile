@@ -17,6 +17,7 @@ import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 bool? futureSignIn;
 enum SignInStatus { notLoggedIn, logging, loggedIn }
@@ -135,7 +136,10 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const ScreenHeader(text: 'Sign In'),
+                  const Hero(
+                    tag: "get-started",
+                    child: ScreenHeader(text: 'Sign In'),
+                  ),
                   RoundedTextField(
                     hintText: 'Email',
                     controller: emailController,
