@@ -9,6 +9,7 @@ import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/linear_progress_bar.dart';
 
+import '../../main.dart';
 import '../widgets/story_bars.dart';
 import 'main_screen.dart';
 
@@ -42,7 +43,7 @@ class _StoryPageState extends State<StoryPage> {
     super.dispose();
   }
 
-  void _startWatching() {
+  Future<void> _startWatching() async {
     Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
         if(percentWatched[currentStoryIndex] + 0.01 < 1) {
@@ -57,10 +58,11 @@ class _StoryPageState extends State<StoryPage> {
             _startWatching();
           }
           else {
+
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) {
-                return SignInScreen();
+                return HavkaApp();
               },
             ), (route) => false);
           }
