@@ -109,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
         await _apiRoutes.signIn(emailController.text, passwordController.text);
     // print('res $futureSignIn');
     setState(() {
-      if (futureSignIn!) {
+      // if (futureSignIn!) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushAndRemoveUntil(
             context,
@@ -117,7 +117,7 @@ class _SignInScreenState extends State<SignInScreen> {
               (r) => false
           );
         });
-      }
+      // }
       signInStatus = SignInStatus.notLoggedIn;
       showPopUp(context, 'Invalid login or password');
     });

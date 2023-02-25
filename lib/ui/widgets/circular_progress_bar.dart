@@ -33,9 +33,9 @@ class _CircularProgressBar extends State<CircularProgressBar>
       vsync: this,
       duration: Duration(milliseconds:  widget.value == -1 ? 2000 : 600),
     )
-      ..addListener(() {
-        setState(() {});
-      });
+    ..addListener(() {
+      setState(() {});
+    });
     if(widget.value == -1) {
       controller.repeat();
     } else {

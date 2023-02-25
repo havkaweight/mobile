@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/assets.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/onboarding.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:lottie/lottie.dart';
@@ -47,12 +49,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Center(
-            //   child: Hero(
-            //     tag: "splash-animation",
-            //     child: Lottie.network('https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json'),
-            //   ),
-            // ),
+            const Center(
+              child: AppIcon(image: Assets.appLogo),
+            ),
             const SizedBox(height: verticalPadding),
             const Padding(
               padding: EdgeInsets.all(horizontalPadding),
@@ -69,15 +68,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             // const SizedBox(height: verticalPadding),
             Padding(
               padding: const EdgeInsets.all(horizontalPadding),
-              child: HavkaButton(
-                fontSize: 20,
-                child: const Align(child: Text('Get Started')),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => OnboardingScreen()),
-                  );
-                  },
+              child: Hero(
+                tag: "get-started",
+                child: HavkaButton(
+                  fontSize: 20,
+                  child: const Align(child: Text('Get Started')),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StoryPage()),
+                    );
+                    },
+                ),
               ),
             ),
             const SizedBox(height: verticalPadding),

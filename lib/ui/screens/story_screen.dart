@@ -7,6 +7,7 @@ import 'package:health_tracker/ui/screens/onboarding_screens.dart';
 import 'package:health_tracker/ui/screens/product_adding_screen.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
+import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/linear_progress_bar.dart';
 
 import '../../main.dart';
@@ -35,7 +36,7 @@ class _StoryPageState extends State<StoryPage> {
       percentWatched.add(0);
     }
 
-    _startWatching();
+    _startWatching(5);
   }
 
   @override
@@ -43,8 +44,8 @@ class _StoryPageState extends State<StoryPage> {
     super.dispose();
   }
 
-  Future<void> _startWatching() async {
-    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+  Future<void> _startWatching(int seconds) async {
+    Timer.periodic(Duration(milliseconds: seconds*10), (timer) {
       setState(() {
         if(percentWatched[currentStoryIndex] + 0.01 < 1) {
           percentWatched[currentStoryIndex] += 0.01;
@@ -55,16 +56,10 @@ class _StoryPageState extends State<StoryPage> {
 
           if(currentStoryIndex < stories.length - 1) {
             currentStoryIndex ++;
-            _startWatching();
+            _startWatching(5);
           }
           else {
-
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return HavkaApp();
-              },
-            ), (route) => false);
+            Navigator.pop(context);
           }
         }
       });
@@ -73,44 +68,54 @@ class _StoryPageState extends State<StoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (TapDownDetails details) {
-        final double screenWidth = MediaQuery.of(context).size.width;
-        final double dx = details.globalPosition.dx;
-        if (dx < screenWidth / 2) {
-          setState(() {
-            if(currentStoryIndex > 0) {
-              percentWatched[currentStoryIndex - 1] = 0;
-              percentWatched[currentStoryIndex] = 0;
-              currentStoryIndex --;
+    return Hero(
+      tag: "get-started",
+      child: Dismissible(
+        key: const Key('key'),
+        direction: DismissDirection.down,
+        onDismissed: (_) {
+          Navigator.pop(context);
+        },
+        child: GestureDetector(
+          onTapDown: (TapDownDetails details) {
+            final double screenWidth = MediaQuery.of(context).size.width;
+            final double dx = details.globalPosition.dx;
+            if (dx < screenWidth / 2) {
+              setState(() {
+                if(currentStoryIndex > 0) {
+                  percentWatched[currentStoryIndex - 1] = 0;
+                  percentWatched[currentStoryIndex] = 0;
+                  currentStoryIndex --;
+                }
+                else {
+                  percentWatched[currentStoryIndex] = 0;
+                  currentStoryIndex = 0;
+                }
+              });
             }
             else {
-              percentWatched[currentStoryIndex] = 0;
-              currentStoryIndex = 0;
+              setState(() {
+                if(currentStoryIndex < stories.length - 1) {
+                  percentWatched[currentStoryIndex] = 1;
+                  currentStoryIndex ++;
+                }
+                else {
+                  percentWatched[currentStoryIndex] = 1;
+                }
+              });
             }
-          });
-        }
-        else {
-          setState(() {
-            if(currentStoryIndex < stories.length - 1) {
-              percentWatched[currentStoryIndex] = 1;
-              currentStoryIndex ++;
-            }
-            else {
-              percentWatched[currentStoryIndex] = 1;
-            }
-          });
-        }
-      },
-      child: Scaffold(
-        backgroundColor: HavkaColors.bone[100],
-        body: Stack(
-          children: [
-            stories[currentStoryIndex],
-            StoryBars(
-              percentWatched: percentWatched,
-            )
-          ],
+          },
+          child: Scaffold(
+            backgroundColor: HavkaColors.bone[100],
+            body: Stack(
+              children: [
+                stories[currentStoryIndex],
+                StoryBars(
+                  percentWatched: percentWatched,
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );

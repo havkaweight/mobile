@@ -6,20 +6,21 @@ import 'package:health_tracker/ui/screens/onboarding.dart';
 import 'package:health_tracker/ui/screens/onboarding_screens.dart';
 import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
+import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/utils/auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'constants/assets.dart';
+
 // https://stackoverflow.com/questions/49040779/how-to-handle-a-different-login-navigation-flow
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final bool skipOnboarding = prefs.getBool("skipOnboarding") ?? false;
   runApp(
       MaterialApp(
           theme: themeData,
-          home: skipOnboarding ? HavkaApp() : StoryPage(),
+          home: HavkaApp(),
       ),
   );
 }
@@ -90,7 +91,7 @@ class _HavkaAppState extends State<HavkaApp> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SplashScreen();
         } else {
-          return MainScreen();
+          return WelcomeScreen();
         }
       },
     );
@@ -121,15 +122,11 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
+      body: const Center(
           child: Hero(
             tag: "splash-animation",
-            child: Lottie.asset(
-                'https://assets7.lottiefiles.com/packages/lf20_6yhhrbk6.json',
-                controller: _controller,
-            ),
+            child: AppIcon(image: Assets.appLogo),
           ),
-          // child: AppIcon(image: Assets.appLogo),
       ),
     );
   }
