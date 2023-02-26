@@ -21,7 +21,7 @@ class HavkaLineChart extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final axisPaint = Paint()
-        ..color = Colors.black
+        ..color = Colors.black.withOpacity(0.6)
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke;
 

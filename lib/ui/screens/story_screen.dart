@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -65,56 +66,71 @@ class _StoryPageState extends State<StoryPage> {
       });
     });
   }
-
+  double _dragDistance = 0;
+  double _offset = 0;
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: "get-started",
-      child: Dismissible(
-        key: const Key('key'),
-        direction: DismissDirection.down,
-        onDismissed: (_) {
-          Navigator.pop(context);
+    final double height = MediaQuery.of(context).size.height;
+    return Transform.translate(
+      offset: Offset(0.0, _offset),
+      child: GestureDetector(
+        onVerticalDragDown: (details) {
+          setState(() {
+            _dragDistance = 0;
+          });
         },
-        child: GestureDetector(
-          onTapDown: (TapDownDetails details) {
-            final double screenWidth = MediaQuery.of(context).size.width;
-            final double dx = details.globalPosition.dx;
-            if (dx < screenWidth / 2) {
-              setState(() {
-                if(currentStoryIndex > 0) {
-                  percentWatched[currentStoryIndex - 1] = 0;
-                  percentWatched[currentStoryIndex] = 0;
-                  currentStoryIndex --;
-                }
-                else {
-                  percentWatched[currentStoryIndex] = 0;
-                  currentStoryIndex = 0;
-                }
-              });
+        onVerticalDragUpdate: (details) {
+          setState(() {
+            if(details.delta.dy > 0) {
+              _dragDistance += details.delta.dy;
+              _offset += details.delta.dy / height * 150;
             }
-            else {
-              setState(() {
-                if(currentStoryIndex < stories.length - 1) {
-                  percentWatched[currentStoryIndex] = 1;
-                  currentStoryIndex ++;
-                }
-                else {
-                  percentWatched[currentStoryIndex] = 1;
-                }
-              });
-            }
-          },
-          child: Scaffold(
-            backgroundColor: HavkaColors.bone[100],
-            body: Stack(
-              children: [
-                stories[currentStoryIndex],
-                StoryBars(
-                  percentWatched: percentWatched,
-                )
-              ],
-            ),
+          });
+        },
+        onVerticalDragEnd: (details) {
+          if (_offset > 50) {
+            Navigator.pop(context);
+          } else {
+            _offset = 0;
+          }
+        },
+        onTapUp: (TapUpDetails details) {
+          final double screenWidth = MediaQuery.of(context).size.width;
+          final double dx = details.globalPosition.dx;
+          if (dx < screenWidth / 2) {
+            setState(() {
+              if(currentStoryIndex > 0) {
+                percentWatched[currentStoryIndex - 1] = 0;
+                percentWatched[currentStoryIndex] = 0;
+                currentStoryIndex --;
+              }
+              else {
+                percentWatched[currentStoryIndex] = 0;
+                currentStoryIndex = 0;
+              }
+            });
+          }
+          else {
+            setState(() {
+              if(currentStoryIndex < stories.length - 1) {
+                percentWatched[currentStoryIndex] = 1;
+                currentStoryIndex ++;
+              }
+              else {
+                percentWatched[currentStoryIndex] = 1;
+              }
+            });
+          }
+        },
+        child: Hero(
+          tag: "get-started",
+          child: Stack(
+            children: [
+              stories[currentStoryIndex],
+              StoryBars(
+                percentWatched: percentWatched,
+              )
+            ],
           ),
         ),
       ),

@@ -26,7 +26,7 @@ class _OnboardingScreen1State extends State<OnboardingScreen1> {
       DataPoint(dx: 0, dy: 0)
     ];
 
-    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    Timer.periodic(const Duration(milliseconds: 40), (timer) {
       setState(() {
         mockDataPoints.add(DataPoint(dx: mockDataPoints.last.dx+5, dy: mockDataPoints.last.dy + (Random().nextDouble()*2-1)*10));
       });
