@@ -5,18 +5,13 @@ class DataPoint {
   final double dx;
   final double dy;
 
-  DataPoint({
-    required this.dx,
-    required this.dy,
-  });
+  DataPoint(this.dx, this.dy);
 }
 
 class HavkaLineChart extends CustomPainter {
   List<DataPoint> mockDataPoints;
 
-  HavkaLineChart({
-    required this.mockDataPoints,
-  });
+  HavkaLineChart(this.mockDataPoints);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -30,14 +25,13 @@ class HavkaLineChart extends CustomPainter {
       ..lineTo(0, size.height)
       ..lineTo(size.width, size.height);
 
-    final data = Path()..moveTo(-200, 400);
+    final data = Path()..moveTo(0, size.height / 2.0);
 
     for(final dataPoint in mockDataPoints) {
-      data.lineTo(-200+dataPoint.dx, 400+dataPoint.dy);
+      data.lineTo(dataPoint.dx, size.height / 2.0 + dataPoint.dy);
     }
 
     canvas.drawPath(data, axisPaint);
-    // canvas.drawPath(axis, axisPaint);
   }
 
   @override

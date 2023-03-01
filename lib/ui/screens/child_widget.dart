@@ -3,8 +3,6 @@ import '../../ui/screens/profile_screen.dart';
 import '../../ui/screens/scale_screen.dart';
 import '../../ui/screens/user_products_screen.dart';
 
-import 'analysis_screen.dart';
-
 class ChildWidget extends StatelessWidget {
   final AvailableScreen screen;
   const ChildWidget({Key? key, required this.screen}) : super(key: key);
@@ -16,8 +14,6 @@ class ChildWidget extends StatelessWidget {
       widget = ProfileScreen();
     } else if (screen == AvailableScreen.fridge) {
       widget = UserProductsScreen();
-    // } else if (screen == AvailableScreen.analysis) {
-    //   widget = AnalysisScreen();
     }
 
     return SafeArea(
@@ -29,4 +25,4 @@ class ChildWidget extends StatelessWidget {
   }
 }
 
-enum AvailableScreen { profile, fridge, analysis }
+enum AvailableScreen { profile, fridge }
