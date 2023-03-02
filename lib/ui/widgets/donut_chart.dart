@@ -3,13 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class DataItem {
-  final double value;
-  final String label;
-  final Color color;
+import '../../model/data_items.dart';
 
-  DataItem(this.value, this.label, this.color);
-}
 
 class HavkaDonutChart extends CustomPainter {
   final List<DataItem> data;

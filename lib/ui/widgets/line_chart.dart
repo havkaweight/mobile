@@ -1,12 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class DataPoint {
-  final double dx;
-  final double dy;
-
-  DataPoint(this.dx, this.dy);
-}
+import '../../model/data_items.dart';
 
 class HavkaLineChart extends CustomPainter {
   List<DataPoint> mockDataPoints;
