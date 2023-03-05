@@ -10,23 +10,35 @@ class HavkaLineChart extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final axisPaint = Paint()
+    final linePaint = Paint()
         ..color = Colors.black.withOpacity(0.6)
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke;
 
-    final axis = Path()
-      ..moveTo(0, 0)
-      ..lineTo(0, size.height)
-      ..lineTo(size.width, size.height);
+    final axisPaint = Paint()
+      ..color = Colors.grey.withOpacity(0.6)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
 
-    final data = Path()..moveTo(0, size.height / 2.0);
+    final circlePaint = Paint()
+      ..color = Colors.black.withOpacity(0.8)
+      ..style = PaintingStyle.fill;
 
+    final horizontalAxie = Path()
+      ..moveTo(size.width * 0.1, size.height / 2.0)
+      ..lineTo(size.width * 0.9, size.height / 2.0);
+
+    final data = Path()..moveTo(size.width * 0.1, size.height / 2.0);
+    final totalWidth = mockDataPoints.last.dx - mockDataPoints.first.dx;
+    final normalizedWidth = totalWidth / (size.width * 0.8);
     for(final dataPoint in mockDataPoints) {
-      data.lineTo(dataPoint.dx, size.height / 2.0 + dataPoint.dy);
+      data.lineTo(size.width * 0.1 + dataPoint.dx/normalizedWidth, size.height / 2.0 + dataPoint.dy);
+      final center = Offset(size.width * 0.1 + dataPoint.dx/normalizedWidth, size.height / 2.0 + dataPoint.dy);
+      canvas.drawCircle(center, 3, circlePaint);
     }
 
-    canvas.drawPath(data, axisPaint);
+    canvas.drawPath(data, linePaint);
+    canvas.drawPath(horizontalAxie, axisPaint);
   }
 
   @override

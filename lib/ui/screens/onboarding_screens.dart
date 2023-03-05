@@ -26,36 +26,21 @@ class _OnboardingScreen1State extends State<OnboardingScreen1> {
   void initState() {
     super.initState();
     data = [
-      DataItem(0.2, "Protein", Colors.amber[50]!),
-      DataItem(0.3, "Fat", Colors.amber[200]!),
-      DataItem(0.5, "Carbs", Colors.amber[400]!),
+      DataItem(100, "Monday", Colors.amber[500]!),
+      DataItem(200, "Tuesday", Colors.amber[800]!),
+      DataItem(120, "Wednesday", Colors.amber[900]!),
+      DataItem(210, "Thursday", Colors.yellow[300]!),
+      DataItem(80, "Friday", Colors.yellow[500]!),
+      DataItem(240, "Saturday", Colors.amber[200]!),
+      DataItem(270, "Sunday", Colors.amber[400]!),
     ];
     int n = 0;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if(n > 3) {
         timer.cancel();
-        return;
       }
-      const int milliseconds = 10;
-      final double firstRandom = Random().nextDouble();
-      final double secondRandom = (1 - firstRandom) * Random().nextDouble();
-      final double last = 1 - firstRandom - secondRandom;
-      Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
-        final double prevFirstRandom = data[0].value;
-        final double prevSecondRandom = data[1].value;
-        final double prevLast = data[2].value;
-        final double tempFirstRandom = (firstRandom - prevFirstRandom) * 1.0 / milliseconds;
-        final double tempSecondRandom = (secondRandom - prevSecondRandom) * 1.0 / milliseconds;
-        final double tempLast = (last - prevLast) * 1.0 / milliseconds;
-        if([firstRandom-prevFirstRandom, secondRandom-prevSecondRandom, last-prevLast].reduce(max) < 0.01) {
-          timer.cancel();
-          return;
-        }
-        setState(() {
-          data = [DataItem(prevFirstRandom + tempFirstRandom, "Protein", Colors.amber[50]!)];
-          data.add(DataItem(prevSecondRandom + tempSecondRandom, "Fat", Colors.amber[200]!));
-          data.add(DataItem(prevLast + tempLast, "Carbs", Colors.amber[400]!));
-        });
+      setState(() {
+        data.insert(0, DataItem(Random().nextInt(100) + 100, 'label', Colors.amber[500]!));
       });
       n ++;
     });
@@ -160,16 +145,10 @@ class _OnboardingScreen3State extends State<OnboardingScreen3> {
     mockDataPoints = [
       DataPoint(0, 0)
     ];
-
-    Timer.periodic(const Duration(milliseconds: 40), (timer) {
-      if(mockDataPoints.last.dx > 200) {
-        timer.cancel();
-        return;
-      }
-      setState(() {
-        mockDataPoints.add(DataPoint(mockDataPoints.last.dx+5, mockDataPoints.last.dy + (Random().nextDouble()*2-1)*10));
-      });
-    });
+    for (int i = 0; i < 30; i++) {
+      mockDataPoints.add(DataPoint(mockDataPoints.last.dx + 5,
+          mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10));
+    }
   }
 
   @override
