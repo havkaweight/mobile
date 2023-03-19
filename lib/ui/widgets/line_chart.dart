@@ -1,5 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 import '../../model/data_items.dart';
 
@@ -11,7 +14,7 @@ class HavkaLineChart extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-        ..color = Colors.black.withOpacity(0.6)
+        ..color = HavkaColors.green
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke;
 
@@ -21,7 +24,8 @@ class HavkaLineChart extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final circlePaint = Paint()
-      ..color = Colors.black.withOpacity(0.8)
+      ..color = HavkaColors.green.withOpacity(0.8)
+      ..strokeWidth = 1
       ..style = PaintingStyle.fill;
 
     final horizontalAxie = Path()

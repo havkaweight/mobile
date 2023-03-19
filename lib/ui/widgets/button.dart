@@ -103,8 +103,7 @@ class GoogleSignInButton extends StatelessWidget {
 
 
   Future<void> _googleSignIn(BuildContext context) async {
-    final googleSignIn = GoogleSignIn(scopes: ['email', 'profile'],
-        clientId: '201798139028-bpkn1mc26nijusmpkluaescoonmkfd8u.apps.googleusercontent.com');
+    final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
     final googleAccount = await googleSignIn.signIn();
     if (googleAccount != null) {
       final googleAuth = await googleAccount.authentication;
@@ -117,8 +116,8 @@ class GoogleSignInButton extends StatelessWidget {
               accessToken: googleAuth.accessToken,
           ),
         );
-        print(authResult.user!);
 
+        print(authResult.user!);
         print(authResult.user!.uid);
         print(authResult.user!.displayName);
         print(authResult.user!.email);

@@ -111,9 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget _buildProfileScreen(AsyncSnapshot snapshot) {
     final List<DataItem> pfcData = [
-      DataItem(0.2, "Protein", Colors.amber[50]!),
-      DataItem(0.3, "Fat", Colors.amber[200]!),
-      DataItem(0.5, "Carbs", Colors.amber[400]!),
+      DataItem(500, "Protein", Colors.amber[200]!),
+      DataItem(100, "Fat", Colors.amber[400]!),
+      DataItem(200, "Carbs", Colors.amber[600]!),
     ];
     final List<DataItem> weeklyData = [
       DataItem(100, "Monday", Colors.amber[500]!),
