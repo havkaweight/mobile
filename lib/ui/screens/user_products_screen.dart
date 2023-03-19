@@ -39,66 +39,69 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return BleStatusTrackingWidget(
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              const ScreenHeader(text: 'Fridge'),
-              Row(
-                children: [
-                  RoundedButton(
-                    text: 'Add havka',
-                    onPressed: () {
-                      _buildProductsList(context).then((_) => setState(() {}));
-                    },
-                  ),
-                  IconButton(
-                    icon: const FaIcon(FontAwesomeIcons.barcode, color: HavkaColors.green),
-                    onPressed: () {
-                      _buildBarcodeScanner().then((_) => setState(() {}));
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Expanded(
-            child: FutureBuilder<List<UserProduct>>(
-              future: _apiRoutes.getUserProductsList(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<List<UserProduct>> snapshot,
-              ) {
-                if (!snapshot.hasData) {
-                  childWidget = Center(
-                    child: getShimmerLoading(),
-                  );
-                }
-                if (snapshot.hasData) {
-                  userProducts = snapshot.data!;
-                  childWidget = RefreshIndicator(
-                    onRefresh: _pullRefresh,
-                    child: ScrollConfiguration(
-                      behavior: CustomBehavior(),
-                      child: ListView.builder(
-                        itemCount: userProducts.length,
-                        itemBuilder: (BuildContext context, index) {
-                          final UserProduct userProduct = userProducts[index];
-                          return FridgeItem(userProduct: userProduct);
-                        },
-                      )
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const ScreenHeader(text: 'Fridge'),
+                Row(
+                  children: [
+                    RoundedButton(
+                      text: 'Add havka',
+                      onPressed: () {
+                        _buildProductsList(context).then((_) => setState(() {}));
+                      },
                     ),
-                  );
-                }
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: childWidget,
-                );
-              },
+                    IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.barcode, color: HavkaColors.green),
+                      onPressed: () {
+                        _buildBarcodeScanner().then((_) => setState(() {}));
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: FutureBuilder<List<UserProduct>>(
+                future: _apiRoutes.getUserProductsList(),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<List<UserProduct>> snapshot,
+                ) {
+                  if (!snapshot.hasData) {
+                    childWidget = Center(
+                      child: getShimmerLoading(),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    userProducts = snapshot.data!;
+                    childWidget = RefreshIndicator(
+                      onRefresh: _pullRefresh,
+                      child: ScrollConfiguration(
+                        behavior: CustomBehavior(),
+                        child: ListView.builder(
+                          itemCount: userProducts.length,
+                          itemBuilder: (BuildContext context, index) {
+                            final UserProduct userProduct = userProducts[index];
+                            return FridgeItem(userProduct: userProduct);
+                          },
+                        )
+                      ),
+                    );
+                  }
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: childWidget,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
