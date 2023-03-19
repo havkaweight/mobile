@@ -4,6 +4,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
+import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
 import 'package:health_tracker/ui/widgets/fridgeitem.dart';
@@ -21,17 +22,6 @@ List<Map<String, String>> userProductsList = [];
 class UserProductsScreen extends StatefulWidget {
   @override
   _UserProductsScreenState createState() => _UserProductsScreenState();
-}
-
-class CustomBehavior extends ScrollBehavior {
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context,
-      Widget child,
-      ScrollableDetails details,
-      ) {
-    return child;
-  }
 }
 
 class _UserProductsScreenState extends State<UserProductsScreen> {

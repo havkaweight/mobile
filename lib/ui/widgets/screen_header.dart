@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 import '../../constants/font_family.dart';
+import 'modal_scale.dart';
 
 class ScreenHeader extends StatelessWidget {
   final String? text;
   const ScreenHeader({
-    this.text
+    this.text,
   });
 
   @override

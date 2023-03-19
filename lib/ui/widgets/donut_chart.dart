@@ -23,7 +23,7 @@ class HavkaDonutChart extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2.0, size.height / 2.0);
     double startAngle = 0.0;
-    final radius = size.width * 0.8;
+    final radius = size.width * 0.6;
     final rect = Rect.fromCenter(center: center, width: radius, height: radius);
     for(final di in data) {
       final sweepAngle = di.value * 2.0 * pi;

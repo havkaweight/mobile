@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../ui/screens/profile_screen.dart';
-import '../../ui/screens/scale_screen.dart';
-import '../../ui/screens/user_products_screen.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 
 class ChildWidget extends StatelessWidget {
   final AvailableScreen screen;
-  const ChildWidget({Key? key, required this.screen}) : super(key: key);
+  const ChildWidget({
+    super.key,
+    required this.screen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +20,14 @@ class ChildWidget extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.zero,
         child: widget
       ),
     );
   }
 }
 
-enum AvailableScreen { profile, fridge }
+enum AvailableScreen {
+  profile,
+  fridge,
+}
