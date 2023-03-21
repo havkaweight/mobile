@@ -18,15 +18,17 @@ class ModalScale extends StatefulWidget {
   _ModalScaleState createState() => _ModalScaleState();
 }
 
-class _ModalScaleState extends State<ModalScale> {
+class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
   late Animation<double> fadeAnimation;
   late Animation<Offset> slideAnimation;
+
   double dragDistance = 0;
   double offset = 0;
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+
     fadeAnimation = Tween(
         begin: 0.0,
         end: 1.0,
