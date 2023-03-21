@@ -24,6 +24,8 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
 
   double dragDistance = 0;
   double offset = 0;
+  double? marginBottom = 10;
+  double? marginRight = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,8 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
     ).animate(widget.animationController);
 
     return Positioned(
-      bottom: 10,
-      right: 10,
+      bottom: marginBottom,
+      right: marginRight,
       child: Transform.translate(
         offset: Offset(offset, 0.0),
         child: SlideTransition(
@@ -55,7 +57,14 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
                     offset = 0;
                   });
                 } else {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => WeightingsScreen()));
+                  if(marginBottom == null) {
+                    marginBottom = 10;
+                    marginRight = 10;
+                  } else {
+                    marginBottom = null;
+                    marginRight = null;
+                  }
+
                 }
               },
               onHorizontalDragDown: (DragDownDetails details) {
@@ -83,39 +92,36 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
                   }
                 });
               },
-              child: Hero(
-                tag: 'mini-scale',
-                child: Container(
-                  height: 75,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    boxShadow: const[
-                       BoxShadow(
-                         blurRadius: 50.0,
-                         spreadRadius: 1.0,
-                         color: Colors.black38,
-                      )
-                    ],
-                    color: HavkaColors.bone[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                      child: StreamBuilder(
-                        stream: Stream.periodic(const Duration(seconds: 1), (_) => Random().nextInt(300)),
-                        builder: (context, snapshot) {
-                          return Text(
-                            '${snapshot.data ?? 10}g',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              decoration: TextDecoration.none,
-                            ),
-                          );
-                        },
-                      ),
-                  ),
+              child: Container(
+                height: 75,
+                width: 150,
+                decoration: BoxDecoration(
+                  boxShadow: const[
+                     BoxShadow(
+                       blurRadius: 50.0,
+                       spreadRadius: 1.0,
+                       color: Colors.black38,
+                    )
+                  ],
+                  color: HavkaColors.bone[200],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                    child: StreamBuilder(
+                      stream: Stream.periodic(const Duration(seconds: 1), (_) => Random().nextInt(300)),
+                      builder: (context, snapshot) {
+                        return Text(
+                          '${snapshot.data ?? 10}g',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.none,
+                          ),
+                        );
+                      },
+                    ),
                 ),
               ),
             ),

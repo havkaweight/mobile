@@ -33,10 +33,7 @@ class _WeightingsScreenState extends State<WeightingsScreen> {
               StreamBuilder(
                 stream: Stream.periodic(const Duration(seconds: 1), (_) => Random().nextInt(300)),
                 builder: (context, snapshot) {
-                  return Hero(
-                      tag: 'mini-scale',
-                      child: Text('${snapshot.data ?? 10}g')
-                  );
+                  return Text('${snapshot.data ?? 10}g');
               // FutureBuilder<List<UserProductWeighting>>(
               //   future: _apiRoutes.getWeightingsHistory(),
               //   builder: (
