@@ -31,6 +31,7 @@ class HavkaApp extends StatefulWidget {
 }
 
 class _HavkaAppState extends State<HavkaApp> {
+
   AuthService authService = AuthService();
   @override
   void initState() {

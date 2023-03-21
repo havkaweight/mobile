@@ -14,7 +14,9 @@ import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../main.dart';
 import '../widgets/shimmer.dart';
 import 'barcode_scanner.dart';
 
@@ -33,8 +35,8 @@ class _UserProductsScreenState extends State<UserProductsScreen>
   late List<UserProduct> userProducts;
   late Widget childWidget;
   late OverlayEntry entry;
-  bool isScaleShowed = false;
   late AnimationController _animationController;
+  late bool isScaleShowed = false;
 
   void showModalScale() {
     _animationController.forward();
@@ -77,9 +79,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(
-                          isScaleShowed ? Icons.monitor_weight : Icons.monitor_weight_outlined,
-                          color: HavkaColors.green,
+                      icon: const Icon(
+                        Icons.monitor_weight,
+                        color: HavkaColors.green,
                       ),
                       onPressed: () {
                         if(!isScaleShowed) {
