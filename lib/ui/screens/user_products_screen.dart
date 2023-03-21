@@ -4,6 +4,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
+import 'package:health_tracker/ui/widgets/modal_scale.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
@@ -24,16 +25,42 @@ class UserProductsScreen extends StatefulWidget {
   _UserProductsScreenState createState() => _UserProductsScreenState();
 }
 
-class _UserProductsScreenState extends State<UserProductsScreen> {
+class _UserProductsScreenState extends State<UserProductsScreen>
+  with SingleTickerProviderStateMixin {
   final barcodeController = TextEditingController();
 
   final ApiRoutes _apiRoutes = ApiRoutes();
   late List<UserProduct> userProducts;
   late Widget childWidget;
+  late OverlayEntry entry;
+  bool isScaleShowed = false;
+  late AnimationController _animationController;
+
+  void showModalScale() {
+    _animationController.forward();
+    entry = OverlayEntry(builder: (context) => ModalScale(animationController: _animationController));
+    final overlay = Overlay.of(context);
+    overlay.insert(entry);
+  }
+
+  void hideModalScale() {
+    _animationController.reverse().then((_) => entry.remove());
+  }
 
   @override
   void initState() {
     super.initState();
+
+    _animationController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,6 +76,22 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                 const ScreenHeader(text: 'Fridge'),
                 Row(
                   children: [
+                    IconButton(
+                      icon: Icon(
+                          isScaleShowed ? Icons.monitor_weight : Icons.monitor_weight_outlined,
+                          color: HavkaColors.green,
+                      ),
+                      onPressed: () {
+                        if(!isScaleShowed) {
+                          showModalScale();
+                        } else {
+                          hideModalScale();
+                        }
+                        setState(() {
+                          isScaleShowed = !isScaleShowed;
+                        });
+                      },
+                    ),
                     RoundedButton(
                       text: 'Add havka',
                       onPressed: () {
@@ -149,19 +192,17 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         ),
       ),
       context: context,
-      builder: (BuildContext builder) {
+      builder: (BuildContext context) {
         final double mHeight = MediaQuery.of(context).size.height;
         return SizedBox(
           height: mHeight * 0.85,
           child: Column(
             children: [
               Holder(),
-              Center(
-                child: Column(
-                  children: [
-                    ProductsScreen(),
-                  ],
-                ),
+              Column(
+                children: [
+                  ProductsScreen(),
+                ],
               )
             ],
           ),

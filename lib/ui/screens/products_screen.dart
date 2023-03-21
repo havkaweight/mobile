@@ -36,7 +36,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Navigator.pop(context);
         }
       },
-      child: Column(children: [
+      child: Column(
+        children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -63,9 +64,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (searchController.text.isEmpty)
           FutureBuilder<List<Product>>(
             future: _apiRoutes.getProductsList(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
-              print(snapshot);
+            builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
               if (!snapshot.hasData) {
                 return Center(
                     child: Container(
@@ -73,50 +72,47 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         child: const HavkaProgressIndicator()));
               }
               if (snapshot.hasData) {
-                final double mHeight = MediaQuery.of(context).size.height;
-                return SizedBox(
-                  height: mHeight * 0.7,
-                  child: ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext context, index) {
-                        final Product product = snapshot.data![index];
-                        return ListTile(
-                          leading: Container(
-                            width: 50.0,
-                            height: 50.0,
-                            decoration: BoxDecoration(
-                              color: const Color(0xff7c94b6),
-                              image: DecorationImage(
-                                image: NetworkImage(product.img ?? 'https://cdn.havka.one/test.jpg') ,
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: const BorderRadius.all( Radius.circular(50.0)),
-                              border: Border.all(
-                                color: HavkaColors.cream,
-                                width: 3,
-                              ),
-                            ),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, index) {
+                    final Product product = snapshot.data![index];
+                    return ListTile(
+                      leading: Container(
+                        width: 50.0,
+                        height: 50.0,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff7c94b6),
+                          image: DecorationImage(
+                            image: NetworkImage(product.img ?? 'https://cdn.havka.one/test.jpg') ,
+                            fit: BoxFit.cover,
                           ),
-                          title: Text(product.name!,
-                              style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .headline3!
-                                      .fontSize)),
-                          subtitle: Text(product.brand ?? 'not found',
-                              style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .headline4!
-                                      .fontSize)),
-                          onTap: () async {
-                            await _apiRoutes.addUserProduct(product);
-                            Navigator.pop(context);
-                          },
-                        );
-                      }),
+                          borderRadius: const BorderRadius.all( Radius.circular(50.0)),
+                          border: Border.all(
+                            color: HavkaColors.cream,
+                            width: 3,
+                          ),
+                        ),
+                      ),
+                      title: Text(product.name!,
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline3!
+                                  .fontSize)),
+                      subtitle: Text(product.brand ?? 'not found',
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline4!
+                                  .fontSize)),
+                      onTap: () async {
+                        await _apiRoutes.addUserProduct(product);
+                        Navigator.pop(context);
+                      },
+                    );
+                  }
                 );
-
               }
               return const Center(child: Text('Error internet connection'));
             },
@@ -135,39 +131,36 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         child: const HavkaProgressIndicator()));
               }
               if (snapshot.hasData) {
-                final double mHeight = MediaQuery.of(context).size.height;
-                return SizedBox(
-                  height: mHeight * 0.73,
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, index) {
-                      final Product product = snapshot.data![index];
-                      return ListTile(
-                        leading: Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff7c94b6),
-                            image: const DecorationImage(
-                              image: NetworkImage('https://cdn.havka.one/test.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: const BorderRadius.all( Radius.circular(50.0)),
-                            border: Border.all(
-                              color: HavkaColors.cream,
-                              width: 3,
-                            ),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, index) {
+                    final Product product = snapshot.data![index];
+                    return ListTile(
+                      leading: Container(
+                        width: 100.0,
+                        height: 100.0,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff7c94b6),
+                          image: const DecorationImage(
+                            image: NetworkImage('https://cdn.havka.one/test.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: const BorderRadius.all( Radius.circular(50.0)),
+                          border: Border.all(
+                            color: HavkaColors.cream,
+                            width: 3,
                           ),
                         ),
-                        title: Text(product.name!),
-                        subtitle: Text(product.brand!),
-                        onTap: () async {
-                          await _apiRoutes.addUserProduct(product);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  ),
+                      ),
+                      title: Text(product.name!),
+                      subtitle: Text(product.brand!),
+                      onTap: () async {
+                        await _apiRoutes.addUserProduct(product);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
                 );
               }
               return const Center(child: Text('Error internet connection'));
