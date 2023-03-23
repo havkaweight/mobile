@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/onboarding.dart';
@@ -13,6 +14,8 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants/assets.dart';
+
+final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
 // https://stackoverflow.com/questions/49040779/how-to-handle-a-different-login-navigation-flow
 Future main() async {

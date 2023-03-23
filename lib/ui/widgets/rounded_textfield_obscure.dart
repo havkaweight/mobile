@@ -20,7 +20,7 @@ class RoundedTextFieldObscured extends StatefulWidget {
     Key? key,
     this.labelText,
     this.hintText,
-    this.width = 0.7,
+    this.width = 1,
     this.icon,
     this.color,
     this.controller,

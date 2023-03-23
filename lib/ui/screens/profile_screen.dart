@@ -20,6 +20,7 @@ import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 
+import '../../main.dart';
 import '../../model/data_items.dart';
 import '../../model/user.dart';
 import '../widgets/bar_chart.dart';
@@ -64,11 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   void logout() {
     setState(() {
       removeToken();
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
-      _googleSignIn.signOut();
-      _googleSignIn.disconnect();
+      googleSignIn.signOut();
+      googleSignIn.disconnect();
 
-      // clear Navigator queue
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => WelcomeScreen()),

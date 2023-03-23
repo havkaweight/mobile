@@ -75,7 +75,7 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin{
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 setState(() {
                   dragDistance += details.delta.dx;
-                  if(details.delta.dx >= 0) {
+                  if(dragDistance >= 0) {
                     offset = dragDistance;
                   } else {
                     offset += details.delta.dx / width * 100;

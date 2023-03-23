@@ -8,6 +8,8 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 
+import '../../main.dart';
+
 
 class HavkaButton extends StatelessWidget {
   final Widget child;
@@ -105,21 +107,19 @@ class GoogleSignInButton extends StatelessWidget {
 
 
   Future<void> _googleSignIn(BuildContext context) async {
-    final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
-    final googleAccount = await googleSignIn.signIn();
+    final googleAccount = await googleSignIn.signInSilently();
     if (googleAccount != null) {
       final googleAuth = await googleAccount.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
       if (googleAuth.accessToken != null && googleAuth.idToken != null) {
         log(googleAuth.accessToken!);
         log(googleAuth.idToken!);
-        final authResult = await authInstance.signInWithCredential(
-          GoogleAuthProvider.credential(
-              idToken: googleAuth.idToken,
-              accessToken: googleAuth.accessToken,
-          ),
-        );
+        final authResult = await authInstance.signInWithCredential(credential);
 
-        print(authResult.user!);
+        print(authResult.user);
         print(authResult.user!.uid);
         print(authResult.user!.displayName);
         print(authResult.user!.email);

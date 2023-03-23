@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../constants/colors.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class RoundedTextField extends StatefulWidget {
   final String? labelText;
@@ -46,9 +46,7 @@ class RoundedTextFieldState<T extends RoundedTextField> extends State<RoundedTex
 
   @override
   Widget build(BuildContext context) {
-    final double mWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: widget.width! * mWidth,
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
       child: TextField(
         textAlign: widget.textAlign!,
