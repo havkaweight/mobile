@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:math';
 
@@ -10,9 +8,9 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:flutter/src/painting/text_style.dart' as textStyle;
 import 'package:health_tracker/ui/widgets/donut_chart.dart';
 
-import '../../model/data_items.dart';
-import '../widgets/bar_chart.dart';
-import '../widgets/line_chart.dart';
+import 'package:health_tracker/model/data_items.dart';
+import 'package:health_tracker/ui/widgets/bar_chart.dart';
+import 'package:health_tracker/ui/widgets/line_chart.dart';
 
 class OnboardingScreen1 extends StatefulWidget {
   @override
@@ -21,6 +19,7 @@ class OnboardingScreen1 extends StatefulWidget {
 
 class _OnboardingScreen1State extends State<OnboardingScreen1> {
   late List<DataItem> data;
+  late Timer _addData;
 
   @override
   void initState() {
@@ -35,19 +34,21 @@ class _OnboardingScreen1State extends State<OnboardingScreen1> {
       DataItem(270, "Sunday", Colors.amber[400]!),
     ];
     int n = 0;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(n > 3) {
+    _addData = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (n > 3) {
         timer.cancel();
       }
       setState(() {
-        data.insert(0, DataItem(Random().nextInt(100) + 100, 'label', Colors.amber[500]!));
+        data.insert(0,
+            DataItem(Random().nextInt(100) + 100, 'label', Colors.amber[500]!));
       });
-      n ++;
+      n++;
     });
   }
 
   @override
   void dispose() {
+    _addData.cancel();
     super.dispose();
   }
 
@@ -72,6 +73,8 @@ class OnboardingScreen2 extends StatefulWidget {
 
 class _OnboardingScreen2State extends State<OnboardingScreen2> {
   late List<DataItem> data;
+  late Timer _updateValues;
+  late Timer _smoothAnimation;
 
   @override
   void initState() {
@@ -82,8 +85,8 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
       DataItem(0.5, "Carbs", Colors.amber[400]!),
     ];
     int n = 0;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(n > 3) {
+    _updateValues = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (n > 3) {
         timer.cancel();
         return;
       }
@@ -91,29 +94,43 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
       final double firstRandom = Random().nextDouble();
       final double secondRandom = (1 - firstRandom) * Random().nextDouble();
       final double last = 1 - firstRandom - secondRandom;
-      Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
+      _smoothAnimation = Timer.periodic(
+          const Duration(milliseconds: milliseconds), (Timer timer) {
         final double prevFirstRandom = data[0].value;
         final double prevSecondRandom = data[1].value;
         final double prevLast = data[2].value;
-        final double tempFirstRandom = (firstRandom - prevFirstRandom) * 1.0 / milliseconds;
-        final double tempSecondRandom = (secondRandom - prevSecondRandom) * 1.0 / milliseconds;
+        final double tempFirstRandom =
+            (firstRandom - prevFirstRandom) * 1.0 / milliseconds;
+        final double tempSecondRandom =
+            (secondRandom - prevSecondRandom) * 1.0 / milliseconds;
         final double tempLast = (last - prevLast) * 1.0 / milliseconds;
-        if([firstRandom-prevFirstRandom, secondRandom-prevSecondRandom, last-prevLast].reduce(max) < 0.01) {
+        if ([
+              firstRandom - prevFirstRandom,
+              secondRandom - prevSecondRandom,
+              last - prevLast
+            ].reduce(max) <
+            0.01) {
           timer.cancel();
           return;
         }
         setState(() {
-          data = [DataItem(prevFirstRandom + tempFirstRandom, "Protein", Colors.amber[50]!)];
-          data.add(DataItem(prevSecondRandom + tempSecondRandom, "Fat", Colors.amber[200]!));
+          data = [
+            DataItem(
+                prevFirstRandom + tempFirstRandom, "Protein", Colors.amber[50]!)
+          ];
+          data.add(DataItem(
+              prevSecondRandom + tempSecondRandom, "Fat", Colors.amber[200]!));
           data.add(DataItem(prevLast + tempLast, "Carbs", Colors.amber[400]!));
         });
       });
-      n ++;
+      n++;
     });
   }
 
   @override
   void dispose() {
+    _updateValues.cancel();
+    _smoothAnimation.cancel();
     super.dispose();
   }
 
@@ -142,9 +159,7 @@ class _OnboardingScreen3State extends State<OnboardingScreen3> {
   @override
   void initState() {
     super.initState();
-    mockDataPoints = [
-      DataPoint(0, 0)
-    ];
+    mockDataPoints = [DataPoint(0, 0)];
     for (int i = 0; i < 30; i++) {
       mockDataPoints.add(DataPoint(mockDataPoints.last.dx + 5,
           mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10));

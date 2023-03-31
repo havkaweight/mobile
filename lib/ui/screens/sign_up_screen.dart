@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // body: map
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == HttpStatus.created) {
       // setToken(password);
       return Navigator.push(context,
           MaterialPageRoute(builder: (context) => SignInCheckScreen()));
@@ -102,8 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           RoundedTextField(
                             hintText: 'Email',
                             controller: emailController,
-                            errorText:
-                                _userExists ? 'User already exists' : '',
+                            errorText: _userExists ? 'User already exists' : '',
                           ),
                           RoundedTextFieldObscured(
                             hintText: 'Password',

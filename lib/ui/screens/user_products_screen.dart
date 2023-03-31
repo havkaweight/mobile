@@ -16,11 +16,14 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants/strings.dart';
 import '../../main.dart';
 import '../widgets/shimmer.dart';
 import 'barcode_scanner.dart';
+import 'havka_barcode_scanner.dart';
 
 List<Map<String, String>> userProductsList = [];
+OverlayEntry? _overlayEntry;
 
 class UserProductsScreen extends StatefulWidget {
   @override
@@ -28,41 +31,48 @@ class UserProductsScreen extends StatefulWidget {
 }
 
 class _UserProductsScreenState extends State<UserProductsScreen>
-  with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final barcodeController = TextEditingController();
 
   final ApiRoutes _apiRoutes = ApiRoutes();
   late List<UserProduct> userProducts;
   late Widget childWidget;
-  late OverlayEntry entry;
   late AnimationController _animationController;
-  late bool isScaleShowed = false;
+  bool isScaleShowed = false;
 
   void showModalScale() {
+    _overlayEntry = OverlayEntry(
+        builder: (context) =>
+            ModalScale(animationController: _animationController));
+    Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward();
-    entry = OverlayEntry(builder: (context) => ModalScale(animationController: _animationController));
-    final overlay = Overlay.of(context);
-    overlay.insert(entry);
   }
 
   void hideModalScale() {
-    _animationController.reverse().then((_) => entry.remove());
+    _animationController.reverse().whenComplete(() {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    });
+  }
+
+  Future<void> changeModalScaleState() async {
+    final prefs = await SharedPreferences.getInstance();
+    isScaleShowed = prefs.getBool('isScaleShowed') ?? false;
+    if (isScaleShowed) {
+      hideModalScale();
+    } else {
+      showModalScale();
+    }
+    prefs.setBool('isScaleShowed', !isScaleShowed);
   }
 
   @override
   void initState() {
     super.initState();
-
     _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 200),
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
     );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -83,25 +93,24 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                         Icons.monitor_weight,
                         color: HavkaColors.green,
                       ),
-                      onPressed: () {
-                        if(!isScaleShowed) {
-                          showModalScale();
-                        } else {
-                          hideModalScale();
-                        }
+                      onPressed: () async {
+                        changeModalScaleState();
                         setState(() {
                           isScaleShowed = !isScaleShowed;
                         });
                       },
                     ),
                     RoundedButton(
+                      width: 100,
                       text: 'Add havka',
                       onPressed: () {
-                        _buildProductsList(context).then((_) => setState(() {}));
+                        _buildProductsList(context)
+                            .then((_) => setState(() {}));
                       },
                     ),
                     IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.barcode, color: HavkaColors.green),
+                      icon: const FaIcon(FontAwesomeIcons.barcode,
+                          color: HavkaColors.green),
                       onPressed: () {
                         _buildBarcodeScanner().then((_) => setState(() {}));
                       },
@@ -127,15 +136,15 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                     childWidget = RefreshIndicator(
                       onRefresh: _pullRefresh,
                       child: ScrollConfiguration(
-                        behavior: CustomBehavior(),
-                        child: ListView.builder(
-                          itemCount: userProducts.length,
-                          itemBuilder: (BuildContext context, index) {
-                            final UserProduct userProduct = userProducts[index];
-                            return FridgeItem(userProduct: userProduct);
-                          },
-                        )
-                      ),
+                          behavior: CustomBehavior(),
+                          child: ListView.builder(
+                            itemCount: userProducts.length,
+                            itemBuilder: (BuildContext context, index) {
+                              final UserProduct userProduct =
+                                  userProducts[index];
+                              return FridgeItem(userProduct: userProduct);
+                            },
+                          )),
                     );
                   }
                   return AnimatedSwitcher(
@@ -153,9 +162,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
 
   Future<void> _pullRefresh() async {
     final newUserProducts = await _apiRoutes.getUserProductsList();
-      setState(() {
-        userProducts = newUserProducts;
-      });
+    setState(() {
+      userProducts = newUserProducts;
+    });
   }
 
   Future<dynamic> _buildBarcodeScanner() {
@@ -177,7 +186,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
             topRight: Radius.circular(15.0),
           ),
           child:
-              SizedBox(height: mHeight * 0.75, child: BarcodeScannerScreen()),
+              // SizedBox(height: mHeight * 0.75, child: BarcodeScannerScreen()),
+              SizedBox(
+                  height: mHeight * 0.75, child: HavkaBarcodeScannerScreen()),
         );
       },
     );
@@ -195,9 +206,8 @@ class _UserProductsScreenState extends State<UserProductsScreen>
       ),
       context: context,
       builder: (BuildContext context) {
-        final double mHeight = MediaQuery.of(context).size.height;
-        return SizedBox(
-          height: mHeight * 0.85,
+        return FractionallySizedBox(
+          heightFactor: 0.85,
           child: Column(
             children: [
               Holder(),

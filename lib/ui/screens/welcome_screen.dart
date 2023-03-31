@@ -7,8 +7,8 @@ import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:lottie/lottie.dart';
-
 
 // import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 // import 'package:health_tracker/api/constants.dart';
@@ -24,7 +24,6 @@ import 'package:lottie/lottie.dart';
 // import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 // import 'package:health_tracker/ui/widgets/screen_header.dart';
 // import 'package:http/http.dart' as http;
-
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -55,15 +54,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const SizedBox(height: verticalPadding),
             const Padding(
               padding: EdgeInsets.all(horizontalPadding),
-              child: Text(
-                'Welcome to Havka!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: HavkaColors.green,
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: Hero(
+                  tag: "to-signin",
+                  child: ScreenHeader(text: "It's your Havka!")),
             ),
             // const SizedBox(height: verticalPadding),
             Padding(
@@ -78,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       context,
                       MaterialPageRoute(builder: (context) => StoryPage()),
                     );
-                    },
+                  },
                 ),
               ),
             ),
@@ -86,9 +79,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Padding(
               padding: const EdgeInsets.all(horizontalPadding),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text(
                       'Already have an account?',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -97,17 +90,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
-                  HavkaButton(
-                    child: const Align(child: Text('Log In')),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                      );
-                    },
-                  )
-                ]
-              ),
+                    HavkaButton(
+                      child: const Align(child: Text('Log In')),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignInScreen()),
+                        );
+                      },
+                    )
+                  ]),
             ),
           ],
         ),
@@ -123,5 +116,4 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: welcomeWidget(context),
     );
   }
-
 }

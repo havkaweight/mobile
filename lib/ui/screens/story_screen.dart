@@ -22,6 +22,7 @@ class StoryPage extends StatefulWidget {
 
 class _StoryPageState extends State<StoryPage> {
   List<double> percentWatched = [];
+  late Timer watchingTimer;
   int currentStoryIndex = 0;
   final List<Widget> stories = [
     OnboardingScreen1(),
@@ -33,7 +34,7 @@ class _StoryPageState extends State<StoryPage> {
   void initState() {
     super.initState();
 
-    for(int i = 0; i < stories.length; i++) {
+    for (int i = 0; i < stories.length; i++) {
       percentWatched.add(0);
     }
 
@@ -42,30 +43,31 @@ class _StoryPageState extends State<StoryPage> {
 
   @override
   void dispose() {
+    watchingTimer.cancel();
     super.dispose();
   }
 
   Future<void> _startWatching(int seconds) async {
-    Timer.periodic(Duration(milliseconds: seconds*10), (timer) {
+    watchingTimer =
+        Timer.periodic(Duration(milliseconds: seconds * 10), (Timer timer) {
       setState(() {
-        if(percentWatched[currentStoryIndex] + 0.01 < 1) {
+        if (percentWatched[currentStoryIndex] + 0.01 < 1) {
           percentWatched[currentStoryIndex] += 0.01;
-        }
-        else {
+        } else {
           percentWatched[currentStoryIndex] = 1;
           timer.cancel();
 
-          if(currentStoryIndex < stories.length - 1) {
-            currentStoryIndex ++;
+          if (currentStoryIndex < stories.length - 1) {
+            currentStoryIndex++;
             _startWatching(5);
-          }
-          else {
+          } else {
             Navigator.pop(context);
           }
         }
       });
     });
   }
+
   double _dragDistance = 0;
   double _offset = 0;
   @override
@@ -81,7 +83,7 @@ class _StoryPageState extends State<StoryPage> {
         },
         onVerticalDragUpdate: (details) {
           setState(() {
-            if(details.delta.dy > 0) {
+            if (details.delta.dy > 0) {
               _dragDistance += details.delta.dy;
               _offset += details.delta.dy / height * 150;
             }
@@ -99,24 +101,21 @@ class _StoryPageState extends State<StoryPage> {
           final double dx = details.globalPosition.dx;
           if (dx < screenWidth / 2) {
             setState(() {
-              if(currentStoryIndex > 0) {
+              if (currentStoryIndex > 0) {
                 percentWatched[currentStoryIndex - 1] = 0;
                 percentWatched[currentStoryIndex] = 0;
-                currentStoryIndex --;
-              }
-              else {
+                currentStoryIndex--;
+              } else {
                 percentWatched[currentStoryIndex] = 0;
                 currentStoryIndex = 0;
               }
             });
-          }
-          else {
+          } else {
             setState(() {
-              if(currentStoryIndex < stories.length - 1) {
+              if (currentStoryIndex < stories.length - 1) {
                 percentWatched[currentStoryIndex] = 1;
-                currentStoryIndex ++;
-              }
-              else {
+                currentStoryIndex++;
+              } else {
                 percentWatched[currentStoryIndex] = 1;
               }
             });

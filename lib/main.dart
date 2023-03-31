@@ -21,10 +21,10 @@ final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-      MaterialApp(
-          theme: themeData,
-          home: HavkaApp(),
-      ),
+    MaterialApp(
+      theme: themeData,
+      home: HavkaApp(),
+    ),
   );
 }
 
@@ -34,7 +34,6 @@ class HavkaApp extends StatefulWidget {
 }
 
 class _HavkaAppState extends State<HavkaApp> {
-
   AuthService authService = AuthService();
   @override
   void initState() {
@@ -68,17 +67,17 @@ class _HavkaAppState extends State<HavkaApp> {
     //             ),
     //           );
     //         }
-          // Navigator.pushReplacement(
-          //     context,
-          //     // MaterialPageRoute(builder: (context) => WelcomeScreen())
-          //
-          //     PageRouteBuilder(
-          //       // pageBuilder: (_, __, ___) => WelcomeScreen(),
-          //       pageBuilder: (_, __, ___) => MainListPage(),
-          //       transitionDuration: Duration(seconds: 1),
-          //       transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
-          //     ),
-          // );
+    // Navigator.pushReplacement(
+    //     context,
+    //     // MaterialPageRoute(builder: (context) => WelcomeScreen())
+    //
+    //     PageRouteBuilder(
+    //       // pageBuilder: (_, __, ___) => WelcomeScreen(),
+    //       pageBuilder: (_, __, ___) => MainListPage(),
+    //       transitionDuration: Duration(seconds: 1),
+    //       transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+    //     ),
+    // );
     //     }
     // );
   }
@@ -108,18 +107,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-  with TickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this)
-    ..addListener(() {
-      if(_controller.value > 0.5) {
-        _controller.value = 0.5;
-      }
-    });
+      ..addListener(() {
+        if (_controller.value > 0.5) {
+          _controller.value = 0.5;
+        }
+      });
   }
 
   @override
@@ -127,15 +126,14 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: const Center(
-          child: Hero(
-            tag: "splash-animation",
-            child: AppIcon(image: Assets.appLogo),
-          ),
+        child: Hero(
+          tag: "splash-animation",
+          child: AppIcon(image: Assets.appLogo),
+        ),
       ),
     );
   }
 }
-
 
 class GoogleSignInScreen extends StatelessWidget {
   @override

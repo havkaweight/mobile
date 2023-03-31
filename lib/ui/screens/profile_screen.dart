@@ -123,21 +123,19 @@ class _ProfileScreenState extends State<ProfileScreen>
       DataItem(240, "Saturday", Colors.amber[200]!),
       DataItem(270, "Sunday", Colors.amber[400]!),
     ];
-    final List<DataPoint> mockDataPoints = [
-      DataPoint(0, 0)
-    ];
+    final List<DataPoint> mockDataPoints = [DataPoint(0, 0)];
     for (int i = 0; i < 30; i++) {
       mockDataPoints.add(
-          DataPoint(
-            mockDataPoints.last.dx + 5,
-            mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10,
-          ),
+        DataPoint(
+          mockDataPoints.last.dx + 5,
+          mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10,
+        ),
       );
     }
     return ScrollConfiguration(
       behavior: CustomBehavior(),
       child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
         final chartHeight = MediaQuery.of(context).size.height * 0.3;
         return SingleChildScrollView(
           child: ConstrainedBox(
@@ -152,7 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   username: '${snapshot.data.email}',
                   height: 163,
                   weight: 67,
-                  photoUrl: 'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                  photoUrl:
+                      'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
                 ),
                 SizedBox(
                   height: chartHeight,
@@ -183,8 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
         );
-      }
-      ),
+      }),
     );
   }
 
@@ -193,10 +191,10 @@ class _ProfileScreenState extends State<ProfileScreen>
         isScrollControlled: true,
         backgroundColor: Theme.of(context).backgroundColor,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0),
-            ),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15.0),
+            topRight: Radius.circular(15.0),
+          ),
         ),
         context: context,
         builder: (BuildContext builder) {

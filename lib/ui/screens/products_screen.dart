@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/ui/screens/user_products_screen.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../api/methods.dart';
 import '../../constants/colors.dart';
@@ -19,9 +18,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
   final searchController = TextEditingController();
 
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode? result;
-  QRViewController? controller;
+  // final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  // Barcode? result;
+  // QRViewController? controller;
 
   @override
   void initState() {
@@ -32,12 +31,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanUpdate: (details) {
-        if(details.delta.dx > 0) {
+        if (details.delta.dx > 0) {
           Navigator.pop(context);
         }
       },
-      child: Column(
-        children: [
+      child: Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -55,7 +53,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   color: HavkaColors.green,
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductAddingScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProductAddingScreen()));
                 },
               ),
             ),
@@ -64,7 +65,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (searchController.text.isEmpty)
           FutureBuilder<List<Product>>(
             future: _apiRoutes.getProductsList(),
-            builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
               if (!snapshot.hasData) {
                 return Center(
                     child: Container(
@@ -73,46 +75,47 @@ class _ProductsScreenState extends State<ProductsScreen> {
               }
               if (snapshot.hasData) {
                 return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (BuildContext context, index) {
-                    final Product product = snapshot.data![index];
-                    return ListTile(
-                      leading: Container(
-                        width: 50.0,
-                        height: 50.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xff7c94b6),
-                          image: DecorationImage(
-                            image: NetworkImage(product.img ?? 'https://cdn.havka.one/test.jpg') ,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: const BorderRadius.all( Radius.circular(50.0)),
-                          border: Border.all(
-                            color: HavkaColors.cream,
-                            width: 3,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, index) {
+                      final Product product = snapshot.data![index];
+                      return ListTile(
+                        leading: Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff7c94b6),
+                            image: DecorationImage(
+                              image: NetworkImage(product.img ??
+                                  'https://cdn.havka.one/test.jpg'),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(50.0)),
+                            border: Border.all(
+                              color: HavkaColors.cream,
+                              width: 3,
+                            ),
                           ),
                         ),
-                      ),
-                      title: Text(product.name!,
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .headline3!
-                                  .fontSize)),
-                      subtitle: Text(product.brand ?? 'not found',
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .fontSize)),
-                      onTap: () async {
-                        await _apiRoutes.addUserProduct(product);
-                        Navigator.pop(context);
-                      },
-                    );
-                  }
-                );
+                        title: Text(product.name!,
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .headline3!
+                                    .fontSize)),
+                        subtitle: Text(product.brand ?? 'not found',
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .headline4!
+                                    .fontSize)),
+                        onTap: () async {
+                          await _apiRoutes.addUserProduct(product);
+                          Navigator.pop(context);
+                        },
+                      );
+                    });
               }
               return const Center(child: Text('Error internet connection'));
             },
@@ -143,10 +146,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xff7c94b6),
                           image: const DecorationImage(
-                            image: NetworkImage('https://cdn.havka.one/test.jpg'),
+                            image:
+                                NetworkImage('https://cdn.havka.one/test.jpg'),
                             fit: BoxFit.cover,
                           ),
-                          borderRadius: const BorderRadius.all( Radius.circular(50.0)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(50.0)),
                           border: Border.all(
                             color: HavkaColors.cream,
                             width: 3,

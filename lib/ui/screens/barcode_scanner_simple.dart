@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+// import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../api/methods.dart';
 import '../../constants/colors.dart';
@@ -10,14 +10,16 @@ import '../../ui/widgets/rounded_button.dart';
 
 class BarcodeScannerSimpleScreen extends StatefulWidget {
   @override
-  _BarcodeScannerScreenSimpleState createState() => _BarcodeScannerScreenSimpleState();
+  _BarcodeScannerScreenSimpleState createState() =>
+      _BarcodeScannerScreenSimpleState();
 }
 
-class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen> {
+class _BarcodeScannerScreenSimpleState
+    extends State<BarcodeScannerSimpleScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode? result;
-  QRViewController? controller;
+  // final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  // Barcode? result;
+  // QRViewController? controller;
 
   // @override
   // void reassemble() {
@@ -37,87 +39,87 @@ class _BarcodeScannerScreenSimpleState extends State<BarcodeScannerSimpleScreen>
         : 300.0;
     return Column(
       children: <Widget>[
-        Expanded(
-          flex: 4,
-          child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                  borderColor: HavkaColors.green,
-                  borderRadius: 10,
-                  borderLength: 30,
-                  borderWidth: 20,
-                  cutOutSize: scanArea)),
-        ),
-        Expanded(
-          flex: 1,
-          child: Center(
-              child: (result != null)
-                  // (result != null)
-                  // ? Text(
-                  // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
-                  // : const Text('Scan a code'),
-                    ? FutureBuilder(
-                      future: _apiRoutes.getProductByBarcode(result!.code),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          if (snapshot.hasError) {
-                            Navigator.pop(context, result!.code);
-                          }
-                          return Center(
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5.0),
-                                  child: const HavkaProgressIndicator()));
-                        }
-                        if (snapshot.hasData) {
-                          final Product product = snapshot.data as Product;
-                          return ListTile(
-                              title: Text(product.name!,
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline3!
-                                          .fontSize)),
-                              subtitle: Text(product.brand!,
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline4!
-                                          .fontSize)),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  RoundedButton(
-                                    text: 'Add',
-                                    onPressed: () async {
-                                      await _apiRoutes.addUserProduct(product);
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              ));
-                        }
-                        return Container();
-                      })
-                  : const Text('Scan a barcode')),
-        )
+        // Expanded(
+        //   flex: 4,
+        //   child: QRView(
+        //       key: qrKey,
+        //       onQRViewCreated: _onQRViewCreated,
+        //       overlay: QrScannerOverlayShape(
+        //           borderColor: HavkaColors.green,
+        //           borderRadius: 10,
+        //           borderLength: 30,
+        //           borderWidth: 20,
+        //           cutOutSize: scanArea)),
+        // ),
+        // Expanded(
+        //   flex: 1,
+        //   child: Center(
+        //       child: (result != null)
+        //           // (result != null)
+        //           // ? Text(
+        //           // 'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
+        //           // : const Text('Scan a code'),
+        //           ? FutureBuilder(
+        //               future: _apiRoutes.getProductByBarcode(result!.code),
+        //               builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //                 if (!snapshot.hasData) {
+        //                   if (snapshot.hasError) {
+        //                     Navigator.pop(context, result!.code);
+        //                   }
+        //                   return Center(
+        //                       child: Container(
+        //                           padding:
+        //                               const EdgeInsets.symmetric(vertical: 5.0),
+        //                           child: const HavkaProgressIndicator()));
+        //                 }
+        //                 if (snapshot.hasData) {
+        //                   final Product product = snapshot.data as Product;
+        //                   return ListTile(
+        //                       title: Text(product.name!,
+        //                           style: TextStyle(
+        //                               fontSize: Theme.of(context)
+        //                                   .textTheme
+        //                                   .headline3!
+        //                                   .fontSize)),
+        //                       subtitle: Text(product.brand!,
+        //                           style: TextStyle(
+        //                               fontSize: Theme.of(context)
+        //                                   .textTheme
+        //                                   .headline4!
+        //                                   .fontSize)),
+        //                       trailing: Row(
+        //                         mainAxisSize: MainAxisSize.min,
+        //                         children: [
+        //                           RoundedButton(
+        //                             text: 'Add',
+        //                             onPressed: () async {
+        //                               await _apiRoutes.addUserProduct(product);
+        //                               Navigator.pop(context);
+        //                             },
+        //                           )
+        //                         ],
+        //                       ));
+        //                 }
+        //                 return Container();
+        //               })
+        //           : const Text('Scan a barcode')),
+        // )
       ],
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
-    });
-  }
+  // void _onQRViewCreated(QRViewController controller) {
+  //   this.controller = controller;
+  //   controller.scannedDataStream.listen((scanData) {
+  //     setState(() {
+  //       result = scanData;
+  //     });
+  //   });
+  // }
 
   @override
   void dispose() {
-    controller?.dispose();
+    // controller?.dispose();
     super.dispose();
   }
 }

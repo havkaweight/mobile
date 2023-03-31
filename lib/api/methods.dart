@@ -1,65 +1,72 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-
-import '../model/device_service.dart';
-import '../model/product.dart';
-import '../model/user.dart';
-import '../model/user_device.dart';
-import '../model/user_product.dart';
-import '../model/user_product_weighting.dart';
-import '../ui/screens/authorization.dart';
-import 'constants.dart';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:health_tracker/api/constants.dart';
+import 'package:health_tracker/model/device_service.dart';
+import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/model/user.dart';
+import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/model/user_product_weighting.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:http/http.dart' as http;
 
 class ApiRoutes {
-
   void isAuthorized(http.Response response) {
-    if (response.statusCode == 401) {
+    if (response.statusCode == HttpStatus.unauthorized) {
       throw Exception('Unauthorized');
     }
   }
 
-  Future<bool?> signIn(String email, String password) async {
-    final Map map = <String, dynamic>{};
-    map['username'] = email;
-    map['password'] = password;
-    final http.Response response = await http.post(
+  Future<bool> signIn(String email, String password) async {
+    final Map<String, dynamic> body = <String, dynamic>{
+      'username': email,
+      'password': password,
+    };
+
+    final Map<String, String> headers = <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    try {
+      final http.Response response = await http.post(
         Uri.https(Api.host, '${Api.prefix}${Api.login}'),
-        headers: <String, String>{
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: map
-    );
-    final data = jsonDecode(response.body);
-    print(data);
-    if (response.statusCode == 200) {
-      if (data.containsKey('access_token') != null) {
-        setToken(data['access_token'] as String);
-        return true;
-        // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == HttpStatus.ok) {
+        final Map<String, dynamic> data =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        if (data.containsKey('access_token')) {
+          setToken(data['access_token'] as String);
+          return true;
+          // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+        } else {
+          return false;
+          // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+        }
+      } else {
+        // throw Exception("Failed sign in.");
+        return false;
       }
-      else {
-        // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-      }
-    } else {
+    } catch (e) {
+      debugPrint("Error $e");
       return false;
-      // throw Exception('Failed sign in');
     }
   }
 
   Future<String?> googleAuthorize() async {
-    final queryParameters = {
-      'authentication_backend': 'jwt'
-    };
+    final queryParameters = {'authentication_backend': 'jwt'};
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.googleAuthorize}', queryParameters),
-        headers: <String, String>{
-          // 'Content-Type': 'application/json'
-        },
+      Uri.https(
+          Api.host, '${Api.prefix}${Api.googleAuthorize}', queryParameters),
+      headers: <String, String>{
+        // 'Content-Type': 'application/json'
+      },
     );
 
     final dynamic data = jsonDecode(response.body);
@@ -75,20 +82,17 @@ class ApiRoutes {
 
   Future<bool?> googleCallback(String serverAuthCode) async {
     final state = await googleAuthorize();
-    final queryParameters = {
-      'code': serverAuthCode,
-      'state': state
-    };
+    final queryParameters = {'code': serverAuthCode, 'state': state};
     print('state $state');
     final Map map = <String, dynamic>{};
     map['code'] = serverAuthCode;
     map['state'] = state;
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.googleCallback}', queryParameters),
+        Uri.https(
+            Api.host, '${Api.prefix}${Api.googleCallback}', queryParameters),
         headers: <String, String>{
           // 'Content-Type': 'application/json'
-        }
-        );
+        });
     final dynamic data = jsonDecode(response.body);
     print(data);
     if (response.statusCode == 200) {
@@ -96,8 +100,7 @@ class ApiRoutes {
         setToken(data['access_token'] as String);
         return true;
         // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-      }
-      else {
+      } else {
         // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
       }
     } else {
@@ -113,16 +116,17 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
-    );
+        });
     isAuthorized(response);
-    final user = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final user =
+        User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     return user;
   }
 
   Future<List<UserProduct>> getUserProductsList() async {
     final Dio dio = Dio();
-    final DioCacheManager dioCacheManager = DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
+    final DioCacheManager dioCacheManager =
+        DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
     dio.interceptors.add(dioCacheManager.interceptor as Interceptor);
     final token = await storage.read(key: 'jwt');
     dio.options.headers = <String, String>{
@@ -142,7 +146,7 @@ class ApiRoutes {
     //     },
     // );
 
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return [];
     }
     final products = response.data as List;
@@ -155,14 +159,14 @@ class ApiRoutes {
   Future<String> deleteUserProduct(UserProduct userProduct) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.delete(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProductsDelete}/${userProduct.id}'),
+        Uri.https(Api.host,
+            '${Api.prefix}${Api.userProductsDelete}/${userProduct.id}'),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
-    );
+        });
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       return 'success';
     }
     return 'bad';
@@ -171,20 +175,21 @@ class ApiRoutes {
   Future<dynamic> getProductByBarcode(String? barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.productByBarcode}/$barcode'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
+      Uri.https(Api.host, '${Api.prefix}${Api.productByBarcode}/$barcode'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
     );
     print(response.statusCode);
     if (response.statusCode == 404) {
       throw Exception('Not found');
     }
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return;
     }
-    final productJson = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final productJson =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     final Product product = Product.fromJson(productJson);
     return product;
   }
@@ -196,13 +201,12 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
-    );
+        });
 
     if (response.statusCode == 404) {
       throw Exception('Not found');
     }
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
@@ -219,8 +223,7 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
-    );
+        });
     if (response.statusCode != 200) {
       return [];
     }
@@ -238,13 +241,13 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
-        }
-    );
+        });
     if (response.statusCode != 200) {
       return [];
     }
     final devicesServices = jsonDecode(response.body) as List;
-    final List<DeviceService> devicesServicesList = devicesServices.map<DeviceService>((json) {
+    final List<DeviceService> devicesServicesList =
+        devicesServices.map<DeviceService>((json) {
       return DeviceService.fromJson(json as Map<String, dynamic>);
     }).toList();
     return devicesServicesList;
@@ -254,18 +257,17 @@ class ApiRoutes {
     debugPrint(serialId);
     final token = await getToken();
     final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
-        headers: <String, String> {
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
-        body: jsonEncode(<String, String> {
-          'serial_id': serialId
-        }),
+      Uri.https(Api.host, '${Api.prefix}${Api.userDevicesAdd}'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(<String, String>{'serial_id': serialId}),
     );
 
     if (response.statusCode == 201) {
-      return UserDevice.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      return UserDevice.fromJson(
+          jsonDecode(response.body) as Map<String, dynamic>);
     }
   }
 
@@ -277,10 +279,9 @@ class ApiRoutes {
         headers: <String, String>{
           'Content-type': 'application/json',
           // 'Authorization': 'Bearer $token'
-        }
-    );
+        });
     debugPrint(response.body);
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
@@ -295,12 +296,12 @@ class ApiRoutes {
   Future addUserProduct(Product product) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProductsAdd}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
-        body: jsonEncode(product.productIdToJson()),
+      Uri.https(Api.host, '${Api.prefix}${Api.userProductsAdd}'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(product.productIdToJson()),
     );
 
     debugPrint('${response.statusCode} ${response.body}');
@@ -314,8 +315,7 @@ class ApiRoutes {
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(product.toJson())
-    );
+        body: jsonEncode(product.toJson()));
 
     debugPrint('${response.statusCode} ${response.body}');
   }
@@ -323,40 +323,42 @@ class ApiRoutes {
   Future<List<UserProductWeighting>> getWeightingsHistory() async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingsHistory}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
+      Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingsHistory}'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
     );
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return [];
     }
-    final userProductsWeightings = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-    final List<UserProductWeighting> userProductsWeightingsList = userProductsWeightings.map<UserProductWeighting>((json) {
+    final userProductsWeightings =
+        jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<UserProductWeighting> userProductsWeightingsList =
+        userProductsWeightings.map<UserProductWeighting>((json) {
       return UserProductWeighting.fromJson(json as Map<String, dynamic>);
     }).toList();
     return userProductsWeightingsList;
   }
 
   Future addUserProductWeighting(
-      double netWeight,
-      UserProduct userProduct, {
-      UserDevice? userDevice,
+    double netWeight,
+    UserProduct userProduct, {
+    UserDevice? userDevice,
   }) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
-        body: jsonEncode({
-          'product_id': userProduct.productId,
-          'user_product_id': userProduct.id,
-          // 'user_device_id': userDevice.id,
-          'weight': netWeight
-        }),
+      Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode({
+        'product_id': userProduct.productId,
+        'user_product_id': userProduct.id,
+        // 'user_device_id': userDevice.id,
+        'weight': netWeight
+      }),
     );
 
     debugPrint('${response.statusCode} ${response.body}');
