@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 
 import '../../main.dart';
-
 
 class HavkaButton extends StatelessWidget {
   final Widget child;
@@ -32,7 +33,6 @@ class HavkaButton extends StatelessWidget {
     this.fontSize = 16,
     this.style,
   }) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -99,15 +99,13 @@ class HavkaButton extends StatelessWidget {
   // }
 }
 
-
 final FirebaseAuth authInstance = FirebaseAuth.instance;
 
 class GoogleSignInButton extends StatelessWidget {
   // const GoogleSignInButton({Key? key}) : super(key: key);
 
-
   Future<void> _googleSignIn(BuildContext context) async {
-    final googleAccount = await googleSignIn.signInSilently();
+    final googleAccount = await googleSignIn.signIn();
     if (googleAccount != null) {
       final googleAuth = await googleAccount.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -118,36 +116,17 @@ class GoogleSignInButton extends StatelessWidget {
         log(googleAuth.accessToken!);
         log(googleAuth.idToken!);
         final authResult = await authInstance.signInWithCredential(credential);
-
-        print(authResult.user);
-        print(authResult.user!.uid);
-        print(authResult.user!.displayName);
-        print(authResult.user!.email);
-
-        print(authResult.additionalUserInfo!);
-
-        if (authResult.additionalUserInfo!.isNewUser) {
-          // await FirebaseFirestore.instance
-          //     .collection('users')
-          //     .doc(authResult.user!.uid)
-          //     .set({
-          //   'id': authResult.user!.uid,
-          //   'name': authResult.user!.displayName,
-          //   'email': authResult.user!.email,
-          //   'shipping-address': '',
-          //   'userWish': [],
-          //   'userCart': [],
-          //   'createdAt': Timestamp.now(),
-          // });
-          // add user to our base
-          // firestore is a paid NoSQL database
-        }
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => MainScreen(),
-          ),
-        );
-
+        await ApiRoutes()
+            .signInGoogle(googleAuth.idToken!)
+            .whenComplete((bool isAuthSuccess) {
+              if (isAuthSuccess) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(),
+                  ),
+                );
+              }
+            } as FutureOr<void> Function());
       }
     }
   }

@@ -21,26 +21,58 @@ class ApiRoutes {
     }
   }
 
-  Future<bool> signIn(String email, String password) async {
+  Future<bool> signUp(String email, String password) async {
     final Map<String, dynamic> body = <String, dynamic>{
-      'username': email,
+      'email': email,
       'password': password,
     };
 
     final Map<String, String> headers = <String, String>{
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
     };
 
     try {
       final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.login}'),
+        Uri.https(
+            Api.host, '${Api.prefix}${Api.authService}${Api.signup}', body),
         headers: headers,
-        body: body,
+        // body: body,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception("${response.statusCode} ${response.body}");
+      }
+
+      return signIn(email, password);
+    } catch (error) {
+      debugPrint("Error: $error");
+      return false;
+    }
+  }
+
+  Future<bool> signIn(String email, String password) async {
+    final Map<String, dynamic> body = <String, dynamic>{
+      'email': email,
+      'password': password,
+    };
+
+    final Map<String, String> headers = <String, String>{
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+    };
+
+    try {
+      final http.Response response = await http.post(
+        Uri.https(Api.host, '${Api.prefix}${Api.signin}', body),
+        headers: headers,
+        // body: body,
       );
 
       if (response.statusCode == HttpStatus.ok) {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
+        print(data);
         if (data.containsKey('access_token')) {
           setToken(data['access_token'] as String);
           return true;
@@ -55,6 +87,37 @@ class ApiRoutes {
       }
     } catch (e) {
       debugPrint("Error $e");
+      return false;
+    }
+  }
+
+  Future<bool> signInGoogle(String idToken) async {
+    try {
+      final Map<String, String> body = <String, String>{
+        "token": idToken,
+      };
+      final http.Response response = await http.post(
+        Uri.https(Api.host,
+            '${Api.prefix}${Api.authService}${Api.signInGoogle}', body),
+        headers: <String, String>{'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == HttpStatus.ok) {
+        final Map<String, dynamic> data =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        print(data);
+        if (data.containsKey('access_token')) {
+          setToken(data['access_token'] as String);
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        // throw Exception("Failed sign in.");
+        return false;
+      }
+    } catch (error) {
+      debugPrint("Error $error");
       return false;
     }
   }
@@ -114,7 +177,7 @@ class ApiRoutes {
     final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.me}'),
         headers: <String, String>{
-          'Content-type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token'
         });
     isAuthorized(response);
@@ -130,7 +193,7 @@ class ApiRoutes {
     dio.interceptors.add(dioCacheManager.interceptor as Interceptor);
     final token = await storage.read(key: 'jwt');
     dio.options.headers = <String, String>{
-      'Content-type': 'application/json',
+      'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };
     final Response response = await dio.get(
@@ -203,10 +266,10 @@ class ApiRoutes {
           'Authorization': 'Bearer $token'
         });
 
-    if (response.statusCode == 404) {
+    if (response.statusCode == HttpStatus.notFound) {
       throw Exception('Not found');
     }
-    if (response.statusCode != 200) {
+    if (response.statusCode != HttpStatus.ok) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
@@ -272,22 +335,20 @@ class ApiRoutes {
   }
 
   Future<List<Product>> getProductsList() async {
-    final token = await storage.read(key: 'jwt');
-    debugPrint('${Api.prefixMongo}${Api.products}');
+    final token = await getToken();
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefixMongo}${Api.products}'),
+        Uri.https(
+            Api.host, '${Api.prefix}${Api.monolithService}${Api.products}'),
         headers: <String, String>{
-          'Content-type': 'application/json',
-          // 'Authorization': 'Bearer $token'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
         });
-    debugPrint(response.body);
     if (response.statusCode != 200) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<Product> productsList = products.map<Product>((json) {
       Product prod = Product.fromJson(json as Map<String, dynamic>);
-      print(prod);
       return prod;
     }).toList();
     return productsList;

@@ -19,7 +19,11 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum SignInStatus { notLoggedIn, logging, loggedIn }
+enum SignInStatus {
+  notLoggedIn,
+  logging,
+  loggedIn,
+}
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -27,13 +31,21 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final emailController = TextEditingController();
+  bool _isSignIn = true;
+  late SignInStatus signInStatus;
+  List<String> _signings = [
+    "Sign In",
+    "Sign Up",
+  ];
+  late List<Function> _signingsFunctions;
+
+  late final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final ApiRoutes _apiRoutes = ApiRoutes();
-  late SignInStatus signInStatus = SignInStatus.notLoggedIn;
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+
   String? emailErrorText;
   String? passwordErrorText;
   late bool futureSignIn;
@@ -120,32 +132,31 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  _validateEmail() {
+  SignInStatus _validateEmail() {
     if (emailController.text.isEmpty && passwordController.text.isEmpty) {
       emailErrorText = 'Fill your email here';
       passwordErrorText = 'Fill your password here';
-      return;
+      return SignInStatus.notLoggedIn;
     }
     if (emailController.text.isEmpty) {
       emailErrorText = 'Fill your email here';
-      return;
+      return SignInStatus.notLoggedIn;
     }
     if (passwordController.text.isEmpty) {
       passwordErrorText = 'Fill your password here';
-      return;
+      return SignInStatus.notLoggedIn;
     }
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
         .hasMatch(emailController.text)) {
       emailErrorText = 'Use example@example.com';
-      return;
+      return SignInStatus.notLoggedIn;
     }
-    return _signIn();
+    emailErrorText = null;
+    passwordErrorText = null;
+    return SignInStatus.logging;
   }
 
   Future _signIn() async {
-    setState(() {
-      signInStatus = SignInStatus.logging;
-    });
     try {
       futureSignIn = await _apiRoutes.signIn(
         emailController.text,
@@ -171,6 +182,30 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  Future _signUp() async {
+    try {
+      futureSignIn = await _apiRoutes.signUp(
+        emailController.text,
+        passwordController.text,
+      );
+      setState(() {
+        if (futureSignIn) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen()),
+            (r) => false,
+          );
+        } else {
+          signInStatus = SignInStatus.notLoggedIn;
+        }
+      });
+    } catch (error) {
+      setState(() {
+        signInStatus = SignInStatus.notLoggedIn;
+      });
+    }
+  }
+
   Widget loginFormWidget(BuildContext context) {
     final mHeight = MediaQuery.of(context).size.height;
     return Container(
@@ -183,9 +218,11 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Hero(
+                  Hero(
                     tag: "to-signin",
-                    child: ScreenHeader(text: 'Sign In'),
+                    child: ScreenHeader(
+                      text: _signings.first,
+                    ),
                   ),
                   RoundedTextField(
                     errorText: emailErrorText,
@@ -193,7 +230,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: emailController,
                     focusNode: _emailFocusNode,
                     onSubmitted: (_) {
-                      setState(() => _validateEmail());
+                      setState(() => signInStatus = _validateEmail());
+                      if (signInStatus == SignInStatus.logging) {
+                        _signingsFunctions.first();
+                      }
                       _passwordFocusNode.requestFocus();
                     },
                   ),
@@ -204,7 +244,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     focusNode: _passwordFocusNode,
                     onSubmitted: (_) {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      setState(() => _validateEmail());
+                      setState(() => signInStatus = _validateEmail());
+                      if (signInStatus == SignInStatus.logging) {
+                        _signingsFunctions.first();
+                      }
                     },
                   ),
                 ],
@@ -226,13 +269,27 @@ class _SignInScreenState extends State<SignInScreen> {
       return Column(
         children: [
           RoundedButton(
-            text: 'Sign In',
+            text: _signings.first,
             onPressed: () {
               FocusManager.instance.primaryFocus?.unfocus();
-              setState(() => _validateEmail());
+              setState(() => signInStatus = _validateEmail());
+              if (_isSignIn) {
+                if (signInStatus == SignInStatus.logging) {
+                  _signingsFunctions.first();
+                }
+              } else {
+                _signingsFunctions.last();
+              }
             },
           ),
-          GoogleSignInButton(),
+          if (_isSignIn)
+            Column(
+              children: [
+                GoogleSignInButton(),
+              ],
+            )
+          else
+            Container(),
           Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -241,13 +298,19 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpScreen()),
-                      (r) => false,
-                    );
+                    setState(() {
+                      _isSignIn = !_isSignIn;
+                      _signings = _signings.reversed.toList();
+                      // _signingsFunctions = _signingsFunctions.reversed.toList();
+                      print(_signingsFunctions);
+                    });
+                    // Navigator.pushAndRemoveUntil(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => SignUpScreen()),
+                    //   (r) => false,
+                    // );
                   },
-                  child: const HavkaText(text: 'Sign Up'),
+                  child: HavkaText(text: _signings.last),
                 ),
               ],
             ),
@@ -261,6 +324,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _signingsFunctions = [
+      _signIn,
+      _signUp,
+    ];
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();

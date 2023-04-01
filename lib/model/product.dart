@@ -1,5 +1,5 @@
 class Product {
-  final int? id;
+  final String? id;
   final String? name;
   final String? brand;
   final double? protein;
@@ -24,7 +24,7 @@ class Product {
   });
 
   Product.fromJson(Map<String, dynamic> json)
-      : id = json['_id'] as int?,
+      : id = json['_id'] as String?,
         name = json['name'] as String,
         brand = json['brand'] as String?,
         protein = json['proteins'] as double?,
@@ -35,8 +35,7 @@ class Product {
         barcode = json['barcode'] as String?,
         img = json['imgs']['original'] as String?;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'brand': brand,
@@ -49,8 +48,5 @@ class Product {
         'img': img,
       };
 
-  Map<String, dynamic> productIdToJson() =>
-      {
-        'product_id': id
-      };
+  Map<String, dynamic> productIdToJson() => {'product_id': id};
 }

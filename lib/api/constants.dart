@@ -1,17 +1,24 @@
 class Api {
   Api._();
+
   static const host = 'havka.one';
   static const prefix = '/api/v1';
-  static const prefixMongo = '/api/v2/mongo';
 
-  static const me = '/users/me';
+  static const authService = '/auth';
+  static const monolithService = '/monolith';
+
+  static const signin = '/auth/signin/email';
+  static const signInGoogle = '/signin/google';
+  static const signup = '/signup/email';
+
+  static const me = '/monolith/user/me';
 
   static const products = '/product';
   static const productsAdd = '/product/add';
   static const productsByRequest = '/product/searching';
   static const productByBarcode = '/product/barcode';
 
-  static const userProducts = '/users/me/product';
+  static const userProducts = '/monolith/user/me/product';
   static const userProductsAdd = '/users/me/product/add';
   static const userProductsDelete = '/users/me/product';
   static const userProductsWeightingAdd = '/users/me/product/weighting/add';
@@ -25,10 +32,6 @@ class Api {
   static const devicesServices = '/users/me/devices/add';
   static const serviceByName = '/devices/service';
 
-  static const login = '/auth/login';
-  static const register = '/auth/register';
-
   static const googleAuthorize = '/auth/google/authorize';
   static const googleCallback = '/auth/google/callback';
-
 }

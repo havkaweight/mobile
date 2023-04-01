@@ -5,18 +5,21 @@ import '../../constants/font_family.dart';
 import 'modal_scale.dart';
 
 class ScreenHeader extends StatelessWidget {
-  final String? text;
+  final String text;
   const ScreenHeader({
-    this.text,
+    required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(
+          vertical: 20.0,
+          horizontal: 10.0,
+        ),
         child: Text(
-          text!,
+          text,
           style: TextStyle(
             fontFamily: FontFamily.roboto,
             fontWeight: FontWeight.bold,
@@ -30,15 +33,20 @@ class ScreenHeader extends StatelessWidget {
 }
 
 class ScreenSubHeader extends StatelessWidget {
-  final String? text;
-  const ScreenSubHeader({this.text});
+  final String text;
+  const ScreenSubHeader({
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(
+        vertical: 5.0,
+        horizontal: 10.0,
+      ),
       child: Text(
-        text!,
+        text,
         style: TextStyle(
           decoration: TextDecoration.none,
           fontFamily: FontFamily.roboto,
@@ -52,15 +60,24 @@ class ScreenSubHeader extends StatelessWidget {
 }
 
 class HavkaText extends StatelessWidget {
-  final String? text;
-  const HavkaText({this.text});
+  final String text;
+  const HavkaText({
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Text(text!,
-          style: const TextStyle(fontSize: 15, color: HavkaColors.green)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10.0,
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 15,
+          color: HavkaColors.green,
+        ),
+      ),
     );
   }
 }
