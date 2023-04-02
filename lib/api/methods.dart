@@ -26,6 +26,7 @@ class ApiRoutes {
       'email': email,
       'password': password,
     };
+    print(body);
 
     final Map<String, String> headers = <String, String>{
       // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -40,9 +41,7 @@ class ApiRoutes {
         // body: body,
       );
 
-      print(response.statusCode);
-
-      if (response.statusCode != HttpStatus.ok) {
+      if (response.statusCode != HttpStatus.created) {
         throw Exception("${response.statusCode} ${response.body}");
       }
 

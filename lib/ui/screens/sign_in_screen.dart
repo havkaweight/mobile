@@ -255,10 +255,12 @@ class _SignInScreenState extends State<SignInScreen>
 
   Future _signUp() async {
     try {
+      print('TUT');
       futureSignIn = await _apiRoutes.signUp(
         emailController.text,
         passwordController.text,
       );
+      print(futureSignIn);
       setState(() {
         if (futureSignIn) {
           Navigator.pushAndRemoveUntil(
@@ -271,6 +273,7 @@ class _SignInScreenState extends State<SignInScreen>
         }
       });
     } catch (error) {
+      debugPrint("Error $error");
       setState(() {
         signInStatus = SignInStatus.notLoggedIn;
       });
@@ -371,7 +374,7 @@ class _SignInScreenState extends State<SignInScreen>
                       _signingsFunctions.first();
                     }
                   } else {
-                    _signingsFunctions.last();
+                    _signingsFunctions.first();
                   }
                 },
               ),
@@ -412,7 +415,6 @@ class _SignInScreenState extends State<SignInScreen>
                       }
                       emailErrorText = null;
                       passwordErrorText = null;
-                      print(_signingsFunctions.first);
                     });
                     // Navigator.pushAndRemoveUntil(
                     //   context,
