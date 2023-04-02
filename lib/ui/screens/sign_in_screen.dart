@@ -63,6 +63,10 @@ class _SignInScreenState extends State<SignInScreen>
   @override
   void initState() {
     super.initState();
+    _signingsFunctions = [
+      _signIn,
+      _signUp,
+    ];
     signInStatus = SignInStatus.notLoggedIn;
     _emailFocusNode.addListener(_onFocusEmail);
     _passwordFocusNode.addListener(_onFocusPassword);
@@ -430,10 +434,6 @@ class _SignInScreenState extends State<SignInScreen>
 
   @override
   Widget build(BuildContext context) {
-    _signingsFunctions = [
-      _signIn,
-      _signUp,
-    ];
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
