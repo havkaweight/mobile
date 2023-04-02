@@ -30,7 +30,8 @@ class SignInScreen extends StatefulWidget {
   _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInScreenState extends State<SignInScreen>
+    with SingleTickerProviderStateMixin {
   bool _isSignIn = true;
   late SignInStatus signInStatus;
   List<String> _signings = [
@@ -45,6 +46,11 @@ class _SignInScreenState extends State<SignInScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final ApiRoutes _apiRoutes = ApiRoutes();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  late AnimationController _animationController;
+  late Animation<Offset> _animationSlideOut;
+  late Animation<Offset> _animationSlideIn;
+  late Animation<double> _animationFadeOut;
+  late Animation<double> _animationFadeIn;
 
   String? emailErrorText;
   String? passwordErrorText;
@@ -61,6 +67,44 @@ class _SignInScreenState extends State<SignInScreen> {
     emailErrorText = null;
     passwordErrorText = null;
     futureSignIn = false;
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+
+    _animationSlideOut = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0.0, -0.2),
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _animationSlideIn = Tween<Offset>(
+      begin: const Offset(0.0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _animationFadeOut = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _animationFadeIn = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<dynamic> resetPassword(String email) async {
@@ -220,8 +264,27 @@ class _SignInScreenState extends State<SignInScreen> {
                 children: <Widget>[
                   Hero(
                     tag: "to-signin",
-                    child: ScreenHeader(
-                      text: _signings.first,
+                    child: Stack(
+                      children: [
+                        FadeTransition(
+                          opacity: _animationFadeOut,
+                          child: SlideTransition(
+                            position: _animationSlideOut,
+                            child: ScreenHeader(
+                              text: _signings.first,
+                            ),
+                          ),
+                        ),
+                        FadeTransition(
+                          opacity: _animationFadeIn,
+                          child: SlideTransition(
+                            position: _animationSlideIn,
+                            child: ScreenHeader(
+                              text: _signings.last,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   RoundedTextField(
@@ -300,8 +363,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   onPressed: () {
                     setState(() {
                       _isSignIn = !_isSignIn;
-                      _signings = _signings.reversed.toList();
                       // _signingsFunctions = _signingsFunctions.reversed.toList();
+                      _animationController.reset();
+                      _animationController.forward().whenComplete(() {
+                        _signings = _signings.reversed.toList();
+                      });
                       print(_signingsFunctions);
                     });
                     // Navigator.pushAndRemoveUntil(
