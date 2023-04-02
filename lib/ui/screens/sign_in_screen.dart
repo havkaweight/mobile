@@ -8,7 +8,6 @@ import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
-import 'package:health_tracker/ui/screens/sign_up_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/popup.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
@@ -31,12 +30,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _isSignIn = true;
   late SignInStatus signInStatus;
   List<String> _signings = [
-    "Sign In",
     "Sign Up",
+    "Sign In",
   ];
   late List<Function> _signingsFunctions;
 
@@ -47,10 +46,13 @@ class _SignInScreenState extends State<SignInScreen>
   final ApiRoutes _apiRoutes = ApiRoutes();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   late AnimationController _animationController;
+  late AnimationController _animationButtonsController;
   late Animation<Offset> _animationSlideOut;
   late Animation<Offset> _animationSlideIn;
   late Animation<double> _animationFadeOut;
   late Animation<double> _animationFadeIn;
+  late Animation<double> _animationMethodsButtonsFadeInOut;
+  late Animation<Offset> _animationMethodsButtonsSlideInOut;
 
   String? emailErrorText;
   String? passwordErrorText;
@@ -70,7 +72,12 @@ class _SignInScreenState extends State<SignInScreen>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
-    );
+    )..forward();
+
+    _animationButtonsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    )..forward();
 
     _animationSlideOut = Tween<Offset>(
       begin: Offset.zero,
@@ -98,6 +105,22 @@ class _SignInScreenState extends State<SignInScreen>
       end: 1.0,
     ).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _animationMethodsButtonsFadeInOut = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+          parent: _animationButtonsController, curve: Curves.easeInOut),
+    );
+
+    _animationMethodsButtonsSlideInOut = Tween<Offset>(
+      begin: const Offset(0.0, -0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+          parent: _animationButtonsController, curve: Curves.easeInOut),
     );
   }
 
@@ -330,29 +353,40 @@ class _SignInScreenState extends State<SignInScreen>
   Widget bottomSignInNavigation() {
     if (signInStatus == SignInStatus.notLoggedIn) {
       return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          RoundedButton(
-            text: _signings.first,
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              setState(() => signInStatus = _validateEmail());
-              if (_isSignIn) {
-                if (signInStatus == SignInStatus.logging) {
-                  _signingsFunctions.first();
-                }
-              } else {
-                _signingsFunctions.last();
-              }
-            },
+          Column(
+            children: [
+              RoundedButton(
+                text: _signings.last,
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  setState(() => signInStatus = _validateEmail());
+                  if (_isSignIn) {
+                    if (signInStatus == SignInStatus.logging) {
+                      _signingsFunctions.first();
+                    }
+                  } else {
+                    _signingsFunctions.last();
+                  }
+                },
+              ),
+              if (_isSignIn)
+                FadeTransition(
+                  opacity: _animationMethodsButtonsFadeInOut,
+                  child: SlideTransition(
+                    position: _animationMethodsButtonsSlideInOut,
+                    child: Column(
+                      children: [
+                        GoogleSignInButton(),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Container(),
+            ],
           ),
-          if (_isSignIn)
-            Column(
-              children: [
-                GoogleSignInButton(),
-              ],
-            )
-          else
-            Container(),
           Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -363,12 +397,18 @@ class _SignInScreenState extends State<SignInScreen>
                   onPressed: () {
                     setState(() {
                       _isSignIn = !_isSignIn;
-                      // _signingsFunctions = _signingsFunctions.reversed.toList();
+                      _signingsFunctions = _signingsFunctions.reversed.toList();
+                      _signings = _signings.reversed.toList();
                       _animationController.reset();
-                      _animationController.forward().whenComplete(() {
-                        _signings = _signings.reversed.toList();
-                      });
-                      print(_signingsFunctions);
+                      _animationController.forward();
+                      if (_isSignIn) {
+                        _animationButtonsController.forward();
+                      } else {
+                        _animationButtonsController.reverse();
+                      }
+                      emailErrorText = null;
+                      passwordErrorText = null;
+                      print(_signingsFunctions.first);
                     });
                     // Navigator.pushAndRemoveUntil(
                     //   context,
@@ -376,7 +416,7 @@ class _SignInScreenState extends State<SignInScreen>
                     //   (r) => false,
                     // );
                   },
-                  child: HavkaText(text: _signings.last),
+                  child: HavkaText(text: _signings.first),
                 ),
               ],
             ),

@@ -7,7 +7,7 @@ class Api {
   static const authService = '/auth';
   static const monolithService = '/monolith';
 
-  static const signin = '/auth/signin/email';
+  static const signin = '/signin/email';
   static const signInGoogle = '/signin/google';
   static const signup = '/signup/email';
 

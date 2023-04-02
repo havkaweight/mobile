@@ -29,7 +29,7 @@ class ApiRoutes {
 
     final Map<String, String> headers = <String, String>{
       // 'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
+      'Content-Type': 'application/json',
     };
 
     try {
@@ -39,6 +39,8 @@ class ApiRoutes {
         headers: headers,
         // body: body,
       );
+
+      print(response.statusCode);
 
       if (response.statusCode != HttpStatus.ok) {
         throw Exception("${response.statusCode} ${response.body}");
@@ -59,12 +61,13 @@ class ApiRoutes {
 
     final Map<String, String> headers = <String, String>{
       // 'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
+      'Content-Type': 'application/json',
     };
 
     try {
       final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.signin}', body),
+        Uri.https(
+            Api.host, '${Api.prefix}${Api.authService}${Api.signin}', body),
         headers: headers,
         // body: body,
       );
