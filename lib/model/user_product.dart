@@ -1,6 +1,6 @@
 class UserProduct {
-  final int? id;
-  final int? productId;
+  final String? id;
+  final String? productId;
   final String? productName;
   final String? productBrand;
   final String? userId;
@@ -22,24 +22,23 @@ class UserProduct {
     this.carbs,
     this.kcal,
     this.netWeightLeft,
-    this.unit
+    this.unit,
   });
 
   UserProduct.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as int,
-        productId = json['product_id'] as int,
-        productName = json['name'] as String,
-        productBrand = json['brand'] as String,
-        userId = json['user_id'] as String,
-        protein = json['proteins'] as double,
-        fat = json['fats'] as double,
-        carbs = json['carbs'] as double,
-        kcal = json['kcal'] as double,
-        netWeightLeft = json['net_weight_left'] as double,
-        unit = json['unit'] as String;
+      : id = json['_id'] as String?,
+        productId = json['product']['_id'] as String?,
+        productName = json['product']['name'] as String?,
+        productBrand = json['brand'] as String?,
+        userId = json['user_id'] as String?,
+        protein = json['proteins'] as double?,
+        fat = json['fats'] as double?,
+        carbs = json['carbs'] as double?,
+        kcal = json['kcal'] as double?,
+        netWeightLeft = json['net_weight_left'] as double?,
+        unit = json['unit'] as String?;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'product_id': productId,
         'name': productName,
@@ -53,8 +52,5 @@ class UserProduct {
         'unit': unit
       };
 
-  Map<String, dynamic> idToJson() =>
-      {
-        'id': id
-      };
+  Map<String, dynamic> idToJson() => {'id': id};
 }

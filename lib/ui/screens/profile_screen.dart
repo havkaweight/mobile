@@ -65,12 +65,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   void logout() {
     setState(() {
       removeToken();
+      final googleSignIn = GoogleSignIn(scopes: ["email", "profile"]);
       googleSignIn.signOut();
       googleSignIn.disconnect();
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => SignInScreen()),
       );
     });
   }

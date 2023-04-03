@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
@@ -29,22 +30,16 @@ Future removeToken() async {
 //   return storage.containsKey(key: 'jwt');
 // }
 
-// Future<String> getToken() async {
-//   String token = await storage.read(key: 'jwt');
-//   return token;
-// }
-
-
 class AuthService {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
   Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool("skipOnboarding", true);
+    // final prefs = await SharedPreferences.getInstance();
+    // prefs.setBool("skipOnboarding", false);
     try {
       await _apiRoutes.getMe();
-    }
-    catch (Exception) {
+    } catch (error) {
+      debugPrint("Error: $error");
       return false;
     }
     return true;
@@ -97,7 +92,6 @@ class AuthService {
   //     throw Exception('Failed sign in');
   //   }
   // }
-
 
   // Future<Future> googleSignIn(String username, String password) async {
   //   final Map<String, dynamic> queryParameters = <String, dynamic>{};

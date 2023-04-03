@@ -8,6 +8,7 @@ import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
+import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/popup.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
@@ -255,12 +256,10 @@ class _SignInScreenState extends State<SignInScreen>
 
   Future _signUp() async {
     try {
-      print('TUT');
       futureSignIn = await _apiRoutes.signUp(
         emailController.text,
         passwordController.text,
       );
-      print(futureSignIn);
       setState(() {
         if (futureSignIn) {
           Navigator.pushAndRemoveUntil(
@@ -393,6 +392,19 @@ class _SignInScreenState extends State<SignInScreen>
               else
                 Container(),
             ],
+          ),
+          Hero(
+            tag: "get-started",
+            child: HavkaButton(
+              fontSize: 20,
+              child: const Align(child: Text('Get Started')),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StoryPage()),
+                );
+              },
+            ),
           ),
           Container(
             padding:

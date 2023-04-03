@@ -32,65 +32,55 @@ class FridgeItem extends StatelessWidget {
             width: 50,
             height: 50,
             child: Stack(
-                children: <Widget>[
-                  Hero(
-                    tag: 'productImage-${userProduct.id}',
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      margin: const EdgeInsets.all(5),
-                      decoration: const BoxDecoration(
-                        color: Color(0xff7c94b6),
-                        image: DecorationImage(
-                          image: NetworkImage('https://cdn.havka.one/test.jpg') ,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              children: <Widget>[
+                Hero(
+                  tag: 'productImage-${userProduct.id}',
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    margin: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Color(0xff7c94b6),
+                      image: DecorationImage(
+                        image: NetworkImage('https://cdn.havka.one/test.jpg'),
+                        fit: BoxFit.cover,
                       ),
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
                     ),
                   ),
-                  SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressBar(value: Random().nextDouble())
-                  )
-                ],
+                ),
+                SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressBar(value: Random().nextDouble()))
+              ],
             ),
           ),
           title: Text(
-            userProduct.productName!,
+            userProduct.productName ?? 'NAME Placeholder',
             style: TextStyle(
               color: Colors.black,
               decoration: TextDecoration.none,
               fontWeight: FontWeight.normal,
-              fontSize: Theme.of(context)
-                  .textTheme
-                  .headline3!
-                  .fontSize,
+              fontSize: Theme.of(context).textTheme.headline3!.fontSize,
             ),
           ),
           subtitle: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                userProduct.productBrand!,
+                userProduct.productBrand ?? 'BRAND Placeholder',
                 style: TextStyle(
                   color: Colors.black,
                   decoration: TextDecoration.none,
                   fontWeight: FontWeight.normal,
-                  fontSize: Theme.of(context)
-                      .textTheme
-                      .headline4!
-                      .fontSize,
+                  fontSize: Theme.of(context).textTheme.headline4!.fontSize,
                 ),
               ),
               Text(
-                '${userProduct.netWeightLeft!.round()}${userProduct.unit} left',
+                '100 000 g',
                 style: TextStyle(
-                  fontSize: Theme.of(context)
-                      .textTheme
-                      .headline4!
-                      .fontSize,
+                  fontSize: Theme.of(context).textTheme.headline4!.fontSize,
                 ),
               )
             ],
@@ -138,10 +128,7 @@ class FridgeItem extends StatelessWidget {
 }
 
 class EmptyFridgeItem extends StatelessWidget {
-
-  const EmptyFridgeItem({
-    super.key
-  });
+  const EmptyFridgeItem({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -170,8 +157,7 @@ class EmptyFridgeItem extends StatelessWidget {
                 const SizedBox(
                     width: 50,
                     height: 50,
-                    child: CircularProgressBar(value: -1)
-                )
+                    child: CircularProgressBar(value: -1))
               ],
             ),
           ),

@@ -9,6 +9,7 @@ import 'package:health_tracker/ui/widgets/app_icon.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:health_tracker/addons/google_sign_in/google_sign_in/lib/google_sign_in.dart';
 // import 'package:health_tracker/api/constants.dart';
@@ -33,79 +34,14 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget? body;
 
+  Future<bool> _skipOnboarding() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("skipOnboarding") ?? false;
+  }
+
   @override
   void initState() {
     super.initState();
-  }
-
-  Widget welcomeWidget(BuildContext context) {
-    const double horizontalPadding = 24;
-    const double verticalPadding = 36;
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Center(
-              child: AppIcon(image: Assets.appLogo),
-            ),
-            const SizedBox(height: verticalPadding),
-            const Padding(
-              padding: EdgeInsets.all(horizontalPadding),
-              child: Hero(
-                  tag: "to-signin",
-                  child: ScreenHeader(text: "It's your Havka!")),
-            ),
-            // const SizedBox(height: verticalPadding),
-            Padding(
-              padding: const EdgeInsets.all(horizontalPadding),
-              child: Hero(
-                tag: "get-started",
-                child: HavkaButton(
-                  fontSize: 20,
-                  child: const Align(child: Text('Get Started')),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => StoryPage()),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: verticalPadding),
-            Padding(
-              padding: const EdgeInsets.all(horizontalPadding),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Text(
-                      'Already have an account?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: HavkaColors.green,
-                        fontSize: 16,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    HavkaButton(
-                      child: const Align(child: Text('Log In')),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignInScreen()),
-                        );
-                      },
-                    )
-                  ]),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -113,7 +49,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).backgroundColor,
-      body: welcomeWidget(context),
+      body: FutureBuilder(
+        future: _skipOnboarding(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data!) {
+              return SignInScreen();
+            } else {
+              return StoryPage();
+            }
+          }
+          return const CircularProgressIndicator();
+        },
+      ),
     );
   }
 }

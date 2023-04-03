@@ -105,6 +105,8 @@ class GoogleSignInButton extends StatelessWidget {
   // const GoogleSignInButton({Key? key}) : super(key: key);
 
   Future<void> _googleSignIn(BuildContext context) async {
+    final GoogleSignIn googleSignIn =
+        GoogleSignIn(scopes: ['email', 'profile']);
     final googleAccount = await googleSignIn.signIn();
     if (googleAccount != null) {
       final googleAuth = await googleAccount.authentication;

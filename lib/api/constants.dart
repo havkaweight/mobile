@@ -11,16 +11,14 @@ class Api {
   static const signInGoogle = '/signin/google';
   static const signup = '/signup/email';
 
-  static const me = '/monolith/user/me';
+  static const me = '/user/me';
 
   static const products = '/product';
   static const productsAdd = '/product/add';
   static const productsByRequest = '/product/searching';
   static const productByBarcode = '/product/barcode';
 
-  static const userProducts = '/monolith/user/me/product';
-  static const userProductsAdd = '/users/me/product/add';
-  static const userProductsDelete = '/users/me/product';
+  static const userProducts = '/user/me/product';
   static const userProductsWeightingAdd = '/users/me/product/weighting/add';
   static const userProductsWeightingsHistory = '/users/me/product/weighting';
 
