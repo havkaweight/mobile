@@ -115,16 +115,15 @@ class GoogleSignInButton extends StatelessWidget {
         idToken: googleAuth.idToken,
       );
       if (googleAuth.accessToken != null && googleAuth.idToken != null) {
-        log(googleAuth.accessToken!);
-        log(googleAuth.idToken!);
-        final authResult = await authInstance.signInWithCredential(credential);
+        await authInstance.signInWithCredential(credential);
         final bool isAuthSuccess =
             await ApiRoutes().signInGoogle(googleAuth.idToken!);
         if (isAuthSuccess) {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => MainScreen(),
             ),
+            (route) => false,
           );
         }
       }

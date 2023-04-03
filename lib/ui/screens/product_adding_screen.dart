@@ -13,23 +13,31 @@ class ProductAddingScreen extends StatefulWidget {
   final String? barcode;
 
   const ProductAddingScreen({this.barcode = ''});
-  const ProductAddingScreen.withBarcode(this.barcode);
+  const ProductAddingScreen.withBarcode({required this.barcode});
 
   @override
   _ProductAddingScreenState createState() => _ProductAddingScreenState();
 }
 
 class _ProductAddingScreenState extends State<ProductAddingScreen> {
-  final nameController = TextEditingController();
-  final brandController = TextEditingController();
-  final proteinController = TextEditingController();
-  final fatsController = TextEditingController();
-  final carbsController = TextEditingController();
-  final kcalController = TextEditingController();
-  final weightController = TextEditingController();
-  final unitController = TextEditingController();
-  final barcodeController = TextEditingController();
-  final barcodeFocusNode = FocusNode();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController brandController = TextEditingController();
+  final TextEditingController proteinController = TextEditingController();
+  final TextEditingController fatsController = TextEditingController();
+  final TextEditingController carbsController = TextEditingController();
+  final TextEditingController kcalController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+  final TextEditingController unitController = TextEditingController();
+  final TextEditingController barcodeController = TextEditingController();
+
+  final FocusNode brandFocusNode = FocusNode();
+  final FocusNode proteinFocusNode = FocusNode();
+  final FocusNode fatsFocusNode = FocusNode();
+  final FocusNode carbsFocusNode = FocusNode();
+  final FocusNode kcalFocusNode = FocusNode();
+  final FocusNode weightFocusNode = FocusNode();
+  final FocusNode unitFocusNode = FocusNode();
+  final FocusNode barcodeFocusNode = FocusNode();
 
   final ApiRoutes _apiRoutes = ApiRoutes();
 
@@ -41,113 +49,126 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Center(
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(30.0),
-                  child: Hero(
-                    tag: "product-add",
-                    child: FaIcon(
-                      FontAwesomeIcons.cartPlus,
-                      color: HavkaColors.green,
-                      size: 80,
-                    ),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Theme.of(context).backgroundColor,
+          body: SingleChildScrollView(
+            reverse: true,
+            child: SafeArea(
+              child: Center(
+                child: FractionallySizedBox(
+                  widthFactor: 0.7,
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(30.0),
+                        child: Hero(
+                          tag: "product-add",
+                          child: FaIcon(
+                            FontAwesomeIcons.cartPlus,
+                            color: HavkaColors.green,
+                            size: 80,
+                          ),
+                        ),
+                      ),
+                      RoundedTextField(
+                        hintText: 'Name',
+                        controller: nameController,
+                        onSubmitted: (_) => brandFocusNode.requestFocus(),
+                      ),
+                      RoundedTextField(
+                        hintText: 'Brand',
+                        controller: brandController,
+                        focusNode: brandFocusNode,
+                        onSubmitted: (_) => proteinFocusNode.requestFocus(),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      RoundedTextField(
+                        hintText: 'Protein',
+                        controller: proteinController,
+                        keyboardType: TextInputType.number,
+                        focusNode: proteinFocusNode,
+                        onSubmitted: (_) => fatsFocusNode.requestFocus(),
+                      ),
+                      RoundedTextField(
+                        hintText: 'Fats',
+                        controller: fatsController,
+                        keyboardType: TextInputType.number,
+                        focusNode: fatsFocusNode,
+                        onSubmitted: (_) => carbsFocusNode.requestFocus(),
+                      ),
+                      RoundedTextField(
+                        hintText: 'Carbs',
+                        controller: carbsController,
+                        keyboardType: TextInputType.number,
+                        focusNode: carbsFocusNode,
+                        onSubmitted: (_) => kcalFocusNode.requestFocus(),
+                      ),
+                      RoundedTextField(
+                        hintText: 'Kcal',
+                        controller: kcalController,
+                        keyboardType: TextInputType.number,
+                        focusNode: kcalFocusNode,
+                        onSubmitted: (_) => barcodeFocusNode.requestFocus(),
+                      ),
+                      RoundedTextField(
+                        width: 100,
+                        hintText: 'Barcode',
+                        controller: barcodeController,
+                        keyboardType: TextInputType.number,
+                        focusNode: barcodeFocusNode,
+                        iconButton: IconButton(
+                          icon: const Icon(Icons.qr_code_2),
+                          color: HavkaColors.green,
+                          onPressed: () {
+                            _buildBarcodeScanner().then(
+                              (barcode) => setState(() {
+                                barcodeController.text = barcode as String;
+                              }),
+                            );
+                          },
+                        ),
+                      ),
+                      RoundedButton(
+                        text: 'Done',
+                        onPressed: () {
+                          _addProduct();
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                RoundedTextField(
-                  hintText: 'Name',
-                  controller: nameController,
-                ),
-                RoundedTextField(
-                  hintText: 'Brand',
-                  controller: brandController,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundedTextField(
-                      width: 0.3,
-                      hintText: 'Protein',
-                      controller: proteinController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    RoundedTextField(
-                      width: 0.3,
-                      hintText: 'Fats',
-                      controller: fatsController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    RoundedTextField(
-                      width: 0.3,
-                      hintText: 'Carbs',
-                      controller: carbsController,
-                      keyboardType: TextInputType.number,
-                    )
-                  ],
-                ),
-                RoundedTextField(
-                  hintText: 'Kcal',
-                  controller: kcalController,
-                  keyboardType: TextInputType.number,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundedTextField(
-                      width: 0.6,
-                      hintText: 'Weight',
-                      controller: weightController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    RoundedTextField(
-                      width: 0.3,
-                      hintText: 'Units',
-                      controller: unitController,
-                    )
-                  ],
-                ),
-                RoundedTextField(
-                  hintText: 'Barcode',
-                  controller: barcodeController,
-                  keyboardType: TextInputType.number,
-                  iconButton: IconButton(
-                    icon: const Icon(Icons.qr_code_2),
-                    color: HavkaColors.green,
-                    onPressed: () {
-                      _buildBarcodeScanner().then(
-                        (barcode) => setState(() {
-                          barcodeController.text = barcode as String;
-                        }),
-                      );
-                    },
-                  ),
-                ),
-                RoundedButton(
-                    text: 'Done',
-                    onPressed: () {
-                      final Product product = Product.fromJson({
-                        'name': nameController.text,
-                        'brand': brandController.text,
-                        'proteins': double.parse(proteinController.text),
-                        'fats': double.parse(fatsController.text),
-                        'carbs': double.parse(carbsController.text),
-                        'kcal': double.parse(kcalController.text),
-                        'net_weight': double.parse(weightController.text),
-                        'unit': unitController.text,
-                        'barcode': barcodeController.text,
-                      });
-                      _apiRoutes.addProduct(product);
-                      Navigator.pop(context);
-                    })
-              ],
+              ),
             ),
-          ),
-        ));
+          )),
+    );
+  }
+
+  void _addProduct() {
+    final Product product = Product.fromJson({
+      'name': nameController.text,
+      'brand': brandController.text,
+      'proteins': double.parse(proteinController.text),
+      'fats': double.parse(fatsController.text),
+      'carbs': double.parse(carbsController.text),
+      'kcal': double.parse(kcalController.text),
+      'net_weight': double.parse(weightController.text),
+      'unit': unitController.text,
+      'barcode': barcodeController.text,
+    });
+    _apiRoutes.addProduct(product);
   }
 
   Future _buildBarcodeScanner() {

@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
-import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/widgets/modal_scale.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
-import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
 import 'package:health_tracker/ui/widgets/fridgeitem.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/modal_scale.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:health_tracker/ui/widgets/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../constants/strings.dart';
-import '../../main.dart';
-import '../widgets/shimmer.dart';
-import 'barcode_scanner.dart';
-import 'havka_barcode_scanner.dart';
 
 List<Map<String, String>> userProductsList = [];
 OverlayEntry? _overlayEntry;
@@ -133,19 +126,23 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                   }
                   if (snapshot.hasData) {
                     userProducts = snapshot.data!;
-                    childWidget = RefreshIndicator(
-                      onRefresh: _pullRefresh,
-                      child: ScrollConfiguration(
-                          behavior: CustomBehavior(),
-                          child: ListView.builder(
-                            itemCount: userProducts.length,
-                            itemBuilder: (BuildContext context, index) {
-                              final UserProduct userProduct =
-                                  userProducts[index];
-                              return FridgeItem(userProduct: userProduct);
-                            },
-                          )),
-                    );
+                    if (userProducts.isNotEmpty) {
+                      childWidget = RefreshIndicator(
+                        onRefresh: _pullRefresh,
+                        child: ScrollConfiguration(
+                            behavior: CustomBehavior(),
+                            child: ListView.builder(
+                              itemCount: userProducts.length,
+                              itemBuilder: (BuildContext context, index) {
+                                final UserProduct userProduct =
+                                    userProducts[index];
+                                return FridgeItem(userProduct: userProduct);
+                              },
+                            )),
+                      );
+                    } else {
+                      childWidget = const Center(child: Text("No items found"));
+                    }
                   }
                   return AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),

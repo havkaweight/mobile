@@ -396,8 +396,8 @@ class _SignInScreenState extends State<SignInScreen>
           Hero(
             tag: "get-started",
             child: HavkaButton(
-              fontSize: 20,
-              child: const Align(child: Text('Get Started')),
+              fontSize: 18,
+              child: const Align(child: Text('What is Havka?')),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -428,11 +428,6 @@ class _SignInScreenState extends State<SignInScreen>
                       emailErrorText = null;
                       passwordErrorText = null;
                     });
-                    // Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => SignUpScreen()),
-                    //   (r) => false,
-                    // );
                   },
                   child: HavkaText(text: _signings.first),
                 ),

@@ -15,12 +15,6 @@ import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:http/http.dart' as http;
 
 class ApiRoutes {
-  void isAuthorized(http.Response response) {
-    if (response.statusCode == HttpStatus.unauthorized) {
-      throw Exception('Unauthorized');
-    }
-  }
-
   Future<bool> signUp(String email, String password) async {
     final Map<String, dynamic> body = <String, dynamic>{
       'email': email,
@@ -124,68 +118,27 @@ class ApiRoutes {
     }
   }
 
-  Future<String?> googleAuthorize() async {
-    final queryParameters = {'authentication_backend': 'jwt'};
-    final http.Response response = await http.get(
-      Uri.https(
-          Api.host, '${Api.prefix}${Api.googleAuthorize}', queryParameters),
-      headers: <String, String>{
-        // 'Content-Type': 'application/json'
-      },
-    );
-
-    final dynamic data = jsonDecode(response.body);
-    print('data ${response.body}');
-    print('statusCode ${response.statusCode}');
-    if (response.statusCode == 200) {
-      if (data.containsKey('authorization_url') != null) {
-        final uri = Uri.parse(data['authorization_url'] as String);
-        return uri.queryParameters['state'];
-      }
-    }
-  }
-
-  Future<bool?> googleCallback(String serverAuthCode) async {
-    final state = await googleAuthorize();
-    final queryParameters = {'code': serverAuthCode, 'state': state};
-    print('state $state');
-    final Map map = <String, dynamic>{};
-    map['code'] = serverAuthCode;
-    map['state'] = state;
-    final http.Response response = await http.get(
-        Uri.https(
-            Api.host, '${Api.prefix}${Api.googleCallback}', queryParameters),
-        headers: <String, String>{
-          // 'Content-Type': 'application/json'
-        });
-    final dynamic data = jsonDecode(response.body);
-    print(data);
-    if (response.statusCode == HttpStatus.ok) {
-      if (data.containsKey('access_token') != null) {
-        setToken(data['access_token'] as String);
-        return true;
-        // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-      } else {
-        // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-      }
-    } else {
-      return false;
-      // throw Exception('Failed sign in');
-    }
-  }
-
   Future<User> getMe() async {
-    final token = await getToken();
-    final http.Response response = await http.get(
+    try {
+      final token = await getToken();
+      final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.monolithService}${Api.me}'),
         headers: <String, String>{
           'Accept': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
-    isAuthorized(response);
-    final user =
-        User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    return user;
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == HttpStatus.unauthorized) {
+        throw Exception('Unauthorized');
+      }
+
+      final user =
+          User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      return user;
+    } catch (error) {
+      throw Exception("Error: $error");
+    }
   }
 
   Future<List<UserProduct>> getUserProductsList() async {
@@ -211,15 +164,13 @@ class ApiRoutes {
     //     },
     // );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != HttpStatus.ok) {
       return [];
     }
-    final products = response.data as List;
-    print(products);
+    final userProducts = response.data as List;
     final List<UserProduct> userProductsList =
-        products.map<UserProduct>((json) {
-      final userProduct = UserProduct.fromJson(json as Map<String, dynamic>);
-      return userProduct;
+        userProducts.map<UserProduct>((json) {
+      return UserProduct.fromJson(json as Map<String, dynamic>);
     }).toList();
     return userProductsList;
   }

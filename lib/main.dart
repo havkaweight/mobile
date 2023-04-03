@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/theme.dart';
+import 'package:health_tracker/ui/screens/main_screen.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/splash_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
@@ -79,11 +81,15 @@ class _HavkaAppState extends State<HavkaApp> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: authService.isLoggedIn(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
           return SplashScreen();
         } else {
-          return WelcomeScreen();
+          if (snapshot.data!) {
+            return WelcomeScreen();
+          } else {
+            return MainScreen();
+          }
         }
       },
     );
