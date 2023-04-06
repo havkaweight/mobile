@@ -18,6 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 List<Map<String, String>> userProductsList = [];
 OverlayEntry? _overlayEntry;
 
+String? barcode;
+
 class UserProductsScreen extends StatefulWidget {
   @override
   _UserProductsScreenState createState() => _UserProductsScreenState();
@@ -94,7 +96,6 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                       },
                     ),
                     RoundedButton(
-                      width: 100,
                       text: 'Add havka',
                       onPressed: () {
                         _buildProductsList(context)
@@ -130,15 +131,16 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                       childWidget = RefreshIndicator(
                         onRefresh: _pullRefresh,
                         child: ScrollConfiguration(
-                            behavior: CustomBehavior(),
-                            child: ListView.builder(
-                              itemCount: userProducts.length,
-                              itemBuilder: (BuildContext context, index) {
-                                final UserProduct userProduct =
-                                    userProducts[index];
-                                return FridgeItem(userProduct: userProduct);
-                              },
-                            )),
+                          behavior: CustomBehavior(),
+                          child: ListView.builder(
+                            itemCount: userProducts.length,
+                            itemBuilder: (BuildContext context, index) {
+                              final UserProduct userProduct =
+                                  userProducts[index];
+                              return FridgeItem(userProduct: userProduct);
+                            },
+                          ),
+                        ),
                       );
                     } else {
                       childWidget = const Center(child: Text("No items found"));
@@ -185,7 +187,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
           child:
               // SizedBox(height: mHeight * 0.75, child: BarcodeScannerScreen()),
               SizedBox(
-                  height: mHeight * 0.75, child: HavkaBarcodeScannerScreen()),
+            height: mHeight * 0.75,
+            child: HavkaBarcodeScannerScreen(),
+          ),
         );
       },
     );

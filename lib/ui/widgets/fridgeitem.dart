@@ -39,13 +39,17 @@ class FridgeItem extends StatelessWidget {
                     width: 50,
                     height: 50,
                     margin: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Color(0xff7c94b6),
-                      image: DecorationImage(
-                        image: NetworkImage('https://cdn.havka.one/test.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                    decoration: BoxDecoration(
+                      color: const Color(0xff7c94b6),
+                      image: userProduct.netWeightLeft != null
+                          ? const DecorationImage(
+                              image: NetworkImage(
+                                  'https://cdn.havka.one/test.jpg'),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(50.0)),
                     ),
                   ),
                 ),

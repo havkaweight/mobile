@@ -65,8 +65,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (searchController.text.isEmpty)
           FutureBuilder<List<Product>>(
             future: _apiRoutes.getProductsList(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<List<Product>> snapshot,
+            ) {
               if (!snapshot.hasData) {
                 return Center(
                     child: Container(
@@ -85,11 +87,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           height: 50.0,
                           decoration: BoxDecoration(
                             color: const Color(0xff7c94b6),
-                            image: DecorationImage(
-                              image: NetworkImage(product.img ??
-                                  'https://cdn.havka.one/test.jpg'),
-                              fit: BoxFit.cover,
-                            ),
+                            image: product.img != null
+                                ? const DecorationImage(
+                                    image: NetworkImage(
+                                      "https://cdn.havka.one/test.jpg",
+                                    ),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(50.0)),
                             border: Border.all(
@@ -145,11 +150,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         height: 100.0,
                         decoration: BoxDecoration(
                           color: const Color(0xff7c94b6),
-                          image: const DecorationImage(
-                            image:
-                                NetworkImage('https://cdn.havka.one/test.jpg'),
-                            fit: BoxFit.cover,
-                          ),
+                          image: product.img != null
+                              ? const DecorationImage(
+                                  image: NetworkImage(
+                                      'https://cdn.havka.one/test.jpg'),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(50.0)),
                           border: Border.all(

@@ -2,14 +2,24 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const storage = FlutterSecureStorage();
 
-Future<bool> setToken(String value) async {
-  await storage.write(key: 'jwt', value: value);
+Future<bool> setToken(String accessToken) async {
+  await storage.write(key: 'jwt', value: accessToken);
   return storage.containsKey(key: 'jwt');
+}
+
+Future<bool> setRefreshToken(String refreshToken) async {
+  await storage.write(key: 'refresh_token', value: refreshToken);
+  return storage.containsKey(key: 'refresh_token');
 }
 
 Future<String?> getToken() async {
   final String? token = await storage.read(key: 'jwt');
   return token;
+}
+
+Future<String?> getRefreshToken() async {
+  final String? refreshToken = await storage.read(key: 'refresh_token');
+  return refreshToken;
 }
 
 Future removeToken() async {

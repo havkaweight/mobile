@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -20,11 +21,10 @@ class ApiRoutes {
       'email': email,
       'password': password,
     };
-    print(body);
 
     final Map<String, String> headers = <String, String>{
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      // 'Content-Type': 'application/json',
     };
 
     try {
@@ -32,7 +32,7 @@ class ApiRoutes {
         Uri.https(
             Api.host, '${Api.prefix}${Api.authService}${Api.signup}', body),
         headers: headers,
-        // body: body,
+        body: body,
       );
 
       if (response.statusCode != HttpStatus.created) {
@@ -53,32 +53,62 @@ class ApiRoutes {
     };
 
     final Map<String, String> headers = <String, String>{
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      // 'Content-Type': 'application/json',
     };
 
     try {
       final http.Response response = await http.post(
         Uri.https(
-            Api.host, '${Api.prefix}${Api.authService}${Api.signin}', body),
+          Api.host,
+          '${Api.prefix}${Api.authService}${Api.signin}',
+        ),
         headers: headers,
-        // body: body,
+        body: body,
       );
 
       if (response.statusCode == HttpStatus.ok) {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
-        print(data);
-        if (data.containsKey('access_token')) {
-          setToken(data['access_token'] as String);
-          return true;
-          // return Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-        } else {
-          return false;
-          // return Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-        }
+        log("Access Token: ${data['access_token'] as String}");
+        setToken(data['access_token'] as String);
+        setRefreshToken(data['refresh_token'] as String);
+        return true;
       } else {
         // throw Exception("Failed sign in.");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Error $e");
+      return false;
+    }
+  }
+
+  Future<bool> tokenUpdate() async {
+    print("YA TUT TOKEN UPDATE");
+    final String? refreshToken = await getRefreshToken();
+
+    final Map<String, String> headers = <String, String>{
+      'Content-Type': 'application/json',
+      'refresh_token': refreshToken!,
+    };
+
+    try {
+      final http.Response response = await http.get(
+        Uri.https(
+          Api.host,
+          '${Api.prefix}${Api.authService}${Api.tokenUpdate}',
+        ),
+        headers: headers,
+      );
+
+      if (response.statusCode == HttpStatus.ok) {
+        final Map<String, dynamic> data =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        setToken(data['access_token'] as String);
+        setRefreshToken(data['refresh_token'] as String);
+        return true;
+      } else {
         return false;
       }
     } catch (e) {
@@ -90,18 +120,23 @@ class ApiRoutes {
   Future<bool> signInGoogle(String idToken) async {
     try {
       final Map<String, String> body = <String, String>{
-        "token": idToken,
+        "id_token": idToken,
       };
       final http.Response response = await http.post(
-        Uri.https(Api.host,
-            '${Api.prefix}${Api.authService}${Api.signInGoogle}', body),
-        headers: <String, String>{'Content-Type': 'application/json'},
+        Uri.https(
+          Api.host,
+          '${Api.prefix}${Api.authService}${Api.signInGoogle}',
+        ),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(body),
       );
 
       if (response.statusCode == HttpStatus.ok) {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
-        print(data);
+        log("Access Token: ${data["access_token"] as String}");
         if (data.containsKey('access_token')) {
           setToken(data['access_token'] as String);
           return true;
@@ -128,9 +163,14 @@ class ApiRoutes {
           'Authorization': 'Bearer $token',
         },
       );
-
       if (response.statusCode == HttpStatus.unauthorized) {
         throw Exception('Unauthorized');
+      } else if (response.statusCode == HttpStatus.forbidden) {
+        final bool isTokenRelevant = await tokenUpdate();
+        if (!isTokenRelevant) {
+          throw Exception("Access Denied");
+        }
+        return getMe();
       }
 
       final user =
@@ -194,14 +234,15 @@ class ApiRoutes {
   Future<dynamic> getProductByBarcode(String? barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-      Uri.https(Api.host, '${Api.prefix}${Api.productByBarcode}/$barcode'),
+      Uri.https(Api.host,
+          '${Api.prefix}${Api.monolithService}${Api.productByBarcode}/$barcode'),
       headers: <String, String>{
         'Content-type': 'application/json',
         'Authorization': 'Bearer $token'
       },
     );
     print(response.statusCode);
-    if (response.statusCode == 404) {
+    if (response.statusCode == HttpStatus.notFound) {
       throw Exception('Not found');
     }
     if (response.statusCode != 200) {
@@ -287,26 +328,26 @@ class ApiRoutes {
 
     if (response.statusCode == 201) {
       return UserDevice.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
+        jsonDecode(response.body) as Map<String, dynamic>,
+      );
     }
   }
 
   Future<List<Product>> getProductsList() async {
     final token = await getToken();
     final http.Response response = await http.get(
-        Uri.https(
-            Api.host, '${Api.prefix}${Api.monolithService}${Api.products}'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
-    if (response.statusCode != 200) {
+      Uri.https(Api.host, '${Api.prefix}${Api.monolithService}${Api.products}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != HttpStatus.ok) {
       return [];
     }
     final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<Product> productsList = products.map<Product>((json) {
-      Product prod = Product.fromJson(json as Map<String, dynamic>);
-      return prod;
+      return Product.fromJson(json as Map<String, dynamic>);
     }).toList();
     return productsList;
   }
@@ -332,17 +373,24 @@ class ApiRoutes {
     debugPrint('${response.statusCode} ${response.body}');
   }
 
-  Future addProduct(Product product) async {
-    final token = await storage.read(key: 'jwt');
-    final http.Response response = await http.post(
-        Uri.https(Api.host, '${Api.prefix}${Api.productsAdd}'),
+  Future<bool> addProduct(Product product) async {
+    try {
+      final token = await storage.read(key: 'jwt');
+      final http.Response response = await http.post(
+        Uri.https(
+            Api.host, '${Api.prefix}${Api.monolithService}${Api.products}'),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
         },
-        body: jsonEncode(product.toJson()));
-
-    debugPrint('${response.statusCode} ${response.body}');
+        body: jsonEncode(product.toJson()),
+      );
+      debugPrint('${response.statusCode} ${response.body}');
+      return true;
+    } catch (error) {
+      debugPrint("Error $error");
+      return false;
+    }
   }
 
   Future<List<UserProductWeighting>> getWeightingsHistory() async {

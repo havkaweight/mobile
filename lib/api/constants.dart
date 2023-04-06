@@ -10,6 +10,7 @@ class Api {
   static const signin = '/signin/email';
   static const signInGoogle = '/signin/google';
   static const signup = '/signup/email';
+  static const tokenUpdate = '/token/update';
 
   static const me = '/user/me';
 
