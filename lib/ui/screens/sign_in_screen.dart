@@ -19,6 +19,8 @@ import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../routes/sharp_page_route.dart';
+
 enum SignInStatus {
   notLoggedIn,
   logging,
@@ -238,7 +240,7 @@ class _SignInScreenState extends State<SignInScreen>
         if (futureSignIn) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
+            SharpPageRoute(builder: (context) => MainScreen()),
             (r) => false,
           );
         } else {
