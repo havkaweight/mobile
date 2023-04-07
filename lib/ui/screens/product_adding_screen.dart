@@ -223,7 +223,9 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
           ),
           child: SizedBox(
             height: mHeight * 0.75,
-            child: HavkaBarcodeScannerScreen(),
+            child: const HavkaBarcodeScannerScreen(
+              isProduct: false,
+            ),
           ),
         );
       },

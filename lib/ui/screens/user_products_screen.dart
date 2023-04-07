@@ -188,7 +188,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
               // SizedBox(height: mHeight * 0.75, child: BarcodeScannerScreen()),
               SizedBox(
             height: mHeight * 0.75,
-            child: HavkaBarcodeScannerScreen(),
+            child: const HavkaBarcodeScannerScreen(
+              isProduct: true,
+            ),
           ),
         );
       },

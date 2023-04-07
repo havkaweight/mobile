@@ -1,19 +1,18 @@
-import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:health_tracker/api/methods.dart';
-// import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/product.dart';
 
 import 'package:health_tracker/ui/widgets/detection_box.dart';
-import 'package:health_tracker/ui/widgets/fridgeitem.dart';
-
-import '../../constants/colors.dart';
-import '../../model/product.dart';
 
 class HavkaBarcodeScannerScreen extends StatefulWidget {
+  final bool isProduct;
+
+  const HavkaBarcodeScannerScreen({required this.isProduct});
+
   @override
   _HavkaBarcodeScannerScreenState createState() =>
       _HavkaBarcodeScannerScreenState();
@@ -207,7 +206,10 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
           painter: DetectionBox(),
           child: Container(),
         ),
-        if (_barcodeValue != null) productByBarcode() else Container(),
+        if (_barcodeValue != null)
+          if (widget.isProduct) productByBarcode() else barcode()
+        else
+          Container(),
       ],
     );
   }
@@ -221,8 +223,16 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
       enableAudio: false,
     );
     await _cameraController.initialize();
-    _cameraController.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
     _cameraController.startImageStream((cameraImage) async {
+      final planeData = cameraImage.planes.map(
+        (Plane plane) {
+          return InputImagePlaneMetadata(
+            bytesPerRow: plane.bytesPerRow,
+            height: plane.height,
+            width: plane.width,
+          );
+        },
+      ).toList();
       final inputImage = InputImage.fromBytes(
         bytes: Uint8List.fromList(
           cameraImage.planes.fold(
@@ -237,8 +247,8 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
             cameraImage.height.toDouble(),
           ),
           imageRotation: InputImageRotation.rotation0deg,
-          inputImageFormat: InputImageFormat.yuv420,
-          planeData: [],
+          inputImageFormat: InputImageFormat.bgra8888,
+          planeData: planeData,
         ),
       );
 

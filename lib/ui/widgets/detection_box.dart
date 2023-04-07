@@ -23,15 +23,21 @@ class DetectionBox extends CustomPainter {
     final dy = size.height / 7;
 
     final box = Path();
-    box.addPolygon([
-      Offset(center.dx - dx, center.dy - dy + lineWidth),
-      Offset(center.dx - dx, center.dy - dy + radius),
-    ], false);
+    box.addPolygon(
+      [
+        Offset(center.dx - dx, center.dy - dy + lineWidth),
+        Offset(center.dx - dx, center.dy - dy + radius),
+      ],
+      false,
+    );
 
-    box.addPolygon([
-      Offset(center.dx - dx + lineWidth, center.dy - dy),
-      Offset(center.dx - dx + radius, center.dy - dy),
-    ], false);
+    box.addPolygon(
+      [
+        Offset(center.dx - dx + lineWidth, center.dy - dy),
+        Offset(center.dx - dx + radius, center.dy - dy),
+      ],
+      false,
+    );
 
     box.addArc(
       Rect.fromCenter(
@@ -43,15 +49,21 @@ class DetectionBox extends CustomPainter {
       pi * 0.5,
     );
 
-    box.addPolygon([
-      Offset(center.dx + dx, center.dy - dy + lineWidth),
-      Offset(center.dx + dx, center.dy - dy + radius),
-    ], false);
+    box.addPolygon(
+      [
+        Offset(center.dx + dx, center.dy - dy + lineWidth),
+        Offset(center.dx + dx, center.dy - dy + radius),
+      ],
+      false,
+    );
 
-    box.addPolygon([
-      Offset(center.dx + dx - lineWidth, center.dy - dy),
-      Offset(center.dx + dx - radius, center.dy - dy),
-    ], false);
+    box.addPolygon(
+      [
+        Offset(center.dx + dx - lineWidth, center.dy - dy),
+        Offset(center.dx + dx - radius, center.dy - dy),
+      ],
+      false,
+    );
 
     box.addArc(
       Rect.fromCenter(
