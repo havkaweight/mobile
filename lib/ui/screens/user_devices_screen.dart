@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../api/methods.dart';
-import '../../model/user_device.dart';
-import '../../ui/screens/profile_screen.dart';
-import '../../ui/widgets/progress_indicator.dart';
-import '../../ui/widgets/rounded_button.dart';
-import '../../ui/widgets/screen_header.dart';
+import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class UserDevicesScreen extends StatefulWidget {
   @override
@@ -25,49 +25,57 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
     return WillPopScope(
       onWillPop: () => Future<bool>(() {
         Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
         return true;
       }),
       child: Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                const ScreenHeader(text: 'My devices'),
-                RoundedButton(
-                  text: 'Add device',
-                  onPressed: () {},
-                ),
-                FutureBuilder<List<UserDevice>>(
-                  future: _apiRoutes.getUserDevicesList(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<UserDevice>> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                          child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 40.0),
-                              child: const HavkaProgressIndicator()));
-                    }
-                    if (snapshot.data.runtimeType == List) {
-                      return Expanded(
-                          child: ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (BuildContext context, index) {
-                                final UserDevice userDevice =
-                                    snapshot.data![index];
-                                return ListTile(
-                                  title: Text(userDevice.userDeviceName!),
-                                  subtitle:
-                                      Text(userDevice.deviceId.toString()),
-                                );
-                              }));
-                    }
-                    return const Text('No data :-(');
-                  },
-                ),
-              ]))),
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const ScreenHeader(text: 'My devices'),
+              RoundedButton(
+                text: 'Add device',
+                onPressed: () {},
+              ),
+              FutureBuilder<List<UserDevice>>(
+                future: _apiRoutes.getUserDevicesList(),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<List<UserDevice>> snapshot,
+                ) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 40.0),
+                        child: const HavkaProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (snapshot.data.runtimeType == List) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (BuildContext context, index) {
+                          final UserDevice userDevice = snapshot.data![index];
+                          return ListTile(
+                            title: Text(userDevice.userDeviceName!),
+                            subtitle: Text(userDevice.deviceId.toString()),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return const Text('No data :-(');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

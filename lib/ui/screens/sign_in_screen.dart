@@ -5,21 +5,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/story_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
-import 'package:health_tracker/ui/widgets/popup.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../routes/sharp_page_route.dart';
 
 enum SignInStatus {
   notLoggedIn,
@@ -119,7 +115,9 @@ class _SignInScreenState extends State<SignInScreen>
       end: 1.0,
     ).animate(
       CurvedAnimation(
-          parent: _animationButtonsController, curve: Curves.easeInOut),
+        parent: _animationButtonsController,
+        curve: Curves.easeInOut,
+      ),
     );
 
     _animationMethodsButtonsSlideInOut = Tween<Offset>(
@@ -127,7 +125,9 @@ class _SignInScreenState extends State<SignInScreen>
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
-          parent: _animationButtonsController, curve: Curves.easeInOut),
+        parent: _animationButtonsController,
+        curve: Curves.easeInOut,
+      ),
     );
   }
 
@@ -155,10 +155,14 @@ class _SignInScreenState extends State<SignInScreen>
       if (data.containsKey('access_token')) {
         setToken(data['access_token'] as String);
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+        );
       } else {
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignInScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+        );
       }
     } else {
       print(response.body);
@@ -183,10 +187,14 @@ class _SignInScreenState extends State<SignInScreen>
       if (data.containsKey('access_token') != null) {
         setToken(data['access_token'] as String);
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+        );
       } else {
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignInScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+        );
       }
     } else {
       print(response.body);

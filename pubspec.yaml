@@ -39,15 +39,12 @@ dependencies:
   google_ml_kit: ^0.13.0
   flutter_reactive_ble: ^5.0.2
   charts_flutter: ^0.12.0
-  fl_chart: ^0.36.1
   firebase_auth: ^4.1.5
   firebase_core: ^2.3.0
   google_sign_in: ^6.0.2
   font_awesome_flutter: ^10.4.0
-  smooth_page_indicator: ^1.0.1
   pull_to_refresh: ^2.0.0
-  onboarding: ^3.1.0
-  introduction_screen: ^3.1.1
+  firebase_messaging: ^14.4.0
 
   lint: ^1.5.3
 

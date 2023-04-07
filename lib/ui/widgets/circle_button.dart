@@ -1,22 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../constants/colors.dart';
-import '../../constants/theme.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class CircleButton extends StatelessWidget {
   final String? text;
   final void Function()? onPressed;
-  final Color color, textColor;
+  final Color color;
+  final Color textColor;
 
   const CircleButton({
-    Key? key,
+    super.key,
     this.text,
     this.onPressed,
     this.color = HavkaColors.green,
     this.textColor = Colors.white,
-  }) : super(key: key);
-
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +27,11 @@ class CircleButton extends StatelessWidget {
           backgroundColor: color,
         ),
         child: Text(
-            text!,
-            style: TextStyle(
-                color: textColor,
-                fontSize: Theme.of(context).textTheme.button!.fontSize,
-            ),
+          text!,
+          style: TextStyle(
+            color: textColor,
+            fontSize: Theme.of(context).textTheme.button!.fontSize,
+          ),
         ),
       ),
     );

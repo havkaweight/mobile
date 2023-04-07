@@ -6,16 +6,14 @@ import 'package:flutter/material.dart';
 class HavkaProgressIndicator extends StatelessWidget {
   final Color? color;
 
-  const HavkaProgressIndicator({
-    Key? key,
-    this.color
-  }) : super(key: key);
+  const HavkaProgressIndicator({super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       return CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+        valueColor:
+            AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
       );
     }
     return const CupertinoActivityIndicator();

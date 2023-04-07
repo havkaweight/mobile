@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:charts_flutter/flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
-import 'package:flutter/src/painting/text_style.dart' as textStyle;
-import 'package:health_tracker/ui/widgets/donut_chart.dart';
-
 import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/ui/widgets/bar_chart.dart';
+import 'package:health_tracker/ui/widgets/donut_chart.dart';
 import 'package:health_tracker/ui/widgets/line_chart.dart';
 
 class OnboardingScreen1 extends StatefulWidget {
@@ -39,8 +35,14 @@ class _OnboardingScreen1State extends State<OnboardingScreen1> {
         timer.cancel();
       }
       setState(() {
-        data.insert(0,
-            DataItem(Random().nextInt(100) + 100, 'label', Colors.amber[500]!));
+        data.insert(
+          0,
+          DataItem(
+            Random().nextInt(100) + 100,
+            'label',
+            Colors.amber[500]!,
+          ),
+        );
       });
       n++;
     });
@@ -116,11 +118,25 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
         setState(() {
           data = [
             DataItem(
-                prevFirstRandom + tempFirstRandom, "Protein", Colors.amber[50]!)
+              prevFirstRandom + tempFirstRandom,
+              "Protein",
+              Colors.amber[50]!,
+            ),
           ];
-          data.add(DataItem(
-              prevSecondRandom + tempSecondRandom, "Fat", Colors.amber[200]!));
-          data.add(DataItem(prevLast + tempLast, "Carbs", Colors.amber[400]!));
+          data.add(
+            DataItem(
+              prevSecondRandom + tempSecondRandom,
+              "Fat",
+              Colors.amber[200]!,
+            ),
+          );
+          data.add(
+            DataItem(
+              prevLast + tempLast,
+              "Carbs",
+              Colors.amber[400]!,
+            ),
+          );
         });
       });
       n++;
@@ -161,8 +177,12 @@ class _OnboardingScreen3State extends State<OnboardingScreen3> {
     super.initState();
     mockDataPoints = [DataPoint(0, 0)];
     for (int i = 0; i < 30; i++) {
-      mockDataPoints.add(DataPoint(mockDataPoints.last.dx + 5,
-          mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10));
+      mockDataPoints.add(
+        DataPoint(
+          mockDataPoints.last.dx + 5,
+          mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10,
+        ),
+      );
     }
   }
 

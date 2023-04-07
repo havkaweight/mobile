@@ -1,14 +1,10 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
-
-import '../screens/scale_screen.dart';
 
 class FridgeItem extends StatelessWidget {
   final UserProduct userProduct;

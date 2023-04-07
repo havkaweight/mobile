@@ -7,7 +7,7 @@ class Popup extends StatelessWidget {
 
   const Popup({
     Key? key,
-    this.text
+    this.text,
   }) : super(key: key);
 
   @override
@@ -22,15 +22,16 @@ class Popup extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
-            child: Text(
-                text!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 12,
-                    color: HavkaColors.green,
-                    decoration: TextDecoration.none
-                )
-            )),
+          child: Text(
+            text!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              color: HavkaColors.green,
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -55,7 +56,8 @@ Future showPopUp(BuildContext context, String text) {
     },
     transitionBuilder: (context, anim1, anim2, child) {
       return SlideTransition(
-        position: Tween(begin: const Offset(0, -1), end: Offset.zero).animate(anim1),
+        position:
+            Tween(begin: const Offset(0, -1), end: Offset.zero).animate(anim1),
         child: child,
       );
     },

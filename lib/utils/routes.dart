@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../ui/screens/splash_screen.dart';
-import '../ui/screens/profile_screen.dart';
-import '../ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/profile_screen.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
+import 'package:health_tracker/ui/screens/splash_screen.dart';
 
 class Routes {
   Routes._();

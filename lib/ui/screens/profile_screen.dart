@@ -1,35 +1,27 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/components/profile.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/device_service.dart';
+import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/weightings_screen.dart';
-import 'package:health_tracker/ui/screens/welcome_screen.dart';
+import 'package:health_tracker/ui/widgets/bar_chart.dart';
+import 'package:health_tracker/ui/widgets/donut_chart.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
+import 'package:health_tracker/ui/widgets/line_chart.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
-
-import '../../main.dart';
-import '../../model/data_items.dart';
-import '../../model/user.dart';
-import '../widgets/bar_chart.dart';
-import '../widgets/donut_chart.dart';
-import '../widgets/line_chart.dart';
-import '../widgets/user_device_list.dart';
-import 'authorization.dart';
-import 'devices_screen.dart';
-import 'products_screen.dart';
 
 final flutterReactiveBle = FlutterReactiveBle();
 
@@ -99,8 +91,10 @@ class _ProfileScreenState extends State<ProfileScreen>
           }
           if (snapshot.hasError) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SignInScreen()),
+              );
             });
           }
           return widget!;
@@ -136,110 +130,119 @@ class _ProfileScreenState extends State<ProfileScreen>
     return ScrollConfiguration(
       behavior: CustomBehavior(),
       child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        final chartHeight = MediaQuery.of(context).size.height * 0.3;
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: viewportConstraints.maxHeight,
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          final chartHeight = MediaQuery.of(context).size.height * 0.3;
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  ProfileHeader(
+                    username: '${snapshot.data.email}',
+                    height: 163,
+                    weight: 67,
+                    photoUrl:
+                        'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                  ),
+                  SizedBox(
+                    height: chartHeight,
+                    child: CustomPaint(
+                      painter: HavkaLineChart(mockDataPoints),
+                      child: Container(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: chartHeight,
+                    child: CustomPaint(
+                      painter: HavkaDonutChart(pfcData),
+                      child: Container(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: chartHeight,
+                    child: CustomPaint(
+                      painter: HavkaBarChart(weeklyData),
+                      child: Container(),
+                    ),
+                  ),
+                  RoundedButton(
+                    text: 'Log out',
+                    onPressed: logout,
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                ProfileHeader(
-                  username: '${snapshot.data.email}',
-                  height: 163,
-                  weight: 67,
-                  photoUrl:
-                      'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
-                ),
-                SizedBox(
-                  height: chartHeight,
-                  child: CustomPaint(
-                    painter: HavkaLineChart(mockDataPoints),
-                    child: Container(),
-                  ),
-                ),
-                SizedBox(
-                  height: chartHeight,
-                  child: CustomPaint(
-                    painter: HavkaDonutChart(pfcData),
-                    child: Container(),
-                  ),
-                ),
-                SizedBox(
-                  height: chartHeight,
-                  child: CustomPaint(
-                    painter: HavkaBarChart(weeklyData),
-                    child: Container(),
-                  ),
-                ),
-                RoundedButton(
-                  text: 'Log out',
-                  onPressed: logout,
-                ),
-              ],
-            ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
   Future _buildWeightingsHistory() {
     return showModalBottomSheet(
-        isScrollControlled: true,
-        backgroundColor: Theme.of(context).backgroundColor,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0),
-          ),
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).backgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
         ),
-        context: context,
-        builder: (BuildContext builder) {
-          final double mHeight = MediaQuery.of(context).size.height;
-          return SizedBox(
-            height: mHeight * 0.85,
-            child: Column(children: [
+      ),
+      context: context,
+      builder: (BuildContext builder) {
+        final double mHeight = MediaQuery.of(context).size.height;
+        return SizedBox(
+          height: mHeight * 0.85,
+          child: Column(
+            children: [
               Holder(),
               Center(
-                  child: Column(
-                children: [
-                  WeightingsScreen(),
-                ],
-              ))
-            ]),
-          );
-        });
+                child: Column(
+                  children: [
+                    WeightingsScreen(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<dynamic> _buildScaleSearching(BuildContext context) async {
     final List<DeviceService> servicesList =
         await _apiRoutes.getDevicesServicesList();
     return showModalBottomSheet(
-        isScrollControlled: true,
-        backgroundColor: Theme.of(context).backgroundColor,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0))),
-        context: context,
-        builder: (builder) {
-          final double mHeight = MediaQuery.of(context).size.height;
-          return ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0)),
-            child: SizedBox(
-                height: mHeight * 0.85,
-                child: Column(children: [
-                  Holder(),
-                  Center(child: DevicesScreen(servicesList))
-                ])),
-          );
-        });
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).backgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
+        ),
+      ),
+      context: context,
+      builder: (builder) {
+        final double mHeight = MediaQuery.of(context).size.height;
+        return ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(15.0),
+            topRight: Radius.circular(15.0),
+          ),
+          child: SizedBox(
+            height: mHeight * 0.85,
+            child: Column(
+              children: [Holder(), Center(child: DevicesScreen(servicesList))],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> isDeviceConnected(UserDevice userDevice) async {
@@ -252,7 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       } else {
         status = false;
       }
-      ;
       // return status;
     });
   }

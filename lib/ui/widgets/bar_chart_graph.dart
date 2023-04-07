@@ -23,8 +23,10 @@ class _BarChartState extends State<BarChart> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<UserProductWeighting>>(
       future: _apiRoutes.getWeightingsHistory(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<UserProductWeighting>> snapshot) {
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<List<UserProductWeighting>> snapshot,
+      ) {
         if (!snapshot.hasData) {
           return const HavkaProgressIndicator();
         } else {
@@ -39,7 +41,7 @@ class _BarChartState extends State<BarChart> {
           userProductWeightingList!
               .sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
           for (final UserProductWeighting userProductWeighting
-          in userProductWeightingList) {
+              in userProductWeightingList) {
             listMetric.add(
               BarChartModel(
                 year: formatter.format(userProductWeighting.createdAt!),
@@ -52,15 +54,13 @@ class _BarChartState extends State<BarChart> {
             charts.Series(
               id: "Weightings history",
               data: listMetric,
-
               domainFn: (BarChartModel timeline, _) => timeline.year!,
               measureFn: (BarChartModel timeline, _) => timeline.metric,
-              colorFn: (BarChartModel timeline, _) =>
-                  charts.Color(
-                    r: timeline.color.red,
-                    g: timeline.color.green,
-                    b: timeline.color.blue,
-                  ),
+              colorFn: (BarChartModel timeline, _) => charts.Color(
+                r: timeline.color.red,
+                g: timeline.color.green,
+                b: timeline.color.blue,
+              ),
               labelAccessorFn: (BarChartModel timeline, _) =>
                   timeline.metric.toString(),
             )

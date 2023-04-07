@@ -1,15 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
-import '../../api/methods.dart';
-import '../../constants/scale.dart';
-import '../../constants/utils.dart';
-import '../../model/user_device.dart';
-import '../../model/user_product.dart';
-import '../../ui/widgets/rounded_button.dart';
-import '../../ui/widgets/rounded_textfield.dart';
-import '../../ui/widgets/screen_header.dart';
+import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/constants/scale.dart';
+import 'package:health_tracker/constants/utils.dart';
+import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class ScaleScreen extends StatefulWidget {
   final UserProduct? userProduct;
@@ -43,7 +42,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
     } else {
       weight = 0.0;
     }
-    setState((){});
+    setState(() {});
   }
 
   @override
@@ -58,7 +57,6 @@ class _ScaleScreenState extends State<ScaleScreen> {
 
     weightController.addListener(_changeNutritionValues);
   }
-
 
   @override
   void dispose() {
@@ -76,9 +74,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
     final Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
 
     scaleCharacteristic = QualifiedCharacteristic(
-        serviceId: scaleServiceUuid,
-        characteristicId: scaleCharacteristicId,
-        deviceId: '7C:9E:BD:F4:5B:1A');
+      serviceId: scaleServiceUuid,
+      characteristicId: scaleCharacteristicId,
+      deviceId: '7C:9E:BD:F4:5B:1A',
+    );
 
     protein = widget.userProduct!.protein! * weight! / 100;
     fats = widget.userProduct!.fat! * weight! / 100;
@@ -94,9 +93,9 @@ class _ScaleScreenState extends State<ScaleScreen> {
     // }, onError: (Object error) {});
 
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
-        body: Center(
-            child:
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: Center(
+        child:
             // StreamBuilder<List<int>>(
             //     stream: flutterReactiveBle
             //         .subscribeToCharacteristic(scaleCharacteristic),
@@ -114,85 +113,95 @@ class _ScaleScreenState extends State<ScaleScreen> {
             //       final fats = widget.userProduct.fat * weight / 100;
             //       final carbs = widget.userProduct.carbs * weight / 100;
             //       final kcal = widget.userProduct.kcal * weight / 100;
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        ScreenSubHeader(text: widget.userProduct!.productName!),
-                        ScreenSubHeader(text: widget.userProduct!.productBrand!),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            RoundedTextField(
-                                width: 0.5,
-                                controller: weightController,
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                            ),
-                            Text(widget.userProduct!.unit!)
-                          ],
-                        ),
-                        Table(
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: [
-                            TableRow(children: [
-                              const Text('Protein '),
-                              Text(
-                                protein!.toStringAsFixed(2),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                              Text(' ${widget.userProduct!.unit}')
-                            ]),
-                            TableRow(children: [
-                              const Text('Fats '),
-                              Text(
-                                fats!.toStringAsFixed(2),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                              Text(' ${widget.userProduct!.unit}')
-                            ]),
-                            TableRow(children: [
-                              const Text('Carbs '),
-                              Text(
-                                carbs!.toStringAsFixed(2),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                              Text(' ${widget.userProduct!.unit}')
-                            ]),
-                            TableRow(children: [
-                              const Text('Calories '),
-                              Text(
-                                kcal!.toStringAsFixed(2),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                              const Text(' kcal')
-                            ])
-                          ],
-                        ),
-                        RoundedButton(
-                          text: 'Save',
-                          onPressed: () {
-                            _apiRoutes.addUserProductWeighting(
-                              weight!,
-                              widget.userProduct!,
-                              // userDevice: widget.userDevice,
-                            );
-                            Navigator.pop(context);
-                          },
-                        )
-                      ])
-                // })
-  ));
+            Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ScreenSubHeader(text: widget.userProduct!.productName!),
+            ScreenSubHeader(text: widget.userProduct!.productBrand!),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RoundedTextField(
+                  width: 0.5,
+                  controller: weightController,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                ),
+                Text(widget.userProduct!.unit!)
+              ],
+            ),
+            Table(
+              defaultColumnWidth: const IntrinsicColumnWidth(),
+              children: [
+                TableRow(
+                  children: [
+                    const Text('Protein '),
+                    Text(
+                      protein!.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(' ${widget.userProduct!.unit}')
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    const Text('Fats '),
+                    Text(
+                      fats!.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(' ${widget.userProduct!.unit}')
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    const Text('Carbs '),
+                    Text(
+                      carbs!.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(' ${widget.userProduct!.unit}')
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    const Text('Calories '),
+                    Text(
+                      kcal!.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    const Text(' kcal')
+                  ],
+                )
+              ],
+            ),
+            RoundedButton(
+              text: 'Save',
+              onPressed: () {
+                _apiRoutes.addUserProductWeighting(
+                  weight!,
+                  widget.userProduct!,
+                  // userDevice: widget.userDevice,
+                );
+                Navigator.pop(context);
+              },
+            )
+          ],
+        ),
+        // })
+      ),
+    );
   }
 }

@@ -25,14 +25,15 @@ class SearchTextField extends StatefulWidget {
     this.errorText,
     this.obscureText = false,
     this.autoFocus = false,
-    this.keyboardType = TextInputType.text
+    this.keyboardType = TextInputType.text,
   }) : super(key: key);
 
   @override
   SearchTextFieldState createState() => SearchTextFieldState();
 }
 
-class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextField> {
+class SearchTextFieldState<T extends SearchTextField>
+    extends State<SearchTextField> {
   @override
   void initState() {
     super.initState();
@@ -70,15 +71,17 @@ class SearchTextFieldState<T extends SearchTextField> extends State<SearchTextFi
             borderSide: const BorderSide(color: Color(0xFFFF0000), width: 2.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          hintText: widget.controller!.text.isEmpty ? widget.hintText : widget.controller!.text,
+          hintText: widget.controller!.text.isEmpty
+              ? widget.hintText
+              : widget.controller!.text,
           errorText: widget.errorText,
           prefixIcon: widget.icon,
           hintStyle: const TextStyle(
             color: Color(0x7A66550B),
-            fontSize: 14
+            fontSize: 14,
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 }

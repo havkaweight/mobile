@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../constants/colors.dart';
-import '../../constants/theme.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class RoundedButton extends StatelessWidget {
   final String? text;
@@ -58,28 +56,33 @@ class RoundedIconButton extends StatelessWidget {
   final Icon? icon;
   final FaIcon? faIcon;
 
-  const RoundedIconButton(
-      {required Key key,
-      this.icon,
-      this.faIcon,
-      this.onPressed,
-      this.color = Colors.green,
-      this.iconColor = Colors.white})
-      : super(key: key);
+  const RoundedIconButton({
+    required Key key,
+    this.icon,
+    this.faIcon,
+    this.onPressed,
+    this.color = Colors.green,
+    this.iconColor = Colors.white,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-        decoration: BoxDecoration(
-          color: HavkaColors.green,
-          borderRadius: BorderRadius.circular(5),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+      decoration: BoxDecoration(
+        color: HavkaColors.green,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: ClipRRect(
+        child: IconButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 15.0,
+          ),
+          onPressed: onPressed,
+          icon: icon ?? faIcon!,
         ),
-        child: ClipRRect(
-            child: IconButton(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 15.0),
-                onPressed: onPressed,
-                icon: icon ?? faIcon!)));
+      ),
+    );
   }
 }

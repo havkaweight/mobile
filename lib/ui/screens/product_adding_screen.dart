@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
@@ -110,8 +109,9 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                                 child: Text(
                                   "or",
                                   style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),

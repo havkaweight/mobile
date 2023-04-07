@@ -2,15 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
-
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
-
-import '../../main.dart';
 
 class HavkaButton extends StatelessWidget {
   final Widget child;
@@ -23,7 +19,7 @@ class HavkaButton extends StatelessWidget {
   final double fontSize;
 
   const HavkaButton({
-    Key? key,
+    super.key,
     required this.child,
     required this.onPressed,
     this.text = "button",
@@ -32,7 +28,7 @@ class HavkaButton extends StatelessWidget {
     this.radius = 8,
     this.fontSize = 16,
     this.style,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
