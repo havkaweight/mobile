@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../constants/colors.dart';
-import '../../constants/font_family.dart';
-import 'modal_scale.dart';
+import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/constants/font_family.dart';
 
 class ScreenHeader extends StatelessWidget {
   final String text;

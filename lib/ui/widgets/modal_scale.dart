@@ -104,8 +104,10 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin {
                 ),
                 child: Center(
                   child: StreamBuilder(
-                    stream: Stream.periodic(const Duration(seconds: 1),
-                        (_) => Random().nextInt(300)),
+                    stream: Stream.periodic(
+                      const Duration(seconds: 1),
+                      (_) => Random().nextInt(300),
+                    ),
                     builder: (context, snapshot) {
                       return Text(
                         '${snapshot.data ?? 10}g',

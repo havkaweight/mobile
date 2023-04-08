@@ -5,16 +5,16 @@ import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/fridge.dart';
 
 class MainListPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      drawer: Drawer(),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      drawer: const Drawer(),
       appBar: AppBar(
         backgroundColor: HavkaColors.green,
         centerTitle: true,
-        title: const Text('Havka',
+        title: const Text(
+          'Havka',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -28,11 +28,12 @@ class MainListPage extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.all(10.0),
-              child: Text('Hi',
+              child: Text(
+                'Hi',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 36,
+                  color: Colors.black,
+                  fontSize: 36,
                 ),
               ),
             ),
@@ -48,7 +49,7 @@ class MainListPage extends StatelessWidget {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(
-                      'assets/images/fridge_double.jpg',
+                    'assets/images/fridge_double.jpg',
                   ),
                   fit: BoxFit.cover,
                 ),
@@ -57,21 +58,22 @@ class MainListPage extends StatelessWidget {
             ),
             GoogleSignInButton(),
             Expanded(
-                child: ListView.builder(
-                  itemCount: 40,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    return Container(
-                      margin: EdgeInsets.all(5),
-                      child: Text('item $index',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                        ),
+              child: ListView.builder(
+                itemCount: 40,
+                itemBuilder: (BuildContext ctx, int index) {
+                  return Container(
+                    margin: EdgeInsets.all(5),
+                    child: Text(
+                      'item $index',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
                       ),
-                    );
-                  },
-                )
+                    ),
+                  );
+                },
+              ),
             ),
             // ListView(
             //   children: [

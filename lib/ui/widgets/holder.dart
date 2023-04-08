@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../constants/colors.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class Holder extends StatelessWidget {
   @override

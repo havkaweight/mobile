@@ -8,10 +8,9 @@ class CircularProgressBar extends StatefulWidget {
   const CircularProgressBar({
     super.key,
     required this.value,
-});
+  });
   @override
-  State<CircularProgressBar> createState() =>
-      _CircularProgressBar();
+  State<CircularProgressBar> createState() => _CircularProgressBar();
 }
 
 class _CircularProgressBar extends State<CircularProgressBar>
@@ -20,9 +19,9 @@ class _CircularProgressBar extends State<CircularProgressBar>
   late final Color color;
   @override
   void initState() {
-    if(widget.value > 0.8) {
+    if (widget.value > 0.8) {
       color = Colors.green;
-    } else if(widget.value > 0.5) {
+    } else if (widget.value > 0.5) {
       color = Colors.amber;
     } else {
       color = Colors.red;
@@ -31,12 +30,11 @@ class _CircularProgressBar extends State<CircularProgressBar>
       value: 0,
       upperBound: widget.value.abs(),
       vsync: this,
-      duration: Duration(milliseconds:  widget.value == -1 ? 2000 : 600),
-    )
-    ..addListener(() {
-      setState(() {});
-    });
-    if(widget.value == -1) {
+      duration: Duration(milliseconds: widget.value == -1 ? 2000 : 600),
+    )..addListener(() {
+        setState(() {});
+      });
+    if (widget.value == -1) {
       controller.repeat();
     } else {
       controller.forward();

@@ -1,17 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class LinearProgressBar extends StatefulWidget {
-
   const LinearProgressBar({
     super.key,
   });
 
   @override
-  _LinearProgressBar createState() =>
-      _LinearProgressBar();
+  _LinearProgressBar createState() => _LinearProgressBar();
 }
 
 class _LinearProgressBar extends State<LinearProgressBar>
@@ -25,8 +21,7 @@ class _LinearProgressBar extends State<LinearProgressBar>
       upperBound: 100,
       vsync: this,
       duration: const Duration(seconds: 5),
-    )
-      ..addListener(() {
+    )..addListener(() {
         setState(() {});
       });
     controller.forward();

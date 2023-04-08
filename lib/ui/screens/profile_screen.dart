@@ -11,6 +11,7 @@ import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
@@ -61,9 +62,10 @@ class _ProfileScreenState extends State<ProfileScreen>
       googleSignIn.signOut();
       googleSignIn.disconnect();
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => SignInScreen()),
+        SharpPageRoute(builder: (context) => SignInScreen()),
+        (route) => false,
       );
     });
   }
@@ -79,25 +81,29 @@ class _ProfileScreenState extends State<ProfileScreen>
     ]);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: FutureBuilder<User>(
         future: _apiRoutes.getMe(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Widget? widget;
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState != ConnectionState.done) {
             widget = const Center(child: HavkaProgressIndicator());
-          } else if (snapshot.hasData) {
-            widget = _buildProfileScreen(snapshot);
+          } else {
+            if (!snapshot.hasData) {
+              widget = const Center(child: HavkaProgressIndicator());
+            } else {
+              widget = _buildProfileScreen(snapshot);
+            }
+            // if (snapshot.hasError) {
+            //   WidgetsBinding.instance.addPostFrameCallback((_) {
+            //     Navigator.pushReplacement(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => SignInScreen()),
+            //     );
+            //   });
+            // }
           }
-          if (snapshot.hasError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SignInScreen()),
-              );
-            });
-          }
-          return widget!;
+          return widget;
         },
       ),
     );
@@ -185,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   Future _buildWeightingsHistory() {
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),
@@ -219,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         await _apiRoutes.getDevicesServicesList();
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),

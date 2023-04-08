@@ -12,7 +12,7 @@ class DeviceService {
     this.serviceUuid,
     this.serviceName,
     this.characteristicUuid,
-    this.characteristicName
+    this.characteristicName,
   });
 
   DeviceService.fromJson(Map<String, dynamic> json)
@@ -23,8 +23,7 @@ class DeviceService {
         characteristicUuid = json['characteristic_uuid'] as String,
         characteristicName = json['characteristic_name'] as String;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'device_catalog_id': deviceCatalogId,
         'service_uuid': serviceUuid,

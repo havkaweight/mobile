@@ -170,38 +170,6 @@ class _SignInScreenState extends State<SignInScreen>
     }
   }
 
-  Future<Future> googleSignIn(String username, String password) async {
-    final Map<String, dynamic> queryParameters = <String, dynamic>{};
-    queryParameters['authentication_backend'] = 'jwt';
-    queryParameters['scopes'] = ['email', 'profile'];
-    final http.Response response = await http.post(
-      Uri.https(Api.host, '${Api.prefix}/auth/google', queryParameters),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
-      },
-    );
-
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      if (data.containsKey('access_token') != null) {
-        setToken(data['access_token'] as String);
-        return Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
-      } else {
-        return Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
-        );
-      }
-    } else {
-      print(response.body);
-      throw Exception('Failed sign in');
-    }
-  }
-
   void _onFocusEmail() {
     if (_emailFocusNode.hasFocus) {
       emailErrorText = null;
@@ -459,7 +427,7 @@ class _SignInScreenState extends State<SignInScreen>
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: loginFormWidget(context),
       ),
     );

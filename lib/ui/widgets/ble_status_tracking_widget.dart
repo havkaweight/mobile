@@ -38,7 +38,7 @@ class BleStatusTrackingWidgetState extends State<BleStatusTrackingWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _key,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: widget.child);
     // body: FutureBuilder(
     // future: _apiRoutes.getUserDevicesList(),

@@ -8,5 +8,4 @@ class HavkaScale {
     this.characteristicUUID,
     this.deviceUUID,
   });
-
 }

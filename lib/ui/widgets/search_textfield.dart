@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../constants/colors.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class SearchTextField extends StatefulWidget {
   final String? labelText;
@@ -15,7 +14,7 @@ class SearchTextField extends StatefulWidget {
   final TextInputType? keyboardType;
 
   const SearchTextField({
-    Key? key,
+    super.key,
     this.labelText,
     this.hintText,
     this.width = 0.7,
@@ -26,7 +25,7 @@ class SearchTextField extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.keyboardType = TextInputType.text,
-  }) : super(key: key);
+  });
 
   @override
   SearchTextFieldState createState() => SearchTextFieldState();

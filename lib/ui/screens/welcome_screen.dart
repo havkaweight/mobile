@@ -25,7 +25,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: FutureBuilder(
         future: _skipOnboarding(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {

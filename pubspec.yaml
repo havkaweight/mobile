@@ -36,9 +36,9 @@ dependencies:
   google_fonts: any
   shared_preferences: ^2.0.17
   flutter_secure_storage: ^6.1.0
-  google_ml_kit: ^0.13.0
+  # google_ml_kit: ^0.13.0
+  google_mlkit_barcode_scanning: ^0.5.0
   flutter_reactive_ble: ^5.0.2
-  charts_flutter: ^0.12.0
   firebase_auth: ^4.1.5
   firebase_core: ^2.3.0
   google_sign_in: ^6.0.2

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 
@@ -6,9 +5,9 @@ class Popup extends StatelessWidget {
   final String? text;
 
   const Popup({
-    Key? key,
+    super.key,
     this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

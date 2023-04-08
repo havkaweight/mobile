@@ -109,15 +109,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         title: Text(
                           product.name!,
                           style: TextStyle(
-                            fontSize:
-                                Theme.of(context).textTheme.headline3!.fontSize,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .fontSize,
                           ),
                         ),
                         subtitle: Text(
                           product.brand ?? 'not found',
                           style: TextStyle(
-                            fontSize:
-                                Theme.of(context).textTheme.headline4!.fontSize,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .fontSize,
                           ),
                         ),
                         onTap: () async {
@@ -135,8 +139,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
             FutureBuilder<List<Product>>(
               future: _apiRoutes
                   .getProductsBySearchingRequest(searchController.text),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<Product>> snapshot) {
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<Product>> snapshot,
+              ) {
                 print(snapshot);
                 if (!snapshot.hasData) {
                   return Center(

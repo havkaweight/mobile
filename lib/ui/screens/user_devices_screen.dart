@@ -31,7 +31,7 @@ class _UserDevicesScreenState extends State<UserDevicesScreen> {
         return true;
       }),
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

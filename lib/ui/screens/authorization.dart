@@ -24,6 +24,7 @@ Future<String?> getRefreshToken() async {
 
 Future removeToken() async {
   await storage.delete(key: 'jwt');
+  await storage.delete(key: 'refresh_token');
 }
 
 // Future<bool> setScale(HavkaScale scale) async {

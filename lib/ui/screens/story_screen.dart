@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/ui/screens/onboarding_screens.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';

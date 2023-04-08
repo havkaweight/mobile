@@ -21,7 +21,7 @@ class ChildWidget extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.zero,
-        child: widget
+        child: widget,
       ),
     );
   }

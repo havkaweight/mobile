@@ -51,7 +51,8 @@ class Product {
         nutrition = json['nutrition'] == null
             ? null
             : ProductNutrition.fromJson(
-                json['nutrition']! as Map<String, dynamic>),
+                json['nutrition']! as Map<String, dynamic>,
+              ),
         baseValue = json['net_weight'] as double?,
         barcode = json['barcode'] as String?,
         img = json['img'] as String?;

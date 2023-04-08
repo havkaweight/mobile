@@ -10,7 +10,7 @@ class Device {
     this.name,
     this.vendor,
     this.serviceUUID,
-    this.status
+    this.status,
   });
 
   Device.fromJson(Map<String, dynamic> json)
@@ -20,8 +20,7 @@ class Device {
         serviceUUID = json['service_uuid'] as String,
         status = json['status'] as int;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'vendor': vendor,

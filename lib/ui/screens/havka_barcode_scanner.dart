@@ -1,7 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+// import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
@@ -118,16 +119,15 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
             child: FutureBuilder(
               future: _apiRoutes.getProductByBarcode(_barcodeValue),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                print(snapshot.data);
-                final Product product = snapshot.data as Product;
                 if (snapshot.connectionState != ConnectionState.done) {
                   return Container();
                 }
+                final Product product = snapshot.data as Product;
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: HavkaColors.cream,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: HavkaColors.bone[100]!),
                     ),
@@ -144,7 +144,8 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
                             image: product.img != null
                                 ? const DecorationImage(
                                     image: NetworkImage(
-                                        'https://cdn.havka.one/test.jpg'),
+                                      'https://cdn.havka.one/test.jpg',
+                                    ),
                                     fit: BoxFit.cover,
                                   )
                                 : null,
@@ -161,7 +162,7 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
                           decoration: TextDecoration.none,
                           fontWeight: FontWeight.normal,
                           fontSize:
-                              Theme.of(context).textTheme.headline3!.fontSize,
+                              Theme.of(context).textTheme.labelLarge!.fontSize,
                         ),
                       ),
                       subtitle: Text(
@@ -171,7 +172,7 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
                           decoration: TextDecoration.none,
                           fontWeight: FontWeight.normal,
                           fontSize:
-                              Theme.of(context).textTheme.headline4!.fontSize,
+                              Theme.of(context).textTheme.labelMedium!.fontSize,
                         ),
                       ),
                       onTap: () async {
@@ -252,7 +253,9 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
         ),
       );
 
-      final barcodeScanner = GoogleMlKit.vision.barcodeScanner();
+      // final barcodeScanner = GoogleMlKit.vision.barcodeScanner();
+      final List<BarcodeFormat> formats = [BarcodeFormat.all];
+      final barcodeScanner = BarcodeScanner(formats: formats);
       final results = await barcodeScanner.processImage(inputImage);
 
       if (results.isNotEmpty) {

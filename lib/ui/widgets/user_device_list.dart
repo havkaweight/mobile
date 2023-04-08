@@ -1,9 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/device_service.dart';
@@ -12,6 +8,9 @@ import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
 import 'package:health_tracker/ui/screens/weightings_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:health_tracker/ui/widgets/screen_header.dart';
 
 class UserDeviceList extends StatefulWidget {
   final String? labelText;
@@ -55,7 +54,7 @@ class UserDeviceListState<T extends UserDeviceList>
   Future _buildWeightingsHistory() {
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),
@@ -89,7 +88,7 @@ class UserDeviceListState<T extends UserDeviceList>
         await _apiRoutes.getDevicesServicesList();
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),
@@ -125,7 +124,6 @@ class UserDeviceListState<T extends UserDeviceList>
       } else {
         status = false;
       }
-      ;
       // return status;
     });
   }
@@ -172,8 +170,10 @@ class UserDeviceListState<T extends UserDeviceList>
                         title: Text(
                           userDevice.userDeviceName!,
                           style: TextStyle(
-                            fontSize:
-                                Theme.of(context).textTheme.headline3!.fontSize,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .fontSize,
                           ),
                         ),
                         trailing: StreamBuilder<ConnectionStateUpdate>(
@@ -207,7 +207,7 @@ class UserDeviceListState<T extends UserDeviceList>
                                 fontWeight: FontWeight.bold,
                                 fontSize: Theme.of(context)
                                     .textTheme
-                                    .headline4!
+                                    .labelMedium!
                                     .fontSize,
                               ),
                             );

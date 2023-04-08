@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/ui/widgets/fridgeitem.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../constants/colors.dart';
-
 
 Shimmer getShimmerLoading() {
   return Shimmer.fromColors(

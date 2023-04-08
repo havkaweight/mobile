@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/ui/screens/child_widget.dart';
 
 class MainScreen extends StatefulWidget {
@@ -30,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         selectedItemColor: Theme.of(context).colorScheme.secondary,
         unselectedItemColor: const Color(0x885BBE78),
         type: BottomNavigationBarType.fixed,
@@ -60,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
           )
         ],
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,

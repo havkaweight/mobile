@@ -3,8 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/data_items.dart';
-
+import 'package:health_tracker/model/data_items.dart';
 
 class HavkaBarChart extends CustomPainter {
   final List<DataItem> data;
@@ -16,9 +15,10 @@ class HavkaBarChart extends CustomPainter {
     final double maxValue = data.map((di) => di.value).reduce(max);
     final int valuesCount = data.length;
     final double barWidth = (size.width - 2 * left) / valuesCount;
-    for(final di in data) {
+    for (final di in data) {
       final height = di.value / maxValue * size.height / 3.0;
-      final rect = Rect.fromLTWH(left, size.height/1.5, barWidth*0.9, -height);
+      final rect =
+          Rect.fromLTWH(left, size.height / 1.5, barWidth * 0.9, -height);
       final paint = Paint()
         ..style = PaintingStyle.fill
         ..color = di.color;

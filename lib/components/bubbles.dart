@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 class Bubbles extends StatefulWidget {
   @override
@@ -30,7 +30,9 @@ class _BubblesState extends State<Bubbles> with SingleTickerProviderStateMixin {
 
     // Init animation controller
     _controller = AnimationController(
-        duration: const Duration(seconds: 1000), vsync: this);
+      duration: const Duration(seconds: 1000),
+      vsync: this,
+    );
     _controller!.addListener(() {
       updateBubblePosition();
     });
@@ -49,10 +51,12 @@ class _BubblesState extends State<Bubbles> with SingleTickerProviderStateMixin {
       backgroundColor: bgColor,
       body: CustomPaint(
         foregroundPainter:
-        BubblePainter(bubbles: bubbles, controller: _controller),
-        size: Size(MediaQuery.of(context).size.width,
-            MediaQuery.of(context).size.height),
+            BubblePainter(bubbles: bubbles, controller: _controller),
+        size: Size(
+          MediaQuery.of(context).size.width,
+          MediaQuery.of(context).size.height,
         ),
+      ),
     );
   }
 
@@ -95,7 +99,7 @@ class Bubble {
   }
 
   draw(Canvas canvas, Size canvasSize) {
-    Paint paint = new Paint()
+    Paint paint = Paint()
       ..color = color!
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.fill;

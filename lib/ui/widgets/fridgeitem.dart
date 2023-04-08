@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 
@@ -20,8 +21,11 @@ class FridgeItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: HavkaColors.bone[100]!),
+          border: Border.all(
+            color: HavkaColors.bone[100]!,
+          ),
         ),
         child: ListTile(
           leading: SizedBox(
@@ -40,7 +44,8 @@ class FridgeItem extends StatelessWidget {
                       image: userProduct.netWeightLeft != null
                           ? const DecorationImage(
                               image: NetworkImage(
-                                  'https://cdn.havka.one/test.jpg'),
+                                'https://cdn.havka.one/test.jpg',
+                              ),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -50,19 +55,22 @@ class FridgeItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressBar(value: Random().nextDouble()))
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressBar(
+                    value: Random().nextDouble(),
+                  ),
+                ),
               ],
             ),
           ),
           title: Text(
             userProduct.productName ?? 'NAME Placeholder',
             style: TextStyle(
-              color: Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
               decoration: TextDecoration.none,
               fontWeight: FontWeight.normal,
-              fontSize: Theme.of(context).textTheme.headline3!.fontSize,
+              fontSize: Theme.of(context).textTheme.labelLarge!.fontSize,
             ),
           ),
           subtitle: Row(
@@ -74,13 +82,13 @@ class FridgeItem extends StatelessWidget {
                   color: Colors.black,
                   decoration: TextDecoration.none,
                   fontWeight: FontWeight.normal,
-                  fontSize: Theme.of(context).textTheme.headline4!.fontSize,
+                  fontSize: Theme.of(context).textTheme.labelMedium!.fontSize,
                 ),
               ),
               Text(
                 '100 000 g',
                 style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.headline4!.fontSize,
+                  fontSize: Theme.of(context).textTheme.labelSmall!.fontSize,
                 ),
               )
             ],
@@ -88,7 +96,7 @@ class FridgeItem extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              SharpPageRoute(
                 builder: (context) => UserProductScreen(
                   userProduct: userProduct,
                 ),
@@ -155,9 +163,10 @@ class EmptyFridgeItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressBar(value: -1))
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressBar(value: -1),
+                )
               ],
             ),
           ),

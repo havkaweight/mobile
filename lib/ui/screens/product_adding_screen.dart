@@ -54,7 +54,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: SingleChildScrollView(
           reverse: true,
           child: SafeArea(
@@ -206,7 +206,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   Future _buildBarcodeScanner() {
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),

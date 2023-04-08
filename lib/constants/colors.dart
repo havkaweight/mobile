@@ -4,14 +4,17 @@ class HavkaColors {
   HavkaColors._(); // this basically makes it so you can't instantiate this class
 
   static const Color green = Color(0xFF5BBE78);
+  static const Color black = Color(0xFF888888);
+  static const Color error = Color.fromARGB(255, 176, 59, 59);
   static const Color cream = Color(0xFFFFFdd0);
-  static const Map<int, Color> bone = <int, Color> {
+
+  static const Map<int, Color> bone = <int, Color>{
     50: Color(0x88EDE88E),
     100: Color(0xFFEDE88E),
     200: Color(0xFFFFFF99),
   };
 
-  static const Map<int, Color> grey = <int, Color> {
+  static const Map<int, Color> grey = <int, Color>{
     50: Color(0x88E1EDEB),
     100: Color(0xFFE1EDEB),
   };

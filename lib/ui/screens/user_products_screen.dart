@@ -37,8 +37,10 @@ class _UserProductsScreenState extends State<UserProductsScreen>
 
   void showModalScale() {
     _overlayEntry = OverlayEntry(
-        builder: (context) =>
-            ModalScale(animationController: _animationController));
+      builder: (context) => ModalScale(
+        animationController: _animationController,
+      ),
+    );
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward();
   }
@@ -103,8 +105,10 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                       },
                     ),
                     IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.barcode,
-                          color: HavkaColors.green),
+                      icon: const FaIcon(
+                        FontAwesomeIcons.barcode,
+                        color: HavkaColors.green,
+                      ),
                       onPressed: () {
                         _buildBarcodeScanner().then((_) => setState(() {}));
                       },
@@ -169,7 +173,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
   Future<dynamic> _buildBarcodeScanner() {
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),
@@ -200,7 +204,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
   Future<dynamic> _buildProductsList(BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15.0),

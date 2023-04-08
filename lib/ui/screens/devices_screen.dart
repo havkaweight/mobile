@@ -55,23 +55,25 @@ class _DevicesScreenState extends State<DevicesScreen> {
     final Utils utils = Utils();
     await _subscription?.cancel();
     final DeviceService service = widget.servicesList.singleWhere(
-        (serviceItem) =>
-            Uuid.parse(serviceItem.serviceUuid!) == device.serviceUuids[0]);
+      (serviceItem) =>
+          Uuid.parse(serviceItem.serviceUuid!) == device.serviceUuids[0],
+    );
     final Uuid serviceUuid = Uuid.parse(service.serviceUuid!);
     final Uuid characteristicUuid = Uuid.parse(service.characteristicUuid!);
     // stream = flutterReactiveBle.connectToDevice(id: device.id);
-    final _connectionStateUpdateSubscription =
+    final connectionStateUpdateSubscription =
         flutterReactiveBle.connectToDevice(id: device.id).listen(null);
     characteristic = QualifiedCharacteristic(
-        serviceId: serviceUuid,
-        characteristicId: characteristicUuid,
-        deviceId: device.id);
+      serviceId: serviceUuid,
+      characteristicId: characteristicUuid,
+      deviceId: device.id,
+    );
     final List<int> serialIdRaw =
         await flutterReactiveBle.readCharacteristic(characteristic!);
     final String serialId = utils.listIntToString(serialIdRaw);
     print(serialIdRaw);
     print(serialId);
-    await _connectionStateUpdateSubscription?.cancel(); // disconnecting
+    await connectionStateUpdateSubscription.cancel(); // disconnecting
     await _apiRoutes.userDeviceAdd(serialId);
   }
 
@@ -87,38 +89,43 @@ class _DevicesScreenState extends State<DevicesScreen> {
       withServices: servicesUuidList,
       scanMode: ScanMode.lowLatency,
     )
-        .listen((device) {
-      if (!devicesListId.contains(device.id)) {
-        print(device.id);
-        print(device);
-        setState(() {
-          discDevicesList.add(device);
-          devicesListId.add(device.id);
-        });
-      }
-    }, onError: (e) {
-      print('Device scan fails with error: $e');
-    });
+        .listen(
+      (device) {
+        if (!devicesListId.contains(device.id)) {
+          print(device.id);
+          print(device);
+          setState(() {
+            discDevicesList.add(device);
+            devicesListId.add(device.id);
+          });
+        }
+      },
+      onError: (e) {
+        print('Device scan fails with error: $e');
+      },
+    );
   }
 
   ListView _buildDevicesList(BuildContext context) {
     return ListView.builder(
-        shrinkWrap: true,
-        itemCount: discDevicesList.length,
-        padding: const EdgeInsets.all(8),
-        itemBuilder: (context, index) {
-          final DiscoveredDevice device = discDevicesList[index];
-          return ListTile(
-            title: Text(device.name == '' ? '(unknown device)' : device.name),
-            subtitle: Text(device.id),
-            trailing: RoundedButton(
-                text: 'Connect',
-                onPressed: () {
-                  connectToDevice(device);
-                  Navigator.pop(context);
-                }),
-          );
-        });
+      shrinkWrap: true,
+      itemCount: discDevicesList.length,
+      padding: const EdgeInsets.all(8),
+      itemBuilder: (context, index) {
+        final DiscoveredDevice device = discDevicesList[index];
+        return ListTile(
+          title: Text(device.name == '' ? '(unknown device)' : device.name),
+          subtitle: Text(device.id),
+          trailing: RoundedButton(
+            text: 'Connect',
+            onPressed: () {
+              connectToDevice(device);
+              Navigator.pop(context);
+            },
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -127,35 +134,42 @@ class _DevicesScreenState extends State<DevicesScreen> {
     return SizedBox(
       height: mHeight * 0.82,
       child: FutureBuilder(
-          future: _setSearchingDevicesList(),
-          builder: (context, snapshot) {
-            if ([
-                  BleStatus.unauthorized,
-                  BleStatus.poweredOff,
-                  BleStatus.unsupported
-                ].contains(flutterReactiveBle.status) ||
-                flutterReactiveBle.status ==
-                    BleStatus.locationServicesDisabled) {
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const <Widget>[
-                          Icon(Icons.bluetooth_disabled,
-                              color: Colors.grey, size: 40),
-                          Icon(Icons.location_disabled,
-                              color: Colors.grey, size: 40),
-                        ],
+        future: _setSearchingDevicesList(),
+        builder: (context, snapshot) {
+          if ([
+                BleStatus.unauthorized,
+                BleStatus.poweredOff,
+                BleStatus.unsupported
+              ].contains(flutterReactiveBle.status) ||
+              flutterReactiveBle.status == BleStatus.locationServicesDisabled) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(
+                        Icons.bluetooth_disabled,
+                        color: Colors.grey,
+                        size: 40,
                       ),
-                    ),
-                    const Text('Turn on Bluetooth and Location')
-                  ]);
-            }
-            return _buildDevicesList(context);
-          }),
+                      Icon(
+                        Icons.location_disabled,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    ],
+                  ),
+                ),
+                const Text('Turn on Bluetooth and Location')
+              ],
+            );
+          }
+          return _buildDevicesList(context);
+        },
+      ),
     );
   }
 }

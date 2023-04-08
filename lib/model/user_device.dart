@@ -14,7 +14,7 @@ class UserDevice {
     this.macAddress,
     this.userDeviceName,
     this.userId,
-    this.firmwareVersion
+    this.firmwareVersion,
   });
 
   UserDevice.fromJson(Map<String, dynamic> json)
@@ -26,8 +26,7 @@ class UserDevice {
         userId = json['user_id'] as String,
         firmwareVersion = json['firmware_version'] as String;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'device_id': deviceId,
         'serial_id': serialId,
@@ -37,8 +36,7 @@ class UserDevice {
         'firmware_version': firmwareVersion
       };
 
-  Map<String, dynamic> createdDataToJson() =>
-      {
+  Map<String, dynamic> createdDataToJson() => {
         'serial_id': serialId,
       };
 }

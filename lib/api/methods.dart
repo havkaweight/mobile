@@ -30,7 +30,10 @@ class ApiRoutes {
     try {
       final http.Response response = await http.post(
         Uri.https(
-            Api.host, '${Api.prefix}${Api.authService}${Api.signup}', body),
+          Api.host,
+          '${Api.prefix}${Api.authService}${Api.signup}',
+          body,
+        ),
         headers: headers,
         body: body,
       );
@@ -71,8 +74,8 @@ class ApiRoutes {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
         log("Access Token: ${data['access_token'] as String}");
-        setToken(data['access_token'] as String);
-        setRefreshToken(data['refresh_token'] as String);
+        await setToken(data['access_token'] as String);
+        await setRefreshToken(data['refresh_token'] as String);
         return true;
       } else {
         // throw Exception("Failed sign in.");
@@ -85,12 +88,10 @@ class ApiRoutes {
   }
 
   Future<bool> tokenUpdate() async {
-    print("YA TUT TOKEN UPDATE");
     final String? refreshToken = await getRefreshToken();
-
     final Map<String, String> headers = <String, String>{
       'Content-Type': 'application/json',
-      'refresh_token': refreshToken!,
+      'Authorization': 'Bearer $refreshToken',
     };
 
     try {
@@ -105,8 +106,8 @@ class ApiRoutes {
       if (response.statusCode == HttpStatus.ok) {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
-        setToken(data['access_token'] as String);
-        setRefreshToken(data['refresh_token'] as String);
+        await setToken(data['access_token'] as String);
+        await setRefreshToken(data['refresh_token'] as String);
         return true;
       } else {
         return false;
@@ -156,13 +157,16 @@ class ApiRoutes {
   Future<User> getMe() async {
     try {
       final token = await getToken();
+      final Map<String, String> headers = <String, String>{
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
       final http.Response response = await http.get(
         Uri.https(Api.host, '${Api.prefix}${Api.monolithService}${Api.me}'),
-        headers: <String, String>{
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       );
+
       if (response.statusCode == HttpStatus.unauthorized) {
         throw Exception('Unauthorized');
       } else if (response.statusCode == HttpStatus.forbidden) {
@@ -170,7 +174,7 @@ class ApiRoutes {
         if (!isTokenRelevant) {
           throw Exception("Access Denied");
         }
-        return getMe();
+        return await getMe();
       }
 
       final user =
@@ -218,12 +222,15 @@ class ApiRoutes {
   Future<String> deleteUserProduct(UserProduct userProduct) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.delete(
-        Uri.https(Api.host,
-            '${Api.prefix}${Api.monolithService}${Api.userProducts}/${userProduct.id}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
+      Uri.https(
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.userProducts}/${userProduct.id}',
+      ),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
 
     if (response.statusCode == 200) {
       return 'success';
@@ -234,8 +241,10 @@ class ApiRoutes {
   Future<dynamic> getProductByBarcode(String? barcode) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-      Uri.https(Api.host,
-          '${Api.prefix}${Api.monolithService}${Api.productByBarcode}/$barcode'),
+      Uri.https(
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.productByBarcode}/$barcode',
+      ),
       headers: <String, String>{
         'Content-type': 'application/json',
         'Authorization': 'Bearer $token'
@@ -257,11 +266,12 @@ class ApiRoutes {
   Future<List<Product>> getProductsBySearchingRequest(String request) async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.productsByRequest}/$request'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
+      Uri.https(Api.host, '${Api.prefix}${Api.productsByRequest}/$request'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
 
     if (response.statusCode == HttpStatus.notFound) {
       throw Exception('Not found');
@@ -279,12 +289,15 @@ class ApiRoutes {
   Future<List<UserDevice>> getUserDevicesList() async {
     final token = await getToken();
     final http.Response response = await http.get(
-        Uri.https(
-            Api.host, '${Api.prefix}${Api.monolithService}${Api.userDevices}'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
+      Uri.https(
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.userDevices}',
+      ),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
     if (response.statusCode != HttpStatus.ok) {
       return [];
     }
@@ -298,11 +311,12 @@ class ApiRoutes {
   Future<List<DeviceService>> getDevicesServicesList() async {
     final token = await getToken();
     final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.serviceByName}/info'),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        });
+      Uri.https(Api.host, '${Api.prefix}${Api.serviceByName}/info'),
+      headers: <String, String>{
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
     if (response.statusCode != 200) {
       return [];
     }
@@ -378,7 +392,9 @@ class ApiRoutes {
       final token = await storage.read(key: 'jwt');
       final http.Response response = await http.post(
         Uri.https(
-            Api.host, '${Api.prefix}${Api.monolithService}${Api.products}'),
+          Api.host,
+          '${Api.prefix}${Api.monolithService}${Api.products}',
+        ),
         headers: <String, String>{
           'Content-type': 'application/json',
           'Authorization': 'Bearer $token'
