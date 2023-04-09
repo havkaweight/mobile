@@ -146,7 +146,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 BuildContext context,
                 AsyncSnapshot<List<Product>> snapshot,
               ) {
-                print(snapshot);
                 if (!snapshot.hasData) {
                   return Center(
                     child: Container(

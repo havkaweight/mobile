@@ -200,7 +200,9 @@ class ApiRoutes {
 
     final http.Response response = await http.get(
       Uri.https(
-          Api.host, '${Api.prefix}${Api.monolithService}${Api.userProducts}'),
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.userProducts}',
+      ),
       headers: headers,
     );
 
@@ -246,7 +248,6 @@ class ApiRoutes {
         'Authorization': 'Bearer $token'
       },
     );
-    print(response.statusCode);
     if (response.statusCode == HttpStatus.notFound) {
       throw Exception('Not found');
     }

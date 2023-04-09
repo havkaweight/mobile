@@ -165,7 +165,6 @@ class _SignInScreenState extends State<SignInScreen>
         );
       }
     } else {
-      print(response.body);
       throw Exception('Failed sign in');
     }
   }

@@ -130,7 +130,7 @@ class GoogleSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HavkaButton(
-      child: Container(
+      child: SizedBox(
         height: 40,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -139,7 +139,7 @@ class GoogleSignInButton extends StatelessWidget {
               'assets/icons/google.webp',
               fit: BoxFit.fill,
             ),
-            Text('Continue with Google'),
+            const Text('Continue with Google'),
           ],
         ),
       ),

@@ -31,7 +31,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
 
   String prevText = '';
   final weightController = TextEditingController();
-  dynamic _subscription;
+  late dynamic _subscription;
 
   void _changeNutritionValues() {
     if (weightController.text.isNotEmpty) {
@@ -93,7 +93,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
     // }, onError: (Object error) {});
 
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child:
             // StreamBuilder<List<int>>(

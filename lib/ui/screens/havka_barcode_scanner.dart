@@ -2,15 +2,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:health_tracker/ui/screens/barcode_popup.dart';
 // import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/ui/screens/barcode_product_popup.dart';
-
 import 'package:health_tracker/ui/widgets/detection_box.dart';
-
-import 'barcode_popup.dart';
 
 class HavkaBarcodeScannerScreen extends StatefulWidget {
   final bool isProduct;

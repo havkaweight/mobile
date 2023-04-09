@@ -65,7 +65,6 @@ class _StoryPageState extends State<StoryPage> {
     });
   }
 
-  double _dragDistance = 0;
   double _offset = 0;
   @override
   Widget build(BuildContext context) {
@@ -79,14 +78,11 @@ class _StoryPageState extends State<StoryPage> {
           offset: Offset(0.0, _offset),
           child: GestureDetector(
             onVerticalDragDown: (details) {
-              setState(() {
-                _dragDistance = 0;
-              });
+              setState(() {});
             },
             onVerticalDragUpdate: (details) {
               setState(() {
                 if (details.delta.dy > 0) {
-                  _dragDistance += details.delta.dy;
                   _offset += details.delta.dy / height * 150;
                 }
               });

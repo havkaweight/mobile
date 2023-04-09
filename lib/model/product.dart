@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class ProductNutrition {
   final double? protein;
   final double? fat;

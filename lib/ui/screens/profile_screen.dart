@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       backgroundColor: Theme.of(context).colorScheme.background,
       body: FutureBuilder<User>(
         future: _apiRoutes.getMe(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
           Widget? widget;
           if (snapshot.connectionState != ConnectionState.done) {
             widget = const Center(child: HavkaProgressIndicator());
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  Widget _buildProfileScreen(AsyncSnapshot snapshot) {
+  Widget _buildProfileScreen(AsyncSnapshot<User> snapshot) {
     final List<DataItem> pfcData = [
       DataItem(500, "Protein", Colors.amber[200]!),
       DataItem(100, "Fat", Colors.amber[400]!),
@@ -148,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   ProfileHeader(
-                    username: '${snapshot.data.email}',
+                    username: '${snapshot.data!.email}',
                     height: 163,
                     weight: 67,
                     photoUrl:
