@@ -10,6 +10,8 @@ import 'package:health_tracker/ui/screens/barcode_product_popup.dart';
 
 import 'package:health_tracker/ui/widgets/detection_box.dart';
 
+import 'barcode_popup.dart';
+
 class HavkaBarcodeScannerScreen extends StatefulWidget {
   final bool isProduct;
 
@@ -70,43 +72,6 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
     );
   }
 
-  Widget barcode() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(100.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(_barcode.value);
-                  },
-                  child: Text(
-                    _barcode.value!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _showCameraPreview() {
     if (!_cameraController.value.isInitialized) {
       return const CircularProgressIndicator();
@@ -124,15 +89,15 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
           painter: DetectionBox(),
           child: Container(),
         ),
-        if (widget.isProduct)
-          ValueListenableBuilder<String?>(
-            valueListenable: _barcode,
-            builder: (BuildContext context, String? value, _) {
+        ValueListenableBuilder<String?>(
+          valueListenable: _barcode,
+          builder: (BuildContext context, String? value, _) {
+            if (widget.isProduct) {
               return BarcodeProductPopup(value);
-            },
-          )
-        else
-          barcode(),
+            }
+            return BarcodePopup(value);
+          },
+        ),
       ],
     );
   }

@@ -54,15 +54,16 @@ dependencies:
   cupertino_icons: ^1.0.3
 
 dev_dependencies:
-  image: ^4.0.15
-  flutter_test:
-    sdk: flutter
+  flutter_launcher_icons: "^0.13.0"
 
 flutter_icons:
   android: true
   ios: true
   image_path: "assets/icons/icon.png"
   adaptive_icon_background: '#F4F1BA'
+  remove_alpha_ios: true
+  flutter_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

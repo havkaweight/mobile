@@ -85,9 +85,9 @@ class _HavkaAppState extends State<HavkaApp> {
           return SplashScreen();
         } else {
           if (snapshot.data!) {
-            return WelcomeScreen();
-          } else {
             return MainScreen();
+          } else {
+            return WelcomeScreen();
           }
         }
       },
