@@ -34,7 +34,7 @@ class FridgeItem extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 Hero(
-                  tag: 'productImage-${userProduct.id}',
+                  tag: 'userProductImage-${userProduct.id}',
                   child: Container(
                     width: 50,
                     height: 50,
@@ -65,7 +65,7 @@ class FridgeItem extends StatelessWidget {
             ),
           ),
           title: Text(
-            userProduct.productName ?? 'NAME Placeholder',
+            userProduct.product?.name ?? 'NAME Placeholder',
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               decoration: TextDecoration.none,
@@ -77,7 +77,7 @@ class FridgeItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                userProduct.productBrand ?? 'BRAND Placeholder',
+                userProduct.product?.brand ?? 'BRAND Placeholder',
                 style: TextStyle(
                   color: Colors.black,
                   decoration: TextDecoration.none,

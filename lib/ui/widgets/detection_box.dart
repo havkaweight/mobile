@@ -11,11 +11,11 @@ class DetectionBox extends CustomPainter {
       ..color = HavkaColors.green
       ..style = PaintingStyle.stroke;
 
-    final bgPaint = Paint()..color = Colors.black.withOpacity(0.5);
+    final bgPaint = Paint()..color = Colors.black.withOpacity(0.3);
 
     final center = Offset(size.width / 2, size.height / 3);
     final lineWidth = size.width / 12;
-    final radius = lineWidth / 3;
+    final radius = lineWidth / 5;
     final dx = size.width / 3;
     final dy = size.height / 7;
 

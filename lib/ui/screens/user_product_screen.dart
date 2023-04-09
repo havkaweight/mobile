@@ -22,7 +22,7 @@ class _UserProductScreenState extends State<UserProductScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Hero(
-              tag: 'productImage-${widget.userProduct.id}',
+              tag: 'userProductImage-${widget.userProduct.id}',
               child: Container(
                 width: 300,
                 height: 300,
@@ -40,7 +40,7 @@ class _UserProductScreenState extends State<UserProductScreen> {
               ),
             ),
             Text(
-              widget.userProduct.productName!,
+              widget.userProduct.product!.name!,
               style: const TextStyle(
                 color: Colors.black,
                 decoration: TextDecoration.none,

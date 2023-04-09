@@ -443,7 +443,7 @@ class ApiRoutes {
         'Authorization': 'Bearer $token'
       },
       body: jsonEncode({
-        'product_id': userProduct.productId,
+        'product_id': userProduct.product!.id,
         'user_product_id': userProduct.id,
         // 'user_device_id': userDevice.id,
         'weight': netWeight

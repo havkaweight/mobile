@@ -6,6 +6,7 @@ import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/ui/screens/barcode_product_popup.dart';
 
 import 'package:health_tracker/ui/widgets/detection_box.dart';
 
@@ -22,16 +23,14 @@ class HavkaBarcodeScannerScreen extends StatefulWidget {
 class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
     with SingleTickerProviderStateMixin {
   late CameraController _cameraController;
-  late String? _barcodeValue;
   late AnimationController _barcodeAnimationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  final ApiRoutes _apiRoutes = ApiRoutes();
+  final ValueNotifier<String?> _barcode = ValueNotifier<String?>(null);
 
   @override
   void initState() {
     super.initState();
-    _barcodeValue = null;
 
     _barcodeAnimationController = AnimationController(
       vsync: this,
@@ -39,8 +38,8 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
     );
 
     _fadeAnimation = Tween<double>(
-      begin: 0,
-      end: 100,
+      begin: 0.0,
+      end: 1.0,
     ).animate(_barcodeAnimationController);
 
     _slideAnimation = Tween<Offset>(
@@ -52,6 +51,7 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
   @override
   void dispose() {
     _cameraController.dispose();
+    _barcode.dispose();
     super.dispose();
   }
 
@@ -88,10 +88,10 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
                 padding: const EdgeInsets.all(20.0),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(_barcodeValue);
+                    Navigator.of(context).pop(_barcode.value);
                   },
                   child: Text(
-                    _barcodeValue!,
+                    _barcode.value!,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -100,89 +100,6 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
                   ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget productByBarcode() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: FutureBuilder(
-              future: _apiRoutes.getProductByBarcode(_barcodeValue),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Container();
-                }
-                final Product product = snapshot.data as Product;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: HavkaColors.bone[100]!),
-                    ),
-                    child: ListTile(
-                      leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          margin: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xff7c94b6),
-                            image: product.img != null
-                                ? const DecorationImage(
-                                    image: NetworkImage(
-                                      'https://cdn.havka.one/test.jpg',
-                                    ),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(50.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        product.name ?? 'NAME Placeholder',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              Theme.of(context).textTheme.labelLarge!.fontSize,
-                        ),
-                      ),
-                      subtitle: Text(
-                        product.barcode ?? 'BARCODE Placeholder',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              Theme.of(context).textTheme.labelMedium!.fontSize,
-                        ),
-                      ),
-                      onTap: () async {
-                        await _apiRoutes.addUserProduct(product);
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                );
-              },
             ),
           ),
         ),
@@ -207,10 +124,15 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
           painter: DetectionBox(),
           child: Container(),
         ),
-        if (_barcodeValue != null)
-          if (widget.isProduct) productByBarcode() else barcode()
+        if (widget.isProduct)
+          ValueListenableBuilder<String?>(
+            valueListenable: _barcode,
+            builder: (BuildContext context, String? value, _) {
+              return BarcodeProductPopup(value);
+            },
+          )
         else
-          Container(),
+          barcode(),
       ],
     );
   }
@@ -253,7 +175,6 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
         ),
       );
 
-      // final barcodeScanner = GoogleMlKit.vision.barcodeScanner();
       final List<BarcodeFormat> formats = [BarcodeFormat.all];
       final barcodeScanner = BarcodeScanner(formats: formats);
       final results = await barcodeScanner.processImage(inputImage);
@@ -263,10 +184,10 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
         final value = barcode.rawValue;
         _cameraController.stopImageStream();
         barcodeScanner.close();
-        _barcodeAnimationController.forward();
-        setState(() {
-          _barcodeValue = value;
-        });
+        _barcode.value = value;
+        // setState(() {
+        //   _barcodeValue = value;
+        // });
       } else {
         // setState(() {
         //   _barcodeValue = 'No barcode detected';

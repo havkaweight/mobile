@@ -79,10 +79,10 @@ class _ScaleScreenState extends State<ScaleScreen> {
       deviceId: '7C:9E:BD:F4:5B:1A',
     );
 
-    protein = widget.userProduct!.protein! * weight! / 100;
-    fats = widget.userProduct!.fat! * weight! / 100;
-    carbs = widget.userProduct!.carbs! * weight! / 100;
-    kcal = widget.userProduct!.kcal! * weight! / 100;
+    protein = widget.userProduct!.product!.nutrition!.protein! * weight! / 100;
+    fats = widget.userProduct!.product!.nutrition!.fat! * weight! / 100;
+    carbs = widget.userProduct!.product!.nutrition!.carbs! * weight! / 100;
+    kcal = widget.userProduct!.product!.nutrition!.kcal! * weight! / 100;
 
     // _subscription = flutterReactiveBle
     //     .readCharacteristic(scaleCharacteristic)
@@ -116,8 +116,8 @@ class _ScaleScreenState extends State<ScaleScreen> {
             Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ScreenSubHeader(text: widget.userProduct!.productName!),
-            ScreenSubHeader(text: widget.userProduct!.productBrand!),
+            ScreenSubHeader(text: widget.userProduct!.product!.name!),
+            ScreenSubHeader(text: widget.userProduct!.product!.brand!),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
