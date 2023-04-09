@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:health_tracker/api/constants.dart';
 import 'package:health_tracker/model/device_service.dart';
@@ -186,32 +184,30 @@ class ApiRoutes {
   }
 
   Future<List<UserProduct>> getUserProductsList() async {
-    final Dio dio = Dio();
-    final DioCacheManager dioCacheManager =
-        DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
-    dio.interceptors.add(dioCacheManager.interceptor as Interceptor);
+    // final Dio dio = Dio();
+    // final DioCacheManager dioCacheManager =
+    //     DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
+    // dio.interceptors.add(dioCacheManager.interceptor as Interceptor);
     final token = await storage.read(key: 'jwt');
-    dio.options.headers = <String, String>{
+    final Map<String, String> headers = <String, String>{
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    final Response response = await dio.get(
-      'https://${Api.host}${Api.prefix}${Api.monolithService}${Api.userProducts}',
-      options: buildCacheOptions(const Duration(days: 7), forceRefresh: true),
-    );
-
-    // final http.Response response = await http.get(
-    //     Uri.https(Api.host, '${Api.prefix}${Api.userProducts}'),
-    //     headers: <String, String>{
-    //       'Content-type': 'application/json',
-    //       'Authorization': 'Bearer $token',
-    //     },
+    // final Response response = await dio.get(
+    //   'https://${Api.host}${Api.prefix}${Api.monolithService}${Api.userProducts}',
+    //   options: buildCacheOptions(const Duration(days: 7), forceRefresh: true),
     // );
+
+    final http.Response response = await http.get(
+      Uri.https(
+          Api.host, '${Api.prefix}${Api.monolithService}${Api.userProducts}'),
+      headers: headers,
+    );
 
     if (response.statusCode != HttpStatus.ok) {
       return [];
     }
-    final userProducts = response.data as List;
+    final userProducts = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<UserProduct> userProductsList =
         userProducts.map<UserProduct>((json) {
       return UserProduct.fromJson(json as Map<String, dynamic>);

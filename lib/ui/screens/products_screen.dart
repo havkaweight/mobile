@@ -79,57 +79,60 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   );
                 }
                 if (snapshot.hasData) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, index) {
-                      final Product product = snapshot.data![index];
-                      return ListTile(
-                        leading: Container(
-                          width: 50.0,
-                          height: 50.0,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff7c94b6),
-                            image: product.img != null
-                                ? const DecorationImage(
-                                    image: NetworkImage(
-                                      "https://cdn.havka.one/test.jpg",
-                                    ),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(50.0)),
-                            border: Border.all(
-                              color: HavkaColors.cream,
-                              width: 3,
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, index) {
+                        final Product product = snapshot.data![index];
+                        return ListTile(
+                          leading: Container(
+                            width: 50.0,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                              color: const Color(0xff7c94b6),
+                              image: product.img != null
+                                  ? DecorationImage(
+                                      image: NetworkImage(
+                                        product.img!,
+                                      ),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(50.0)),
+                              border: Border.all(
+                                color: HavkaColors.cream,
+                                width: 3,
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(
-                          product.name!,
-                          style: TextStyle(
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .fontSize,
+                          title: Text(
+                            product.name!,
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .fontSize,
+                            ),
                           ),
-                        ),
-                        subtitle: Text(
-                          product.brand ?? 'not found',
-                          style: TextStyle(
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .labelMedium!
-                                .fontSize,
+                          subtitle: Text(
+                            product.brand ?? 'not found',
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
+                                  .fontSize,
+                            ),
                           ),
-                        ),
-                        onTap: () async {
-                          await _apiRoutes.addUserProduct(product);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
+                          onTap: () async {
+                            await _apiRoutes.addUserProduct(product);
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
                   );
                 }
                 return const Center(child: Text('Error internet connection'));

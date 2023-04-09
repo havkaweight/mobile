@@ -29,9 +29,9 @@ class _UserProductScreenState extends State<UserProductScreen> {
                 margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: const Color(0xff7c94b6),
-                  image: widget.userProduct.netWeightLeft != null
-                      ? const DecorationImage(
-                          image: NetworkImage('https://cdn.havka.one/test.jpg'),
+                  image: widget.userProduct.product!.img != null
+                      ? DecorationImage(
+                          image: NetworkImage(widget.userProduct.product!.img!),
                           fit: BoxFit.cover,
                         )
                       : null,

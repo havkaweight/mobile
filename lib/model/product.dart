@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ProductNutrition {
   final double? protein;
   final double? fat;
@@ -55,7 +57,14 @@ class Product {
               ),
         baseValue = json['net_weight'] as double?,
         barcode = json['barcode'] as String?,
-        img = json['img'] as String?;
+        img = json['imgs'] == null
+            ? null
+            : json['imgs']['foody'] == null
+                ? null
+                : json['imgs']['foody']['original'] == null
+                    ? null
+                    : (json['imgs']['foody']['original'] as String)
+                        .replaceAll('?', '%3F');
 
   Map<String, dynamic> toJson() => {
         '_id': id,
@@ -64,7 +73,7 @@ class Product {
         'nutrition': nutrition == null ? null : nutrition!.toJson(),
         'net_weight': baseValue,
         'barcode': barcode,
-        'img': img,
+        'imgs': img,
       };
 
   Map<String, dynamic> productIdToJson() => {'product_id': id};

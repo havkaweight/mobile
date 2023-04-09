@@ -41,10 +41,10 @@ class FridgeItem extends StatelessWidget {
                     margin: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: const Color(0xff7c94b6),
-                      image: userProduct.netWeightLeft != null
-                          ? const DecorationImage(
+                      image: userProduct.product!.img != null
+                          ? DecorationImage(
                               image: NetworkImage(
-                                'https://cdn.havka.one/test.jpg',
+                                userProduct.product!.img!,
                               ),
                               fit: BoxFit.cover,
                             )
