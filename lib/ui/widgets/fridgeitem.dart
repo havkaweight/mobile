@@ -66,30 +66,18 @@ class FridgeItem extends StatelessWidget {
           ),
           title: Text(
             userProduct.product?.name ?? 'NAME Placeholder',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              decoration: TextDecoration.none,
-              fontWeight: FontWeight.normal,
-              fontSize: Theme.of(context).textTheme.labelLarge!.fontSize,
-            ),
+            style: Theme.of(context).textTheme.labelLarge,
           ),
           subtitle: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 userProduct.product?.brand ?? 'BRAND Placeholder',
-                style: TextStyle(
-                  color: Colors.black,
-                  decoration: TextDecoration.none,
-                  fontWeight: FontWeight.normal,
-                  fontSize: Theme.of(context).textTheme.labelMedium!.fontSize,
-                ),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               Text(
                 '100 000 g',
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.labelSmall!.fontSize,
-                ),
+                style: Theme.of(context).textTheme.labelSmall,
               )
             ],
           ),

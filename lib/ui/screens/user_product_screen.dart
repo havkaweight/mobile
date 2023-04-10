@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
@@ -17,48 +18,54 @@ class _UserProductScreenState extends State<UserProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Hero(
-              tag: 'userProductImage-${widget.userProduct.id}',
-              child: Container(
-                width: 300,
-                height: 300,
-                margin: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: const Color(0xff7c94b6),
-                  image: widget.userProduct.product!.img != null
-                      ? DecorationImage(
-                          image: NetworkImage(widget.userProduct.product!.img!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                  borderRadius: const BorderRadius.all(Radius.circular(50.0)),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Hero(
+                    tag: 'userProductImage-${widget.userProduct.id}',
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 300,
+                        height: 300,
+                        margin: const EdgeInsets.only(bottom: 30.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xff7c94b6),
+                          image: widget.userProduct.product!.img != null
+                              ? DecorationImage(
+                                  image: NetworkImage(
+                                      widget.userProduct.product!.img!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(50.0)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    widget.userProduct.product!.name!,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+              RoundedButton(
+                text: 'Weight',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ScaleScreen(userProduct: widget.userProduct),
+                  ),
                 ),
-              ),
-            ),
-            Text(
-              widget.userProduct.product!.name!,
-              style: const TextStyle(
-                color: Colors.black,
-                decoration: TextDecoration.none,
-                fontWeight: FontWeight.normal,
-                fontSize: 16,
-              ),
-            ),
-            RoundedButton(
-              text: 'Weight',
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ScaleScreen(userProduct: widget.userProduct),
-                ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

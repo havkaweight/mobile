@@ -60,6 +60,9 @@ class _BarcodeProductPopupState extends State<BarcodeProductPopup>
                 if (snapshot.connectionState != ConnectionState.done) {
                   return Container();
                 }
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return Container();
+                }
                 final Product product = snapshot.data as Product;
                 _barcodeAnimationController.forward();
                 return Padding(

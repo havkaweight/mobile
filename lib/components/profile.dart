@@ -14,7 +14,7 @@ class ProfileHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -31,68 +31,56 @@ class ProfileHeader extends StatelessWidget {
               children: <Widget>[
                 Text(
                   username!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              const FaIcon(
-                                FontAwesomeIcons.rulerVertical,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  8,
-                                  0,
-                                  20,
-                                  0,
-                                ),
-                                child: Text(
-                                  '${height!} cm',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Row(
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          const FaIcon(
+                            FontAwesomeIcons.rulerVertical,
+                            color: Colors.black,
+                            size: 20,
                           ),
-                          Row(
-                            children: <Widget>[
-                              const FaIcon(
-                                FontAwesomeIcons.weightScale,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  8,
-                                  0,
-                                  0,
-                                  0,
-                                ),
-                                child: Text(
-                                  '${weight!} kg',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              8,
+                              0,
+                              20,
+                              0,
+                            ),
+                            child: Text(
+                              '${height!} cm',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      Row(
+                        children: <Widget>[
+                          const FaIcon(
+                            FontAwesomeIcons.weightScale,
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              8,
+                              0,
+                              0,
+                              0,
+                            ),
+                            child: Text(
+                              '${weight!} kg',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 // Text(
                 //   'Height: ${height.toString()}',

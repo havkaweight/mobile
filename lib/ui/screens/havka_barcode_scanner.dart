@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +26,7 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   final ValueNotifier<String?> _barcode = ValueNotifier<String?>(null);
+  late final Timer scanningTimer;
 
   @override
   void initState() {
@@ -49,6 +52,7 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
   void dispose() {
     _cameraController.dispose();
     _barcode.dispose();
+    scanningTimer.cancel();
     super.dispose();
   }
 
@@ -87,10 +91,13 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
         ValueListenableBuilder<String?>(
           valueListenable: _barcode,
           builder: (BuildContext context, String? value, _) {
-            if (widget.isProduct) {
-              return BarcodeProductPopup(value);
+            if (value != null) {
+              if (widget.isProduct) {
+                return BarcodeProductPopup(value);
+              }
+              return BarcodePopup(value);
             }
-            return BarcodePopup(value);
+            return Container();
           },
         ),
       ],
@@ -106,53 +113,49 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
       enableAudio: false,
     );
     await _cameraController.initialize();
-    _cameraController.startImageStream((cameraImage) async {
-      final planeData = cameraImage.planes.map(
-        (Plane plane) {
-          return InputImagePlaneMetadata(
-            bytesPerRow: plane.bytesPerRow,
-            height: plane.height,
-            width: plane.width,
-          );
-        },
-      ).toList();
-      final inputImage = InputImage.fromBytes(
-        bytes: Uint8List.fromList(
-          cameraImage.planes.fold(
-            <int>[],
-            (List<int> previousValue, element) =>
-                previousValue..addAll(element.bytes),
-          ),
-        ),
-        inputImageData: InputImageData(
-          size: Size(
-            cameraImage.width.toDouble(),
-            cameraImage.height.toDouble(),
-          ),
-          imageRotation: InputImageRotation.rotation0deg,
-          inputImageFormat: InputImageFormat.bgra8888,
-          planeData: planeData,
-        ),
-      );
+    await startBarcodeScanning();
+  }
 
-      final List<BarcodeFormat> formats = [BarcodeFormat.all];
-      final barcodeScanner = BarcodeScanner(formats: formats);
-      final results = await barcodeScanner.processImage(inputImage);
-
-      if (results.isNotEmpty) {
+  Future<void> startBarcodeScanning() async {
+    scanningTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      _cameraController.startImageStream((cameraImage) async {
+        final planeData = cameraImage.planes.map(
+          (Plane plane) {
+            return InputImagePlaneMetadata(
+              bytesPerRow: plane.bytesPerRow,
+              height: plane.height,
+              width: plane.width,
+            );
+          },
+        ).toList();
+        final inputImage = InputImage.fromBytes(
+          bytes: Uint8List.fromList(
+            cameraImage.planes.fold(
+              <int>[],
+              (List<int> previousValue, element) =>
+                  previousValue..addAll(element.bytes),
+            ),
+          ),
+          inputImageData: InputImageData(
+            size: Size(
+              cameraImage.width.toDouble(),
+              cameraImage.height.toDouble(),
+            ),
+            imageRotation: InputImageRotation.rotation0deg,
+            inputImageFormat: InputImageFormat.bgra8888,
+            planeData: planeData,
+          ),
+        );
+        final List<BarcodeFormat> formats = [BarcodeFormat.all];
+        final barcodeScanner = BarcodeScanner(formats: formats);
+        final results = await barcodeScanner.processImage(inputImage);
+        if (results.isEmpty) return;
         final barcode = results.first;
         final value = barcode.rawValue;
         _cameraController.stopImageStream();
         barcodeScanner.close();
         _barcode.value = value;
-        // setState(() {
-        //   _barcodeValue = value;
-        // });
-      } else {
-        // setState(() {
-        //   _barcodeValue = 'No barcode detected';
-        // });
-      }
+      });
     });
   }
 }

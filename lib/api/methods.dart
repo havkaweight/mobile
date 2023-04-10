@@ -252,7 +252,7 @@ class ApiRoutes {
       throw Exception('Not found');
     }
     if (response.statusCode != 200) {
-      return;
+      throw Exception('Not found');
     }
     final productJson =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
