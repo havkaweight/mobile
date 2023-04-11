@@ -131,17 +131,25 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                   }
                   if (snapshot.hasData) {
                     userProducts = snapshot.data!;
+                    final ValueNotifier<List<UserProduct>>
+                        userProductsListener =
+                        ValueNotifier<List<UserProduct>>(userProducts);
                     if (userProducts.isNotEmpty) {
                       childWidget = RefreshIndicator(
                         onRefresh: _pullRefresh,
                         child: ScrollConfiguration(
                           behavior: CustomBehavior(),
-                          child: ListView.builder(
-                            itemCount: userProducts.length,
-                            itemBuilder: (BuildContext context, index) {
-                              final UserProduct userProduct =
-                                  userProducts[index];
-                              return FridgeItem(userProduct: userProduct);
+                          child: ValueListenableBuilder(
+                            valueListenable: userProductsListener,
+                            builder: (BuildContext context,
+                                List<UserProduct> value, _) {
+                              return ListView.builder(
+                                itemCount: value.length,
+                                itemBuilder: (BuildContext context, index) {
+                                  final UserProduct userProduct = value[index];
+                                  return FridgeItem(userProduct: userProduct);
+                                },
+                              );
                             },
                           ),
                         ),
@@ -164,10 +172,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
   }
 
   Future<void> _pullRefresh() async {
-    final newUserProducts = await _apiRoutes.getUserProductsList();
-    setState(() {
-      userProducts = newUserProducts;
-    });
+    userProducts = await _apiRoutes.getUserProductsList();
   }
 
   Future<dynamic> _buildBarcodeScanner() {

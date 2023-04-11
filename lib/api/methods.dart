@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
 import 'package:health_tracker/api/constants.dart';
@@ -184,6 +185,7 @@ class ApiRoutes {
   }
 
   Future<List<UserProduct>> getUserProductsList() async {
+    print('TUT');
     // final Dio dio = Dio();
     // final DioCacheManager dioCacheManager =
     //     DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
@@ -212,7 +214,10 @@ class ApiRoutes {
     final userProducts = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final List<UserProduct> userProductsList =
         userProducts.map<UserProduct>((json) {
-      return UserProduct.fromJson(json as Map<String, dynamic>);
+      final UserProduct userProduct =
+          UserProduct.fromJson(json as Map<String, dynamic>);
+      print(userProduct.netWeightLeft);
+      return userProduct;
     }).toList();
     return userProductsList;
   }

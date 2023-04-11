@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:health_tracker/constants/theme.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/splash_screen.dart';
@@ -13,6 +14,7 @@ Future main() async {
   runApp(
     MaterialApp(
       theme: themeData,
+      // darkTheme: themeDataDark,
       home: HavkaApp(),
     ),
   );
@@ -78,6 +80,11 @@ class _HavkaAppState extends State<HavkaApp> {
   // https://api.flutter.dev/flutter/widgets/Navigator/pushReplacement.html
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      Theme.of(context).colorScheme.brightness == Brightness.light
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.dark,
+    );
     return FutureBuilder(
       future: authService.isLoggedIn(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {

@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:health_tracker/model/product.dart';
 
 class UserProduct {
   final String? id;
   final Product? product;
   final String? userId;
-  final double? netWeightLeft;
+  late final double? netWeightLeft;
   final String? unit;
 
   UserProduct({
@@ -21,7 +23,7 @@ class UserProduct {
             ? null
             : Product.fromJson(json['product'] as Map<String, dynamic>),
         userId = json['user_id'] as String?,
-        netWeightLeft = json['net_weight_left'] as double?,
+        netWeightLeft = Random().nextDouble(),
         unit = json['unit'] as String?;
 
   Map<String, dynamic> toJson() => {

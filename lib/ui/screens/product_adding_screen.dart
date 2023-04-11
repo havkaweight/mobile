@@ -53,10 +53,8 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SingleChildScrollView(
-          reverse: true,
           child: SafeArea(
             child: Center(
               child: FractionallySizedBox(
@@ -165,11 +163,6 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                         _addProduct();
                         Navigator.pop(context);
                       },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                      ),
                     ),
                   ],
                 ),

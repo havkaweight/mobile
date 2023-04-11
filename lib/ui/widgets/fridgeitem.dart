@@ -58,7 +58,7 @@ class FridgeItem extends StatelessWidget {
                   width: 50,
                   height: 50,
                   child: CircularProgressBar(
-                    value: Random().nextDouble(),
+                    value: userProduct.netWeightLeft!,
                   ),
                 ),
               ],
