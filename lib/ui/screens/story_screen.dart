@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/onboarding_screens.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/story_bars.dart';
@@ -56,7 +57,7 @@ class _StoryPageState extends State<StoryPage> {
             prefs.setBool("skipOnboarding", true);
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => SignInScreen()),
+              SharpPageRoute(builder: (context) => SignInScreen()),
               (r) => false,
             );
           }
@@ -92,7 +93,7 @@ class _StoryPageState extends State<StoryPage> {
                 prefs!.setBool("skipOnboarding", true);
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()),
+                  SharpPageRoute(builder: (context) => SignInScreen()),
                   (r) => false,
                 );
               } else {
