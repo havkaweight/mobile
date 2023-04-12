@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:health_tracker/api/methods.dart';
@@ -29,15 +30,18 @@ Future removeToken() async {
 class AuthService {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
-  Future<bool> isLoggedIn() async {
-    try {
-      await _apiRoutes.getMe();
-    } catch (error) {
-      debugPrint("Error: $error");
-      return false;
-    }
-    return true;
-  }
+  // Future<bool> isLoggedIn() async {
+  //   try {
+  //     final HttpStatus httpStatus = await _apiRoutes.getAvailability();
+
+  //     switch
+
+  //   } catch (error) {
+  //     debugPrint("Error: $error");
+  //     return false;
+  //   }
+  //   return true;
+  // }
 
   Future<bool> logOut() async {
     return false;

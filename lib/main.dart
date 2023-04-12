@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,8 @@ import 'package:health_tracker/ui/screens/splash_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/utils/auth.dart';
+
+import 'api/methods.dart';
 
 // https://stackoverflow.com/questions/49040779/how-to-handle-a-different-login-navigation-flow
 Future main() async {
@@ -26,7 +30,8 @@ class HavkaApp extends StatefulWidget {
 }
 
 class _HavkaAppState extends State<HavkaApp> {
-  AuthService authService = AuthService();
+  final ApiRoutes _apiRoutes = ApiRoutes();
+
   @override
   void initState() {
     super.initState();
@@ -86,15 +91,38 @@ class _HavkaAppState extends State<HavkaApp> {
           : SystemUiOverlayStyle.dark,
     );
     return FutureBuilder(
-      future: authService.isLoggedIn(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      future: _apiRoutes.getAvailability(),
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return SplashScreen();
         } else {
-          if (snapshot.data!) {
-            return MainScreen();
-          } else {
-            return WelcomeScreen();
+          final int httpStatus = snapshot.data!;
+          switch (httpStatus) {
+            case HttpStatus.ok:
+              return MainScreen();
+            case HttpStatus.badGateway:
+              return Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: Theme.of(context).colorScheme.background,
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Icon(
+                          Icons.sick_outlined,
+                          color: Color.fromARGB(255, 112, 112, 112),
+                          size: 80,
+                        ),
+                      ),
+                      Text("Sorry, we are temporary unavailable"),
+                    ],
+                  ),
+                ),
+              );
+            default:
+              return WelcomeScreen();
           }
         }
       },

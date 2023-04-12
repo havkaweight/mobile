@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
 import 'package:health_tracker/api/constants.dart';
@@ -184,8 +183,30 @@ class ApiRoutes {
     }
   }
 
+  Future<int> getAvailability() async {
+    final token = await getToken();
+    final Map<String, String> headers = <String, String>{
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final http.Response response = await http.get(
+      Uri.https(Api.host, '${Api.prefix}${Api.monolithService}${Api.me}'),
+      headers: headers,
+    );
+    switch (response.statusCode) {
+      case HttpStatus.forbidden:
+        final bool isTokenRelevant = await tokenUpdate();
+        if (!isTokenRelevant) {
+          return response.statusCode;
+        }
+        return getAvailability();
+      default:
+        return response.statusCode;
+    }
+  }
+
   Future<List<UserProduct>> getUserProductsList() async {
-    print('TUT');
     // final Dio dio = Dio();
     // final DioCacheManager dioCacheManager =
     //     DioCacheManager(CacheConfig(baseUrl: "https://${Api.host}"));
@@ -216,7 +237,6 @@ class ApiRoutes {
         userProducts.map<UserProduct>((json) {
       final UserProduct userProduct =
           UserProduct.fromJson(json as Map<String, dynamic>);
-      print(userProduct.netWeightLeft);
       return userProduct;
     }).toList();
     return userProductsList;
