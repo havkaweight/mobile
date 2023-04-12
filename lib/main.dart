@@ -8,6 +8,7 @@ import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/splash_screen.dart';
 import 'package:health_tracker/ui/screens/welcome_screen.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
+import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/utils/auth.dart';
 
 import 'api/methods.dart';
@@ -104,20 +105,29 @@ class _HavkaAppState extends State<HavkaApp> {
               return Scaffold(
                 resizeToAvoidBottomInset: false,
                 backgroundColor: Theme.of(context).colorScheme.background,
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Icon(
-                          Icons.sick_outlined,
-                          color: Color.fromARGB(255, 112, 112, 112),
-                          size: 80,
+                body: SafeArea(
+                  child: Align(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Icon(
+                            Icons.sick_outlined,
+                            color: Color.fromARGB(255, 112, 112, 112),
+                            size: 80,
+                          ),
                         ),
-                      ),
-                      Text("Sorry, we are temporary unavailable"),
-                    ],
+                        const Text("Sorry, we are temporary unavailable"),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: RoundedButton(
+                            text: 'Reload',
+                            onPressed: () => setState(() {}),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
