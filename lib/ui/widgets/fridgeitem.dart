@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_product.dart';

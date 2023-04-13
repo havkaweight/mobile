@@ -127,8 +127,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                           ),
                           onTap: () async {
-                            await _apiRoutes.addUserProduct(product);
-                            Navigator.pop(context);
+                            await _apiRoutes
+                                .addUserProduct(product)
+                                .then((value) => Navigator.pop(context));
                           },
                         );
                       },
@@ -185,8 +186,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         title: Text(product.name!),
                         subtitle: Text(product.brand!),
                         onTap: () async {
-                          await _apiRoutes.addUserProduct(product);
-                          Navigator.pop(context);
+                          await _apiRoutes
+                              .addUserProduct(product)
+                              .then((value) => Navigator.pop(context));
                         },
                       );
                     },

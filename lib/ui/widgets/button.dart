@@ -110,7 +110,6 @@ class GoogleSignInButton extends StatelessWidget {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      log(googleAuth.idToken!);
       if (googleAuth.accessToken != null && googleAuth.idToken != null) {
         await authInstance.signInWithCredential(credential);
         final bool isAuthSuccess =

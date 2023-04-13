@@ -19,33 +19,14 @@ class HavkaBarcodeScannerScreen extends StatefulWidget {
       _HavkaBarcodeScannerScreenState();
 }
 
-class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen>
-    with SingleTickerProviderStateMixin {
+class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen> {
   late CameraController _cameraController;
-  late AnimationController _barcodeAnimationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
   final ValueNotifier<String?> _barcode = ValueNotifier<String?>(null);
   late final Timer scanningTimer;
 
   @override
   void initState() {
     super.initState();
-
-    _barcodeAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_barcodeAnimationController);
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.2, 0.0),
-      end: Offset.zero,
-    ).animate(_barcodeAnimationController);
   }
 
   @override

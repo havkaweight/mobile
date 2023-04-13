@@ -118,8 +118,9 @@ class _BarcodeProductPopupState extends State<BarcodeProductPopup>
                         ),
                       ),
                       onTap: () async {
-                        await _apiRoutes.addUserProduct(product);
-                        Navigator.of(context).pop();
+                        await _apiRoutes
+                            .addUserProduct(product)
+                            .then((value) => Navigator.of(context).pop());
                       },
                     ),
                   ),
