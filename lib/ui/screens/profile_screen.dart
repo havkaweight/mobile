@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -11,18 +12,23 @@ import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_device.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/weightings_screen.dart';
+import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
 import 'package:health_tracker/ui/widgets/bar_chart.dart';
 import 'package:health_tracker/ui/widgets/donut_chart.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/line_chart.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../widgets/stack_bar_chart.dart';
 
 final flutterReactiveBle = FlutterReactiveBle();
 
@@ -38,7 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -82,39 +87,22 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: FutureBuilder<User>(
-        future: _apiRoutes.getMe(),
-        builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-          Widget? widget;
-          if (snapshot.connectionState != ConnectionState.done) {
-            widget = const Center(child: HavkaProgressIndicator());
-          } else {
-            if (!snapshot.hasData) {
-              widget = const Center(child: HavkaProgressIndicator());
-            } else {
-              widget = _buildProfileScreen(snapshot);
-            }
-            // if (snapshot.hasError) {
-            //   WidgetsBinding.instance.addPostFrameCallback((_) {
-            //     Navigator.pushReplacement(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => SignInScreen()),
-            //     );
-            //   });
-            // }
-          }
-          return widget;
-        },
-      ),
+      body: _buildProfileScreen(),
     );
   }
 
-  Widget _buildProfileScreen(AsyncSnapshot<User> snapshot) {
-    final List<DataItem> pfcData = [
-      DataItem(500, "Protein", Colors.amber[200]!),
-      DataItem(100, "Fat", Colors.amber[400]!),
-      DataItem(200, "Carbs", Colors.amber[600]!),
-    ];
+  Future<List<UserProduct>> getUserProductsFromCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? data = prefs.getString('userProducts');
+    final List userProducts = data == null ? [] : json.decode(data) as List;
+    return userProducts.map<UserProduct>((json) {
+      final UserProduct userProduct =
+          UserProduct.fromJson(json as Map<String, dynamic>);
+      return userProduct;
+    }).toList();
+  }
+
+  Widget _buildProfileScreen() {
     final List<DataItem> weeklyData = [
       DataItem(100, "Monday", Colors.amber[500]!),
       DataItem(200, "Tuesday", Colors.amber[800]!),
@@ -147,24 +135,129 @@ class _ProfileScreenState extends State<ProfileScreen>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  ProfileHeader(
-                    username: '${snapshot.data!.email}',
-                    height: 163,
-                    weight: 67,
-                    photoUrl:
-                        'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                  FutureBuilder<User>(
+                    future: _apiRoutes.getMe(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<User> snapshot) {
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: HavkaProgressIndicator());
+                      }
+                      return ProfileHeader(
+                        username: '${snapshot.data!.email}',
+                        height: 163,
+                        weight: 67,
+                        photoUrl:
+                            'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                      );
+                    },
+                  ),
+                  RoundedButton(
+                    text: 'Show history',
+                    onPressed: _buildWeightingsHistory,
+                  ),
+                  FutureBuilder(
+                    future: _apiRoutes.getUserProductsList(),
+                    builder: (
+                      BuildContext context,
+                      AsyncSnapshot<List<UserProduct>> snapshot,
+                    ) {
+                      if (snapshot.connectionState != ConnectionState.done ||
+                          !snapshot.hasData) {
+                        return SizedBox(
+                          height: chartHeight,
+                          child: const HavkaProgressIndicator(),
+                        );
+                      }
+                      final List<UserProduct> userProducts = snapshot.data!;
+                      final double proteins = userProducts.fold<double>(
+                        0.0,
+                        (sum, element) {
+                          if (element.product!.nutrition != null &&
+                              element.product!.nutrition!.protein != null) {
+                            return sum + element.product!.nutrition!.protein!;
+                          }
+                          return sum;
+                        },
+                      );
+                      final double fats = userProducts.fold<double>(
+                        0.0,
+                        (sum, element) {
+                          if (element.product!.nutrition != null &&
+                              element.product!.nutrition!.fat != null) {
+                            return sum + element.product!.nutrition!.fat!;
+                          }
+                          return sum;
+                        },
+                      );
+                      final double carbs = userProducts.fold<double>(
+                        0.0,
+                        (sum, element) {
+                          if (element.product!.nutrition != null &&
+                              element.product!.nutrition!.carbs != null) {
+                            return sum + element.product!.nutrition!.carbs!;
+                          }
+                          return sum;
+                        },
+                      );
+                      final List<DataItem> nutritionData = [
+                        DataItem(proteins, "Protein", Colors.amber[200]!),
+                        DataItem(fats, "Fat", Colors.amber[400]!),
+                        DataItem(carbs, "Carbs", Colors.amber[600]!),
+                      ];
+                      final int numberOfUserProducts = userProducts.length;
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40.0,
+                              vertical: 10.0,
+                            ),
+                            child: Column(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    'Protein   |   Fat   |   Carbs',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                  child: CustomPaint(
+                                    painter: HavkaStackBarChart(
+                                      data: nutritionData,
+                                    ),
+                                    child: Container(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              height: chartHeight,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: CustomPaint(
+                                painter: HavkaDonutChart(
+                                  data: nutritionData,
+                                  centerText: numberOfUserProducts.toString(),
+                                ),
+                                child: Container(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   SizedBox(
                     height: chartHeight,
                     child: CustomPaint(
                       painter: HavkaLineChart(mockDataPoints),
-                      child: Container(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: chartHeight,
-                    child: CustomPaint(
-                      painter: HavkaDonutChart(pfcData),
                       child: Container(),
                     ),
                   ),
@@ -209,7 +302,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               Center(
                 child: Column(
                   children: [
-                    WeightingsScreen(),
+                    UserConsumptionScreen(),
                   ],
                 ),
               ),

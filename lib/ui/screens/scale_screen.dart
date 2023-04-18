@@ -79,10 +79,18 @@ class _ScaleScreenState extends State<ScaleScreen> {
       deviceId: '7C:9E:BD:F4:5B:1A',
     );
 
-    protein = widget.userProduct!.product!.nutrition!.protein! * weight! / 100;
-    fats = widget.userProduct!.product!.nutrition!.fat! * weight! / 100;
-    carbs = widget.userProduct!.product!.nutrition!.carbs! * weight! / 100;
-    kcal = widget.userProduct!.product!.nutrition!.kcal! * weight! / 100;
+    protein = widget.userProduct!.product!.nutrition != null
+        ? widget.userProduct!.product!.nutrition!.protein!
+        : 0 * weight! / 100;
+    fats = widget.userProduct!.product!.nutrition != null
+        ? widget.userProduct!.product!.nutrition!.fat!
+        : 0 * weight! / 100;
+    carbs = widget.userProduct!.product!.nutrition != null
+        ? widget.userProduct!.product!.nutrition!.carbs!
+        : 0 * weight! / 100;
+    kcal = widget.userProduct!.product!.nutrition != null
+        ? widget.userProduct!.product!.nutrition!.kcal!
+        : 0 * weight! / 100;
 
     // _subscription = flutterReactiveBle
     //     .readCharacteristic(scaleCharacteristic)
@@ -94,113 +102,132 @@ class _ScaleScreenState extends State<ScaleScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
-        child:
-            // StreamBuilder<List<int>>(
-            //     stream: flutterReactiveBle
-            //         .subscribeToCharacteristic(scaleCharacteristic),
-            //     builder:
-            //         (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-            //       if (!snapshot.hasData) {
-            //         print(weight);
-            //       } else {
-            //         final String valueString =
-            //             utils.listIntToString(snapshot.data);
-            //         weight = double.parse(valueString);
-            //       }
-            //       weightController.text = '$weight';
-            //       final protein = widget.userProduct.protein * weight / 100;
-            //       final fats = widget.userProduct.fat * weight / 100;
-            //       final carbs = widget.userProduct.carbs * weight / 100;
-            //       final kcal = widget.userProduct.kcal * weight / 100;
-            Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ScreenSubHeader(text: widget.userProduct!.product!.name!),
-            ScreenSubHeader(text: widget.userProduct!.product!.brand!),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RoundedTextField(
-                  width: 0.5,
-                  controller: weightController,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                ),
-                Text(widget.userProduct!.unit!)
-              ],
-            ),
-            Table(
-              defaultColumnWidth: const IntrinsicColumnWidth(),
-              children: [
-                TableRow(
-                  children: [
-                    const Text('Protein '),
-                    Text(
-                      protein!.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
+      body: SafeArea(
+        child: Center(
+          child:
+              // StreamBuilder<List<int>>(
+              //     stream: flutterReactiveBle
+              //         .subscribeToCharacteristic(scaleCharacteristic),
+              //     builder:
+              //         (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+              //       if (!snapshot.hasData) {
+              //         print(weight);
+              //       } else {
+              //         final String valueString =
+              //             utils.listIntToString(snapshot.data);
+              //         weight = double.parse(valueString);
+              //       }
+              //       weightController.text = '$weight';
+              //       final protein = widget.userProduct.protein * weight / 100;
+              //       final fats = widget.userProduct.fat * weight / 100;
+              //       final carbs = widget.userProduct.carbs * weight / 100;
+              //       final kcal = widget.userProduct.kcal * weight / 100;
+              Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ScreenSubHeader(text: widget.userProduct!.product!.name!),
+              // ScreenSubHeader(text: widget.userProduct!.product!.brand ?? '-'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: RoundedTextField(
+                      width: 100,
+                      controller: weightController,
+                      textAlign: TextAlign.center,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                     ),
-                    Text(' ${widget.userProduct!.unit}')
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    const Text('Fats '),
-                    Text(
-                      fats!.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  ),
+                  Text(
+                    widget.userProduct!.amount != null
+                        ? widget.userProduct!.amount!.unit
+                        : ' g',
+                  )
+                ],
+              ),
+              Table(
+                defaultColumnWidth: const IntrinsicColumnWidth(),
+                children: [
+                  TableRow(
+                    children: [
+                      const Text('Protein '),
+                      Text(
+                        protein!.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                      textAlign: TextAlign.right,
-                    ),
-                    Text(' ${widget.userProduct!.unit}')
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    const Text('Carbs '),
-                    Text(
-                      carbs!.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        widget.userProduct!.amount != null
+                            ? widget.userProduct!.amount!.unit
+                            : ' g',
+                      )
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      const Text('Fats '),
+                      Text(
+                        fats!.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                      textAlign: TextAlign.right,
-                    ),
-                    Text(' ${widget.userProduct!.unit}')
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    const Text('Calories '),
-                    Text(
-                      kcal!.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        widget.userProduct!.amount != null
+                            ? widget.userProduct!.amount!.unit
+                            : ' g',
+                      )
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      const Text('Carbs '),
+                      Text(
+                        carbs!.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                      textAlign: TextAlign.right,
-                    ),
-                    const Text(' kcal')
-                  ],
-                )
-              ],
-            ),
-            RoundedButton(
-              text: 'Save',
-              onPressed: () {
-                _apiRoutes.addUserProductWeighting(
-                  weight!,
-                  widget.userProduct!,
-                  // userDevice: widget.userDevice,
-                );
-                Navigator.pop(context);
-              },
-            )
-          ],
+                      Text(
+                        widget.userProduct!.amount != null
+                            ? widget.userProduct!.amount!.unit
+                            : ' g',
+                      )
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      const Text('Calories '),
+                      Text(
+                        kcal!.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                      const Text(' kcal')
+                    ],
+                  )
+                ],
+              ),
+              RoundedButton(
+                text: 'Save',
+                onPressed: () {
+                  _apiRoutes.addUserConsumptionItem(
+                      userProduct: widget.userProduct!, netWeight: weight!);
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+          // })
         ),
-        // })
       ),
     );
   }

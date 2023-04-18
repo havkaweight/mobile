@@ -130,12 +130,13 @@ class _HavkaBarcodeScannerScreenState extends State<HavkaBarcodeScannerScreen> {
         final List<BarcodeFormat> formats = [BarcodeFormat.all];
         final barcodeScanner = BarcodeScanner(formats: formats);
         final results = await barcodeScanner.processImage(inputImage);
-        if (results.isEmpty) return;
-        final barcode = results.first;
-        final value = barcode.rawValue;
+        if (results.isNotEmpty) {
+          final barcode = results.first;
+          final value = barcode.rawValue;
+          _barcode.value = value;
+        }
         _cameraController.stopImageStream();
         barcodeScanner.close();
-        _barcode.value = value;
       });
     });
   }

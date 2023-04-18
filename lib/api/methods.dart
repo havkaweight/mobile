@@ -4,9 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:health_tracker/api/constants.dart';
+import 'package:health_tracker/model/amount.dart';
 import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
+import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/model/user_product_weighting.dart';
@@ -71,7 +73,7 @@ class ApiRoutes {
       if (response.statusCode == HttpStatus.ok) {
         final Map<String, dynamic> data =
             jsonDecode(response.body) as Map<String, dynamic>;
-        log("Access Token: ${data['access_token'] as String}");
+        // log("Access Token: ${data['access_token'] as String}");
         await setToken(data['access_token'] as String);
         await setRefreshToken(data['refresh_token'] as String);
         return true;
@@ -242,23 +244,24 @@ class ApiRoutes {
     return userProductsList;
   }
 
-  Future<String> deleteUserProduct(UserProduct userProduct) async {
+  Future<bool> deleteUserProduct(UserProduct userProduct) async {
     final token = await storage.read(key: 'jwt');
+    final Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
     final http.Response response = await http.delete(
       Uri.https(
         Api.host,
         '${Api.prefix}${Api.monolithService}${Api.userProducts}/${userProduct.id}',
       ),
-      headers: <String, String>{
-        'Content-type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
+      headers: headers,
     );
 
-    if (response.statusCode == 200) {
-      return 'success';
+    if (response.statusCode != HttpStatus.ok) {
+      return false;
     }
-    return 'bad';
+    return true;
   }
 
   Future<dynamic> getProductByBarcode(String? barcode) async {
@@ -286,26 +289,67 @@ class ApiRoutes {
   }
 
   Future<List<Product>> getProductsBySearchingRequest(String request) async {
-    final token = await storage.read(key: 'jwt');
-    final http.Response response = await http.get(
-      Uri.https(Api.host, '${Api.prefix}${Api.productsByRequest}/$request'),
-      headers: <String, String>{
+    try {
+      final token = await storage.read(key: 'jwt');
+      final Map<String, String> headers = {
         'Content-type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
+        'Authorization': 'Bearer $token',
+      };
+      final Map<String, dynamic> body = {
+        'search_text': request,
+      };
+      final http.Response response = await http.get(
+        Uri.https(
+          Api.host,
+          '${Api.prefix}${Api.monolithService}${Api.productsByRequest}',
+          body,
+        ),
+        headers: headers,
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw Exception('Not found');
+      }
+      if (response.statusCode != HttpStatus.ok) {
+        return [];
+      }
+      final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+      final List<Product> productsList = products.map<Product>((json) {
+        return Product.fromJson(json as Map<String, dynamic>);
+      }).toList();
+      return productsList;
+    } catch (error) {
+      debugPrint("Error: $error");
+      return [];
+    }
+  }
+
+  Future<List<UserConsumptionItem>> getUserConsumption() async {
+    final token = await storage.read(key: 'jwt');
+    final Map<String, String> headers = <String, String>{
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final http.Response response = await http.get(
+      Uri.https(
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.consumption}',
+      ),
+      headers: headers,
     );
 
-    if (response.statusCode == HttpStatus.notFound) {
-      throw Exception('Not found');
-    }
     if (response.statusCode != HttpStatus.ok) {
       return [];
     }
-    final products = jsonDecode(utf8.decode(response.bodyBytes)) as List;
-    final List<Product> productsList = products.map<Product>((json) {
-      return Product.fromJson(json as Map<String, dynamic>);
+    final userConsumption = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    final List<UserConsumptionItem> userConsumptionList =
+        userConsumption.map<UserConsumptionItem>((json) {
+      final UserConsumptionItem userConsumptionItem =
+          UserConsumptionItem.fromJson(json as Map<String, dynamic>);
+      return userConsumptionItem;
     }).toList();
-    return productsList;
+    return userConsumptionList;
   }
 
   Future<List<UserDevice>> getUserDevicesList() async {
@@ -390,20 +434,20 @@ class ApiRoutes {
 
   Future addUserProduct(Product product) async {
     final token = await storage.read(key: 'jwt');
-    final Map<String, String?> body = {
+    final Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+    final Map<String, dynamic> body = {
       "product_id": product.id,
     };
     final http.Response response = await http.post(
       Uri.https(
         Api.host,
         '${Api.prefix}${Api.monolithService}${Api.userProducts}',
-        body,
       ),
-      headers: <String, String>{
-        'Content-type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-      // body: jsonEncode(product.productIdToJson()),
+      headers: headers,
+      body: json.encode(body),
     );
 
     debugPrint('${response.statusCode} ${response.body}');
@@ -412,15 +456,16 @@ class ApiRoutes {
   Future<bool> addProduct(Product product) async {
     try {
       final token = await storage.read(key: 'jwt');
+      final Map<String, String> headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      };
       final http.Response response = await http.post(
         Uri.https(
           Api.host,
           '${Api.prefix}${Api.monolithService}${Api.products}',
         ),
-        headers: <String, String>{
-          'Content-type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
+        headers: headers,
         body: jsonEncode(product.toJson()),
       );
       debugPrint('${response.statusCode} ${response.body}');
@@ -452,24 +497,29 @@ class ApiRoutes {
     return userProductsWeightingsList;
   }
 
-  Future addUserProductWeighting(
-    double netWeight,
-    UserProduct userProduct, {
+  Future<void> addUserConsumptionItem({
+    required UserProduct userProduct,
+    required double netWeight,
     UserDevice? userDevice,
   }) async {
     final token = await storage.read(key: 'jwt');
+    final Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> body = {
+      // 'product_id': userProduct.product!.id,
+      'user_product_id': userProduct.id!,
+      // 'user_device_id': userDevice.id,
+      'amount': Amount(value: netWeight, unit: 'g').toJson(),
+    };
     final http.Response response = await http.post(
-      Uri.https(Api.host, '${Api.prefix}${Api.userProductsWeightingAdd}'),
-      headers: <String, String>{
-        'Content-type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-      body: jsonEncode({
-        'product_id': userProduct.product!.id,
-        'user_product_id': userProduct.id,
-        // 'user_device_id': userDevice.id,
-        'weight': netWeight
-      }),
+      Uri.https(
+        Api.host,
+        '${Api.prefix}${Api.monolithService}${Api.consumption}',
+      ),
+      headers: headers,
+      body: json.encode(body),
     );
 
     debugPrint('${response.statusCode} ${response.body}');

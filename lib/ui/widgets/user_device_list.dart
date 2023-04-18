@@ -6,7 +6,7 @@ import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/ui/screens/devices_screen.dart';
 import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/screens/weightings_screen.dart';
+import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -72,7 +72,7 @@ class UserDeviceListState<T extends UserDeviceList>
               Center(
                 child: Column(
                   children: [
-                    WeightingsScreen(),
+                    UserConsumptionScreen(),
                   ],
                 ),
               )

@@ -155,11 +155,11 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
     return Scaffold(
       backgroundColor: HavkaColors.bone[200],
       body: Center(
-        child: CustomPaint(
-          painter: HavkaDonutChart(data),
-          child: Container(),
-        ),
-      ),
+          // child: CustomPaint(
+          //   painter: HavkaDonutChart(data),
+          //   child: Container(),
+          // ),
+          ),
     );
   }
 }

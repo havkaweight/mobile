@@ -177,20 +177,20 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   void _addProduct() {
     final Product product = Product(
       name: nameController.text,
-      // nutrition: ProductNutrition(
-      //   protein: proteinController.text.isNotEmpty
-      //       ? double.parse(proteinController.text)
-      //       : null,
-      //   fat: fatsController.text.isNotEmpty
-      //       ? double.parse(fatsController.text)
-      //       : null,
-      //   carbs: carbsController.text.isNotEmpty
-      //       ? double.parse(carbsController.text)
-      //       : null,
-      //   kcal: kcalController.text.isNotEmpty
-      //       ? double.parse(kcalController.text)
-      //       : null,
-      // ),
+      nutrition: ProductNutrition(
+        protein: proteinController.text.isNotEmpty
+            ? double.parse(proteinController.text)
+            : null,
+        fat: fatsController.text.isNotEmpty
+            ? double.parse(fatsController.text)
+            : null,
+        carbs: carbsController.text.isNotEmpty
+            ? double.parse(carbsController.text)
+            : null,
+        kcal: kcalController.text.isNotEmpty
+            ? double.parse(kcalController.text)
+            : null,
+      ),
       barcode: barcodeController.text,
     );
     _apiRoutes.addProduct(product);

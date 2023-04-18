@@ -118,7 +118,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                           ),
                           subtitle: Text(
-                            product.brand ?? 'not found',
+                            product.brand ?? 'BRAND Placeholder',
                             style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
@@ -147,30 +147,31 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 BuildContext context,
                 AsyncSnapshot<List<Product>> snapshot,
               ) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 40.0),
-                      child: const HavkaProgressIndicator(),
-                    ),
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(
+                    child: HavkaProgressIndicator(),
                   );
                 }
-                if (snapshot.hasData) {
-                  return ListView.builder(
+                if (snapshot.hasError) {
+                  const Center(child: Text('Error internet connection'));
+                }
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: snapshot.data!.length,
                     itemBuilder: (BuildContext context, index) {
                       final Product product = snapshot.data![index];
                       return ListTile(
                         leading: Container(
-                          width: 100.0,
-                          height: 100.0,
+                          width: 50.0,
+                          height: 50.0,
                           decoration: BoxDecoration(
                             color: const Color(0xff7c94b6),
                             image: product.img != null
-                                ? const DecorationImage(
+                                ? DecorationImage(
                                     image: NetworkImage(
-                                      'https://cdn.havka.one/test.jpg',
+                                      product.img!,
                                     ),
                                     fit: BoxFit.cover,
                                   )
@@ -183,8 +184,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                           ),
                         ),
-                        title: Text(product.name!),
-                        subtitle: Text(product.brand!),
+                        title: Text(
+                          product.name ?? 'NAME Placeholder',
+                          style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .fontSize,
+                          ),
+                        ),
+                        subtitle: Text(
+                          product.brand ?? 'BRAND Placeholder',
+                          style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .fontSize,
+                          ),
+                        ),
                         onTap: () async {
                           await _apiRoutes
                               .addUserProduct(product)
@@ -192,9 +209,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         },
                       );
                     },
-                  );
-                }
-                return const Center(child: Text('Error internet connection'));
+                  ),
+                );
               },
             ),
         ],

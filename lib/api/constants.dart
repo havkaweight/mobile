@@ -16,12 +16,14 @@ class Api {
 
   static const products = '/product';
   static const productsAdd = '/product/add';
-  static const productsByRequest = '/product/searching';
+  static const productsByRequest = '/product/search';
   static const productByBarcode = '/product/barcode';
 
   static const userProducts = '/user/me/product';
   static const userProductsWeightingAdd = '/users/me/product/weighting/add';
   static const userProductsWeightingsHistory = '/users/me/product/weighting';
+
+  static const consumption = '/user/me/consumption';
 
   static const devices = '/devices';
 

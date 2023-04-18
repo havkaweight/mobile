@@ -9,6 +9,7 @@ import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:health_tracker/ui/screens/main_screen.dart';
 import 'package:health_tracker/ui/screens/story_screen.dart';
+import 'package:health_tracker/ui/widgets/barcode.dart';
 import 'package:health_tracker/ui/widgets/button.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -268,6 +269,14 @@ class _SignInScreenState extends State<SignInScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  SizedBox(
+                    height: 40,
+                    width: 80,
+                    child: CustomPaint(
+                      painter: HavkaBarcode(),
+                      child: Container(),
+                    ),
+                  ),
                   Hero(
                     tag: "to-signin",
                     child: Stack(

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
@@ -19,6 +21,8 @@ List<Map<String, String>> userProductsList = [];
 OverlayEntry? _overlayEntry;
 
 String? barcode;
+
+typedef DeleteUserProductCallback = Future<void> Function(UserProduct);
 
 class UserProductsScreen extends StatefulWidget {
   @override
@@ -72,107 +76,128 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     );
   }
 
+  void _removeItem(UserProduct userProduct, int index, BuildContext context) {
+    _apiRoutes.deleteUserProduct(userProduct).whenComplete(() {
+      AnimatedList.of(context).removeItem(
+        index,
+        (_, animation) {
+          return FadeTransition(
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(animation),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, -0.5),
+                end: Offset.zero,
+              ).animate(animation),
+              child: FridgeItem(
+                userProduct: userProduct,
+              ),
+            ),
+          );
+        },
+        duration: const Duration(milliseconds: 200),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BleStatusTrackingWidget(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const ScreenHeader(text: 'Fridge'),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.monitor_weight,
-                        color: HavkaColors.green,
-                      ),
-                      onPressed: () async {
-                        changeModalScaleState();
-                        setState(() {
-                          isScaleShowed = !isScaleShowed;
-                        });
-                      },
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              const ScreenHeader(text: 'Fridge'),
+              Row(
+                children: [
+                  RoundedButton(
+                    text: 'Add havka',
+                    onPressed: () {
+                      _buildProductsList(context).then((_) => setState(() {}));
+                    },
+                  ),
+                  IconButton(
+                    icon: const FaIcon(
+                      FontAwesomeIcons.barcode,
+                      color: HavkaColors.green,
                     ),
-                    RoundedButton(
-                      text: 'Add havka',
-                      onPressed: () {
-                        _buildProductsList(context)
-                            .then((_) => setState(() {}));
-                      },
-                    ),
-                    IconButton(
-                      icon: const FaIcon(
-                        FontAwesomeIcons.barcode,
-                        color: HavkaColors.green,
-                      ),
-                      onPressed: () {
-                        _buildBarcodeScanner().then((_) => setState(() {}));
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Expanded(
-              child: FutureBuilder<List<UserProduct>>(
-                future: _apiRoutes.getUserProductsList(),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<List<UserProduct>> snapshot,
-                ) {
-                  if (!snapshot.hasData) {
-                    childWidget = Center(
-                      child: getShimmerLoading(),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    userProducts = snapshot.data!;
-                    final ValueNotifier<List<UserProduct>>
-                        userProductsListener =
-                        ValueNotifier<List<UserProduct>>(userProducts);
-                    if (userProducts.isNotEmpty) {
-                      childWidget = RefreshIndicator(
-                        onRefresh: _pullRefresh,
-                        child: ScrollConfiguration(
-                          behavior: CustomBehavior(),
-                          child: ValueListenableBuilder(
-                            valueListenable: userProductsListener,
-                            builder: (BuildContext context,
-                                List<UserProduct> value, _) {
-                              return ListView.builder(
-                                itemCount: value.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  final UserProduct userProduct = value[index];
-                                  return FridgeItem(userProduct: userProduct);
+                    onPressed: () {
+                      _buildBarcodeScanner().then((_) => setState(() {}));
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder<List<UserProduct>>(
+            future: _apiRoutes.getUserProductsList(),
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<List<UserProduct>> snapshot,
+            ) {
+              if (!snapshot.hasData) {
+                childWidget = Center(
+                  child: getShimmerLoading(),
+                );
+              }
+              if (snapshot.hasData) {
+                userProducts = snapshot.data!;
+                final ValueNotifier<List<UserProduct>> userProductsListener =
+                    ValueNotifier<List<UserProduct>>(userProducts);
+                if (userProducts.isNotEmpty) {
+                  childWidget = RefreshIndicator(
+                    onRefresh: _pullRefresh,
+                    child: ScrollConfiguration(
+                      behavior: CustomBehavior(),
+                      child: ValueListenableBuilder(
+                        valueListenable: userProductsListener,
+                        builder: (
+                          BuildContext context,
+                          List<UserProduct> value,
+                          _,
+                        ) {
+                          return AnimatedList(
+                            initialItemCount: value.length,
+                            itemBuilder:
+                                (BuildContext context, index, animation) {
+                              final UserProduct userProduct = value[index];
+                              return FridgeItem(
+                                userProduct: userProduct,
+                                onPressed: () {
+                                  _removeItem(userProduct, index, context);
+                                  // setState(() {});
                                 },
                               );
                             },
-                          ),
-                        ),
-                      );
-                    } else {
-                      childWidget = const Center(child: Text("No items found"));
-                    }
-                  }
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: childWidget,
+                          );
+                        },
+                      ),
+                    ),
                   );
-                },
-              ),
-            ),
-          ],
+                } else {
+                  childWidget = const Center(child: Text("No items found"));
+                }
+              }
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: childWidget,
+              );
+            },
+          ),
         ),
-      ),
+      ],
     );
   }
 
   Future<void> _pullRefresh() async {
     userProducts = await _apiRoutes.getUserProductsList();
+    setState(() {});
   }
 
   Future<dynamic> _buildBarcodeScanner() {

@@ -50,9 +50,11 @@ class Product {
         brand = json['brand'] as String?,
         nutrition = json['nutrition'] == null
             ? null
-            : ProductNutrition.fromJson(
-                json['nutrition'] as Map<String, dynamic>,
-              ),
+            : json['nutrition']['per 100g'] == null
+                ? null
+                : ProductNutrition.fromJson(
+                    json['nutrition']['per 100g'] as Map<String, dynamic>,
+                  ),
         baseValue = json['net_weight'] as double?,
         barcode = json['barcode'] as String?,
         img = json['imgs'] == null
@@ -68,7 +70,11 @@ class Product {
         '_id': id,
         'name': name,
         'brand': brand,
-        'nutrition': nutrition == null ? null : nutrition!.toJson(),
+        'nutrition': nutrition == null
+            ? null
+            : {
+                'per 100g': nutrition!.toJson(),
+              },
         'net_weight': baseValue,
         'barcode': barcode,
         'imgs': img,
