@@ -11,10 +11,10 @@ class HavkaBarChart extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    double left = size.width * 0.2;
+    double left = 0.0;
     final double maxValue = data.map((di) => di.value).reduce(max);
     final int valuesCount = data.length;
-    final double barWidth = (size.width - 2 * left) / valuesCount;
+    final double barWidth = size.width / valuesCount;
     for (final di in data) {
       final height = di.value / maxValue * size.height / 3.0;
       final rect =

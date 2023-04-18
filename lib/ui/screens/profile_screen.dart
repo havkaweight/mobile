@@ -200,9 +200,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                         },
                       );
                       final List<DataItem> nutritionData = [
-                        DataItem(proteins, "Protein", Colors.amber[200]!),
-                        DataItem(fats, "Fat", Colors.amber[400]!),
-                        DataItem(carbs, "Carbs", Colors.amber[600]!),
+                        DataItem(proteins, "Protein", const Color(0xFF1294ff)),
+                        DataItem(fats, "Fat", const Color(0xFFf6b227)),
+                        DataItem(carbs, "Carb", const Color(0xFF09dcbf)),
                       ];
                       final int numberOfUserProducts = userProducts.length;
                       return Column(
@@ -214,26 +214,23 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             child: Column(
                               children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(
-                                    'Protein   |   Fat   |   Carbs',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                  child: CustomPaint(
-                                    painter: HavkaStackBarChart(
-                                      data: nutritionData,
-                                    ),
-                                    child: Container(),
-                                  ),
+                                HavkaStackBarChart(
+                                  data: nutritionData,
                                 ),
                               ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40.0,
+                              vertical: 10.0,
+                            ),
+                            child: SizedBox(
+                              height: chartHeight,
+                              child: CustomPaint(
+                                painter: HavkaBarChart(weeklyData),
+                                child: Container(),
+                              ),
                             ),
                           ),
                           Padding(
@@ -258,13 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                     height: chartHeight,
                     child: CustomPaint(
                       painter: HavkaLineChart(mockDataPoints),
-                      child: Container(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: chartHeight,
-                    child: CustomPaint(
-                      painter: HavkaBarChart(weeklyData),
                       child: Container(),
                     ),
                   ),

@@ -1,16 +1,19 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:health_tracker/model/data_items.dart';
 
-class HavkaStackBarChart extends CustomPainter {
+class HavkaStackBarChartPaint extends CustomPainter {
   final List<DataItem> data;
-  HavkaStackBarChart({required this.data});
+  HavkaStackBarChartPaint({required this.data});
 
   @override
   void paint(Canvas canvas, Size size) {
+    final linePaint = Paint()
+      ..strokeWidth = 8
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white;
+
     double left = 0.0;
     final double valuesSum = data
         .map((di) => di.value)
@@ -24,14 +27,90 @@ class HavkaStackBarChart extends CustomPainter {
         topRight: di == data.last ? const Radius.circular(10) : Radius.zero,
         bottomRight: di == data.last ? const Radius.circular(10) : Radius.zero,
       );
-      final paint = Paint()
+      final barPaint = Paint()
         ..style = PaintingStyle.fill
         ..color = di.color;
-      canvas.drawRRect(rect, paint);
+      canvas.drawRRect(rect, barPaint);
       left += barWidth;
+      if (di != data.last) {
+        canvas.drawLine(
+          Offset(left, 0),
+          Offset(left, size.height),
+          linePaint,
+        );
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant HavkaStackBarChart oldDelegate) => true;
+  bool shouldRepaint(covariant HavkaStackBarChartPaint oldDelegate) => true;
+}
+
+class HavkaStackBarChart extends StatefulWidget {
+  final List<DataItem> data;
+  const HavkaStackBarChart({required this.data});
+
+  @override
+  _HavkaStackBarChartState createState() => _HavkaStackBarChartState();
+}
+
+class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 20,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Stack(
+                      children: [
+                        Text(
+                          widget.data[index].label,
+                          style: TextStyle(
+                            color: widget.data[index].color,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(
+                      index != widget.data.length - 1 ? '|' : '',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: CustomPaint(
+            painter: HavkaStackBarChartPaint(data: widget.data),
+            child: Container(
+              height: 40,
+            ),
+          ),
+        )
+      ],
+    );
+  }
 }

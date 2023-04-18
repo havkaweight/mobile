@@ -13,7 +13,7 @@ class ProductNutrition {
 
   ProductNutrition.fromJson(Map<dynamic, dynamic> json)
       : protein = json['protein'] as double?,
-        fat = json['fat'] as double?,
+        fat = json['fats'] as double?,
         carbs = json['carbs'] as double?,
         kcal = json['kcal'] as double?;
 
