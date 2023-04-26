@@ -27,6 +27,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final headerBlockHeight = MediaQuery.of(context).size.height * 0.85 * 0.08;
+    final listBlockHeight =
+        MediaQuery.of(context).size.height * 0.82 - headerBlockHeight;
     return GestureDetector(
       onPanUpdate: (details) {
         if (details.delta.dx > 0) {
@@ -35,33 +38,36 @@ class _ProductsScreenState extends State<ProductsScreen> {
       },
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SearchTextField(
-                hintText: 'Search food',
-                width: 0.8,
-                controller: searchController,
-                icon: const Icon(Icons.search),
-              ),
-              Hero(
-                tag: "product-add",
-                child: IconButton(
-                  icon: const FaIcon(
-                    FontAwesomeIcons.plus,
-                    color: HavkaColors.green,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProductAddingScreen(),
-                      ),
-                    );
-                  },
+          SizedBox(
+            height: headerBlockHeight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SearchTextField(
+                  hintText: 'Search food',
+                  width: 0.8,
+                  controller: searchController,
+                  icon: const Icon(Icons.search),
                 ),
-              ),
-            ],
+                Hero(
+                  tag: "product-add",
+                  child: IconButton(
+                    icon: const FaIcon(
+                      FontAwesomeIcons.plus,
+                      color: HavkaColors.green,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProductAddingScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
           if (searchController.text.isEmpty)
             FutureBuilder<List<Product>>(
@@ -80,7 +86,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 }
                 if (snapshot.hasData) {
                   return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
+                    height: listBlockHeight,
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: snapshot.data!.length,

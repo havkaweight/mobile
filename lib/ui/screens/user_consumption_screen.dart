@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
+import 'package:health_tracker/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_tracker/api/methods.dart';
@@ -50,20 +51,24 @@ class _UserConsumptionScreenState extends State<UserConsumptionScreen> {
                       child: ListView.builder(
                           itemCount: snapshot.data!.length,
                           itemBuilder: (BuildContext context, index) {
+                            snapshot.data!.sort(
+                              (a, b) => (b.consumedAt ?? b.createdAt!)
+                                  .compareTo(a.consumedAt ?? a.createdAt!),
+                            );
                             final UserConsumptionItem userConsumptionItem =
                                 snapshot.data![index];
-                            // final createdAt = DateFormat('yyyy-MM-dd kk:mm')
-                            //     .format(userConsumptionItem.createdAt!);
                             return ListTile(
                               title: Text(
-                                '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                userConsumptionItem.product!.name!,
+                                style:
+                                    Theme.of(context).textTheme.displayMedium,
                               ),
                               subtitle: Text(
-                                userConsumptionItem.product!.name!,
-                                style: Theme.of(context).textTheme.displayLarge,
+                                formatDate(
+                                  userConsumptionItem.consumedAt ??
+                                      userConsumptionItem.createdAt!,
+                                ),
+                                style: Theme.of(context).textTheme.displaySmall,
                               ),
                               trailing: Text(
                                 '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',

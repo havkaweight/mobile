@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:health_tracker/constants/colors.dart';
 
 import 'package:health_tracker/model/data_items.dart';
+import 'package:health_tracker/ui/widgets/protein.dart';
 
 class HavkaStackBarChartPaint extends CustomPainter {
-  final List<DataItem> data;
+  final List<PFCDataItem> data;
   HavkaStackBarChartPaint({required this.data});
 
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..strokeWidth = 8
+      ..strokeWidth = 6
       ..style = PaintingStyle.stroke
-      ..color = Colors.white;
+      ..color = HavkaColors.cream;
 
     double left = 0.0;
     final double valuesSum = data
@@ -47,7 +50,7 @@ class HavkaStackBarChartPaint extends CustomPainter {
 }
 
 class HavkaStackBarChart extends StatefulWidget {
-  final List<DataItem> data;
+  final List<PFCDataItem> data;
   const HavkaStackBarChart({required this.data});
 
   @override
@@ -74,25 +77,37 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
               return Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Stack(
                       children: [
-                        Text(
-                          widget.data[index].label,
-                          style: TextStyle(
-                            color: widget.data[index].color,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 3.0),
+                              child: Icon(
+                                widget.data[index].icon,
+                                color: widget.data[index].color,
+                                size: 12,
+                              ),
+                            ),
+                            Text(
+                              widget.data[index].label,
+                              style: TextStyle(
+                                color: widget.data[index].color,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 1.0),
                     child: Text(
                       index != widget.data.length - 1 ? '|' : '',
                       style: const TextStyle(
-                        color: Colors.grey,
+                        color: Color.fromARGB(255, 215, 215, 215),
                       ),
                     ),
                   ),

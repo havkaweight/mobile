@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/data_items.dart';
+import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/routes/sharp_page_route.dart';
+import 'package:health_tracker/ui/screens/scale_screen.dart';
 import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
+import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 
 class FridgeItem extends StatefulWidget {
   final UserProduct userProduct;
@@ -107,14 +112,21 @@ class _FridgeItemState extends State<FridgeItem> {
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      if (widget.userProduct.product?.nutrition != null)
+                        SizedBox(
+                          height: 20,
+                          width: 150,
+                          child: buildNutritionLine(
+                            widget.userProduct.product?.nutrition,
+                          ),
+                        )
+                      else
+                        const SizedBox(
+                          height: 20,
+                        ),
                       Text(
-                        widget.userProduct.product?.brand ??
-                            'BRAND Placeholder',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      Text(
-                        widget.userProduct.product?.nutrition?.kcal != null
-                            ? '${widget.userProduct.product?.nutrition?.kcal} kcal'
+                        widget.userProduct.amount != null
+                            ? '${widget.userProduct.amount!.value.toInt()} ${widget.userProduct.amount!.unit}'
                             : '-',
                         style: Theme.of(context).textTheme.labelSmall,
                       )
@@ -124,7 +136,7 @@ class _FridgeItemState extends State<FridgeItem> {
                     Navigator.push(
                       context,
                       SharpPageRoute(
-                        builder: (context) => UserProductScreen(
+                        builder: (context) => ScaleScreen(
                           userProduct: widget.userProduct,
                         ),
                       ),

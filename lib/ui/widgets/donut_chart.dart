@@ -7,7 +7,7 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
 
 class HavkaDonutChart extends CustomPainter {
-  final List<DataItem> data;
+  final List<PFCDataItem> data;
   final String? centerText;
   HavkaDonutChart({
     required this.data,

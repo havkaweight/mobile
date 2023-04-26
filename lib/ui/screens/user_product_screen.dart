@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
+import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 
 class UserProductScreen extends StatefulWidget {
@@ -51,6 +52,12 @@ class _UserProductScreenState extends State<UserProductScreen> {
                   Text(
                     widget.userProduct.product!.name!,
                     style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 100,
+                    child: buildNutritionLine(
+                        widget.userProduct.product!.nutrition),
                   ),
                 ],
               ),

@@ -7,6 +7,10 @@ class HavkaColors {
   static const Color black = Color.fromARGB(255, 0, 0, 0);
   static const Color error = Color.fromARGB(255, 176, 59, 59);
   static const Color cream = Color(0xFFFFFdd0);
+  static const Color protein = Color(0xFF1294ff);
+  static const Color fat = Color(0xFFf6b227);
+  static const Color carbs = Color(0xFF09dcbf);
+  static const Color kcal = Color.fromARGB(255, 167, 126, 5);
 
   static const Map<int, Color> bone = <int, Color>{
     50: Color(0x88EDE88E),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:health_tracker/constants/colors.dart';
 
 class RoundedTextField extends StatefulWidget {
@@ -6,13 +7,16 @@ class RoundedTextField extends StatefulWidget {
   final String? hintText;
   final double? width;
   final Color? color;
+  final Icon? prefixIcon;
   final IconButton? iconButton;
+  final String? suffixText;
   final bool? obscureText;
   final FocusNode? focusNode;
   final bool? autoFocus;
   final String? errorText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
   final void Function(String)? onSubmitted;
   final TextAlign? textAlign;
 
@@ -21,6 +25,8 @@ class RoundedTextField extends StatefulWidget {
     this.labelText,
     this.hintText,
     this.width = 1,
+    this.prefixIcon,
+    this.suffixText,
     this.iconButton,
     this.color,
     this.controller,
@@ -29,6 +35,7 @@ class RoundedTextField extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.keyboardType = TextInputType.text,
+    this.inputFormatters,
     this.onSubmitted,
     this.textAlign = TextAlign.start,
   });
@@ -54,12 +61,15 @@ class RoundedTextFieldState<T extends RoundedTextField>
         focusNode: widget.focusNode,
         obscureText: widget.obscureText!,
         keyboardType: widget.keyboardType,
+        inputFormatters: widget.inputFormatters,
         autofocus: widget.autoFocus!,
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          prefixIcon: widget.prefixIcon,
           suffixIcon: widget.iconButton,
+          suffixText: widget.suffixText,
           fillColor: HavkaColors.bone[100],
           filled: true,
           border: OutlineInputBorder(

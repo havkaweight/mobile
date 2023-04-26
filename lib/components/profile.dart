@@ -52,7 +52,7 @@ class ProfileHeader extends StatelessWidget {
                               0,
                             ),
                             child: Text(
-                              '${height!} cm',
+                              '$height cm',
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ),

@@ -26,19 +26,19 @@ class HavkaLineChart extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final horizontalAxie = Path()
-      ..moveTo(size.width * 0.2, size.height / 2.0)
-      ..lineTo(size.width * 0.8, size.height / 2.0);
+      ..moveTo(0, size.height / 2.0)
+      ..lineTo(size.width, size.height / 2.0);
 
-    final data = Path()..moveTo(size.width * 0.2, size.height / 2.0);
+    final data = Path()..moveTo(0, size.height / 2.0);
     final totalWidth = mockDataPoints.last.dx - mockDataPoints.first.dx;
-    final normalizedWidth = totalWidth / (size.width * 0.6);
+    final normalizedWidth = totalWidth / size.width;
     for (final dataPoint in mockDataPoints) {
       data.lineTo(
-        size.width * 0.2 + dataPoint.dx / normalizedWidth,
+        dataPoint.dx / normalizedWidth,
         size.height / 2.0 + dataPoint.dy,
       );
       final center = Offset(
-        size.width * 0.2 + dataPoint.dx / normalizedWidth,
+        dataPoint.dx / normalizedWidth,
         size.height / 2.0 + dataPoint.dy,
       );
       canvas.drawCircle(center, 3, circlePaint);

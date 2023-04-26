@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/ui/widgets/bar_chart.dart';
+import 'package:health_tracker/ui/widgets/bar_chart_timeline.dart';
 import 'package:health_tracker/ui/widgets/donut_chart.dart';
 import 'package:health_tracker/ui/widgets/line_chart.dart';
 
@@ -20,30 +20,30 @@ class _OnboardingScreen1State extends State<OnboardingScreen1> {
   @override
   void initState() {
     super.initState();
-    data = [
-      DataItem(100, "Monday", Colors.amber[500]!),
-      DataItem(200, "Tuesday", Colors.amber[800]!),
-      DataItem(120, "Wednesday", Colors.amber[900]!),
-      DataItem(210, "Thursday", Colors.yellow[300]!),
-      DataItem(80, "Friday", Colors.yellow[500]!),
-      DataItem(240, "Saturday", Colors.amber[200]!),
-      DataItem(270, "Sunday", Colors.amber[400]!),
-    ];
+    // data = [
+    //   DataItem(100, "Monday", Colors.amber[500]!),
+    //   DataItem(200, "Tuesday", Colors.amber[800]!),
+    //   DataItem(120, "Wednesday", Colors.amber[900]!),
+    //   DataItem(210, "Thursday", Colors.yellow[300]!),
+    //   DataItem(80, "Friday", Colors.yellow[500]!),
+    //   DataItem(240, "Saturday", Colors.amber[200]!),
+    //   DataItem(270, "Sunday", Colors.amber[400]!),
+    // ];
     int n = 0;
     _addData = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (n > 3) {
         timer.cancel();
       }
-      setState(() {
-        data.insert(
-          0,
-          DataItem(
-            Random().nextInt(100) + 100,
-            'label',
-            Colors.amber[500]!,
-          ),
-        );
-      });
+      // setState(() {
+      //   data.insert(
+      //     0,
+      //     DataItem(
+      //       Random().nextInt(100) + 100,
+      //       'label',
+      //       Colors.amber[500]!,
+      //     ),
+      //   );
+      // });
       n++;
     });
   }
@@ -81,11 +81,11 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
   @override
   void initState() {
     super.initState();
-    data = [
-      DataItem(0.2, "Protein", Colors.amber[50]!),
-      DataItem(0.3, "Fat", Colors.amber[200]!),
-      DataItem(0.5, "Carbs", Colors.amber[400]!),
-    ];
+    // data = [
+    //   DataItem(0.2, "Protein", Colors.amber[50]!),
+    //   DataItem(0.3, "Fat", Colors.amber[200]!),
+    //   DataItem(0.5, "Carbs", Colors.amber[400]!),
+    // ];
     int n = 0;
     _updateValues = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (n > 3) {
@@ -115,29 +115,29 @@ class _OnboardingScreen2State extends State<OnboardingScreen2> {
           timer.cancel();
           return;
         }
-        setState(() {
-          data = [
-            DataItem(
-              prevFirstRandom + tempFirstRandom,
-              "Protein",
-              Colors.amber[50]!,
-            ),
-          ];
-          data.add(
-            DataItem(
-              prevSecondRandom + tempSecondRandom,
-              "Fat",
-              Colors.amber[200]!,
-            ),
-          );
-          data.add(
-            DataItem(
-              prevLast + tempLast,
-              "Carbs",
-              Colors.amber[400]!,
-            ),
-          );
-        });
+        // setState(() {
+        //   data = [
+        //     DataItem(
+        //       prevFirstRandom + tempFirstRandom,
+        //       "Protein",
+        //       Colors.amber[50]!,
+        //     ),
+        //   ];
+        //   data.add(
+        //     DataItem(
+        //       prevSecondRandom + tempSecondRandom,
+        //       "Fat",
+        //       Colors.amber[200]!,
+        //     ),
+        //   );
+        //   data.add(
+        //     DataItem(
+        //       prevLast + tempLast,
+        //       "Carbs",
+        //       Colors.amber[400]!,
+        //     ),
+        //   );
+        // });
       });
       n++;
     });

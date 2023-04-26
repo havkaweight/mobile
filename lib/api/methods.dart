@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:health_tracker/api/constants.dart';
-import 'package:health_tracker/model/amount.dart';
+import 'package:health_tracker/model/product_amount.dart';
 import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user.dart';
@@ -14,6 +14,7 @@ import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/model/user_product_weighting.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ApiRoutes {
   Future<bool> signUp(String email, String password) async {
@@ -51,7 +52,7 @@ class ApiRoutes {
 
   Future<bool> signIn(String email, String password) async {
     final Map<String, dynamic> body = <String, dynamic>{
-      'email': email,
+      'email_or_username': email,
       'password': password,
     };
 
@@ -163,7 +164,7 @@ class ApiRoutes {
       };
 
       final http.Response response = await http.get(
-        Uri.https(Api.host, '${Api.prefix}${Api.monolithService}${Api.me}'),
+        Uri.https(Api.host, '${Api.prefix}${Api.me}'),
         headers: headers,
       );
 
@@ -180,6 +181,34 @@ class ApiRoutes {
       final user =
           User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
       return user;
+    } catch (error) {
+      throw Exception("Error: $error");
+    }
+  }
+
+  Future updateMe(User user) async {
+    try {
+      final token = await getToken();
+      final Map<String, String> headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      final http.Response response = await http.patch(
+        Uri.https(Api.host, '${Api.prefix}${Api.me}'),
+        headers: headers,
+        body: json.encode(user.toJson()),
+      );
+
+      print(response.statusCode);
+      print(json.encode(user.toJson()));
+
+      if (response.statusCode == HttpStatus.unauthorized) {
+        throw Exception('Unauthorized');
+      }
+      if (response.statusCode == HttpStatus.ok) {
+        throw Exception('Internal Error');
+      }
     } catch (error) {
       throw Exception("Error: $error");
     }
@@ -280,7 +309,7 @@ class ApiRoutes {
       throw Exception('Not found');
     }
     if (response.statusCode != 200) {
-      throw Exception('Not found');
+      throw Exception('Error');
     }
     final productJson =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
@@ -500,6 +529,7 @@ class ApiRoutes {
   Future<void> addUserConsumptionItem({
     required UserProduct userProduct,
     required double netWeight,
+    required DateTime consumedAt,
     UserDevice? userDevice,
   }) async {
     final token = await storage.read(key: 'jwt');
@@ -511,7 +541,9 @@ class ApiRoutes {
       // 'product_id': userProduct.product!.id,
       'user_product_id': userProduct.id!,
       // 'user_device_id': userDevice.id,
-      'amount': Amount(value: netWeight, unit: 'g').toJson(),
+      'amount': ProductAmount(value: netWeight, unit: 'g').toJson(),
+      'consumed_at':
+          DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(consumedAt),
     };
     final http.Response response = await http.post(
       Uri.https(

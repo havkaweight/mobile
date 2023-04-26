@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 
 class BarcodeProductPopup extends StatefulWidget {
   final String? barcode;
@@ -84,9 +85,9 @@ class _BarcodeProductPopupState extends State<BarcodeProductPopup>
                           decoration: BoxDecoration(
                             color: const Color(0xff7c94b6),
                             image: product.img != null
-                                ? const DecorationImage(
+                                ? DecorationImage(
                                     image: NetworkImage(
-                                      'https://cdn.havka.one/test.jpg',
+                                      product.img!,
                                     ),
                                     fit: BoxFit.cover,
                                   )
@@ -98,7 +99,7 @@ class _BarcodeProductPopupState extends State<BarcodeProductPopup>
                         ),
                       ),
                       title: Text(
-                        product.name ?? 'NAME Placeholder',
+                        product.name!,
                         style: TextStyle(
                           color: Colors.black,
                           decoration: TextDecoration.none,
@@ -107,15 +108,14 @@ class _BarcodeProductPopupState extends State<BarcodeProductPopup>
                               Theme.of(context).textTheme.labelLarge!.fontSize,
                         ),
                       ),
-                      subtitle: Text(
-                        product.barcode ?? 'BARCODE Placeholder',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              Theme.of(context).textTheme.labelMedium!.fontSize,
-                        ),
+                      subtitle: SizedBox(
+                        height: 20,
+                        width: 150,
+                        child: product.nutrition == null
+                            ? null
+                            : buildNutritionLine(
+                                product.nutrition,
+                              ),
                       ),
                       onTap: () async {
                         await _apiRoutes

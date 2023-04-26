@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/model/product_energy.dart';
+import 'package:health_tracker/model/product_measure.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
@@ -23,17 +25,20 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   final TextEditingController proteinController = TextEditingController();
   final TextEditingController fatsController = TextEditingController();
   final TextEditingController carbsController = TextEditingController();
-  final TextEditingController kcalController = TextEditingController();
+  final TextEditingController energyValueController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
   final TextEditingController barcodeController = TextEditingController();
+  final List<String> energyUnits = ['kcal', 'kJ'];
+  late String energyUnit;
 
   final FocusNode nameFocusNode = FocusNode();
   final FocusNode brandFocusNode = FocusNode();
   final FocusNode proteinFocusNode = FocusNode();
   final FocusNode fatsFocusNode = FocusNode();
   final FocusNode carbsFocusNode = FocusNode();
-  final FocusNode kcalFocusNode = FocusNode();
+  final FocusNode energyValueFocusNode = FocusNode();
+  final FocusNode energyUnitFocusNode = FocusNode();
   final FocusNode weightFocusNode = FocusNode();
   final FocusNode unitFocusNode = FocusNode();
   final FocusNode barcodeFocusNode = FocusNode();
@@ -44,6 +49,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   void initState() {
     super.initState();
     barcodeController.text = widget.barcode!;
+    energyUnit = energyUnits.first;
   }
 
   @override
@@ -100,12 +106,12 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                             color: Colors.grey,
                           ),
                           SizedBox(
-                            width: 30,
+                            width: 100,
                             child: ColoredBox(
                               color: HavkaColors.cream,
                               child: Center(
                                 child: Text(
-                                  "or",
+                                  "Basic Info",
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -129,33 +135,94 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       focusNode: brandFocusNode,
                       onSubmitted: (_) => proteinFocusNode.requestFocus(),
                     ),
+                    SizedBox(
+                      height: 40,
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: const [
+                          Divider(
+                            color: Colors.grey,
+                          ),
+                          SizedBox(
+                            width: 150,
+                            child: ColoredBox(
+                              color: HavkaColors.cream,
+                              child: Center(
+                                child: Text(
+                                  "Nutrition per 100g",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     RoundedTextField(
                       hintText: 'Protein',
                       controller: proteinController,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       focusNode: proteinFocusNode,
                       onSubmitted: (_) => fatsFocusNode.requestFocus(),
                     ),
                     RoundedTextField(
                       hintText: 'Fats',
                       controller: fatsController,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       focusNode: fatsFocusNode,
                       onSubmitted: (_) => carbsFocusNode.requestFocus(),
                     ),
                     RoundedTextField(
                       hintText: 'Carbs',
                       controller: carbsController,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       focusNode: carbsFocusNode,
-                      onSubmitted: (_) => kcalFocusNode.requestFocus(),
+                      onSubmitted: (_) => energyValueFocusNode.requestFocus(),
                     ),
-                    RoundedTextField(
-                      hintText: 'Kcal',
-                      controller: kcalController,
-                      keyboardType: TextInputType.number,
-                      focusNode: kcalFocusNode,
-                      onSubmitted: (_) => Focus.of(context).unfocus(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 200,
+                          child: RoundedTextField(
+                            hintText: 'Energy',
+                            controller: energyValueController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            focusNode: energyValueFocusNode,
+                            // onSubmitted: (_) => Focus.of(context).unfocus(),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: HavkaColors.bone[100],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DropdownButton(
+                              underline: const SizedBox(),
+                              borderRadius: BorderRadius.circular(10),
+                              value: energyUnit,
+                              items: [
+                                for (String eUnit in energyUnits)
+                                  DropdownMenuItem(
+                                    value: eUnit,
+                                    child: Text(eUnit),
+                                  )
+                              ],
+                              onChanged: _energyUnitCallback,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     RoundedButton(
                       text: 'Done',
@@ -174,10 +241,20 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
     );
   }
 
+  void _energyUnitCallback(String? selectedValue) {
+    if (selectedValue is String) {
+      setState(() {
+        energyUnit = selectedValue;
+      });
+    }
+  }
+
   void _addProduct() {
     final Product product = Product(
       name: nameController.text,
+      brand: brandController.text,
       nutrition: ProductNutrition(
+        // productMeasure: ProductMeasure(unit: 'g', value: 100),
         protein: proteinController.text.isNotEmpty
             ? double.parse(proteinController.text)
             : null,
@@ -187,8 +264,13 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
         carbs: carbsController.text.isNotEmpty
             ? double.parse(carbsController.text)
             : null,
-        kcal: kcalController.text.isNotEmpty
-            ? double.parse(kcalController.text)
+        energy: energyValueController.text.isNotEmpty
+            ? [
+                ProductEnergy(
+                  unit: energyUnit,
+                  value: double.parse(energyValueController.text),
+                )
+              ]
             : null,
       ),
       barcode: barcodeController.text,

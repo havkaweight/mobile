@@ -1,13 +1,13 @@
-class Amount {
+class ProductAmount {
   final String unit;
   final double value;
 
-  Amount({
+  ProductAmount({
     required this.unit,
     required this.value,
   });
 
-  Amount.fromJson(Map<String, dynamic> json)
+  ProductAmount.fromJson(Map<String, dynamic> json)
       : unit = json['unit'] as String,
         value = json['value'] as double;
 

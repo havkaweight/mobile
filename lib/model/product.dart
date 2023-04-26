@@ -1,27 +1,45 @@
+import 'dart:convert';
+
+import 'package:health_tracker/model/product_energy.dart';
+import 'package:health_tracker/model/product_measure.dart';
+
 class ProductNutrition {
+  final ProductMeasure? productMeasure;
   final double? protein;
   final double? fat;
   final double? carbs;
-  final double? kcal;
+  final List<ProductEnergy>? energy;
 
   const ProductNutrition({
+    this.productMeasure,
     this.protein,
     this.fat,
     this.carbs,
-    this.kcal,
+    this.energy,
   });
 
   ProductNutrition.fromJson(Map<dynamic, dynamic> json)
-      : protein = json['protein'] as double?,
+      : productMeasure = json['measure'] == null
+            ? null
+            : ProductMeasure.fromJson(json['measure'] as Map<String, dynamic>),
+        protein = json['protein'] as double?,
         fat = json['fats'] as double?,
         carbs = json['carbs'] as double?,
-        kcal = json['kcal'] as double?;
+        energy = json['energy'] == null
+            ? null
+            : [
+                for (Map<String, dynamic> el in json['energy'])
+                  ProductEnergy.fromJson(el)
+              ];
 
   Map<dynamic, dynamic> toJson() => {
+        'measure': productMeasure == null ? null : productMeasure!.toJson(),
         'protein': protein,
-        'fat': fat,
+        'fats': fat,
         'carbs': carbs,
-        'kcal': kcal,
+        'energy': energy == null
+            ? null
+            : [for (ProductEnergy el in energy!) el.toJson()],
       };
 }
 
