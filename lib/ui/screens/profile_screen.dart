@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +14,8 @@ import 'package:health_tracker/components/profile.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/device_service.dart';
+import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/model/product_amount.dart';
 import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_device.dart';
@@ -47,10 +51,18 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with WidgetsBindingObserver {
   final ApiRoutes _apiRoutes = ApiRoutes();
+  late List<UserProduct> userProducts;
+  late List<PFCDataItem> nutritionData;
+  late int numberOfUserProducts;
+  late ValueNotifier<List<UserProduct>?> userProductsListener;
 
   @override
   void initState() {
     super.initState();
+    userProductsListener = ValueNotifier<List<UserProduct>?>(null);
+    () async {
+      await fetchUserProducts();
+    }();
   }
 
   @override
@@ -82,6 +94,137 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
   }
 
+  Future<void> fetchUserProducts() async {
+    const String fileName = "userProducts.json";
+    final dir = await getTemporaryDirectory();
+    final File file = File("${dir.path}/$fileName");
+    // file.delete();
+    if (file.existsSync()) {
+      print('sfsdgsdg1211212');
+      final jsonData = jsonDecode(file.readAsStringSync()) as List;
+      // print(jsonData);
+      final List<UserProduct> newUserProducts = jsonData.map<UserProduct>(
+        (json) {
+          // print(json);
+          final UserProduct userProduct =
+              UserProduct.fromJson(json as Map<String, dynamic>);
+          // print(userProduct);
+          return userProduct;
+        },
+      ).toList();
+      userProducts = newUserProducts;
+      userProductsListener.value = userProducts!;
+      final double proteins = userProducts.fold<double>(
+        0.0,
+        (sum, element) {
+          if (element.product!.nutrition != null &&
+              element.product!.nutrition!.protein != null) {
+            return sum + element.product!.nutrition!.protein!;
+          }
+          return sum;
+        },
+      );
+      final double fats = userProducts.fold<double>(
+        0.0,
+        (sum, element) {
+          if (element.product!.nutrition != null &&
+              element.product!.nutrition!.fat != null) {
+            return sum + element.product!.nutrition!.fat!;
+          }
+          return sum;
+        },
+      );
+      final double carbs = userProducts.fold<double>(
+        0.0,
+        (sum, element) {
+          if (element.product!.nutrition != null &&
+              element.product!.nutrition!.carbs != null) {
+            return sum + element.product!.nutrition!.carbs!;
+          }
+          return sum;
+        },
+      );
+      nutritionData = [
+        PFCDataItem(
+          proteins,
+          "Protein",
+          HavkaColors.protein,
+          FontAwesomeIcons.dna,
+        ),
+        PFCDataItem(
+          fats,
+          "Fat",
+          HavkaColors.fat,
+          FontAwesomeIcons.droplet,
+        ),
+        PFCDataItem(
+          carbs,
+          "Carbs",
+          HavkaColors.carbs,
+          FontAwesomeIcons.wheatAwn,
+        ),
+      ];
+      numberOfUserProducts = userProducts.length;
+    }
+    userProducts = await _apiRoutes.getUserProductsList();
+    file.writeAsStringSync(
+      jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
+      flush: true,
+    );
+    userProductsListener.value = userProducts!;
+    final double proteins = userProducts.fold<double>(
+      0.0,
+      (sum, element) {
+        if (element.product!.nutrition != null &&
+            element.product!.nutrition!.protein != null) {
+          return sum + element.product!.nutrition!.protein!;
+        }
+        return sum;
+      },
+    );
+    final double fats = userProducts.fold<double>(
+      0.0,
+      (sum, element) {
+        if (element.product!.nutrition != null &&
+            element.product!.nutrition!.fat != null) {
+          return sum + element.product!.nutrition!.fat!;
+        }
+        return sum;
+      },
+    );
+    final double carbs = userProducts.fold<double>(
+      0.0,
+      (sum, element) {
+        if (element.product!.nutrition != null &&
+            element.product!.nutrition!.carbs != null) {
+          return sum + element.product!.nutrition!.carbs!;
+        }
+        return sum;
+      },
+    );
+    nutritionData = [
+      PFCDataItem(
+        proteins,
+        "Protein",
+        HavkaColors.protein,
+        FontAwesomeIcons.dna,
+      ),
+      PFCDataItem(
+        fats,
+        "Fat",
+        HavkaColors.fat,
+        FontAwesomeIcons.droplet,
+      ),
+      PFCDataItem(
+        carbs,
+        "Carbs",
+        HavkaColors.carbs,
+        FontAwesomeIcons.wheatAwn,
+      ),
+    ];
+    numberOfUserProducts = userProducts.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     // flutterReactiveBle.statusStream.listen((status) {
@@ -96,17 +239,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       backgroundColor: Theme.of(context).colorScheme.background,
       body: _buildProfileScreen(),
     );
-  }
-
-  Future<List<UserProduct>> getUserProductsFromCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? data = prefs.getString('userProducts');
-    final List userProducts = data == null ? [] : json.decode(data) as List;
-    return userProducts.map<UserProduct>((json) {
-      final UserProduct userProduct =
-          UserProduct.fromJson(json as Map<String, dynamic>);
-      return userProduct;
-    }).toList();
   }
 
   Widget _buildProfileScreen() {
@@ -283,139 +415,185 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ],
                   ),
-                  FutureBuilder(
-                    future: _apiRoutes.getUserConsumption(),
+                  // FutureBuilder(
+                  //   future: _apiRoutes.getUserConsumption(),
+                  //   builder: (
+                  //     BuildContext context,
+                  //     AsyncSnapshot<List<UserConsumptionItem>> snapshot,
+                  //   ) {
+                  //     if (snapshot.connectionState != ConnectionState.done ||
+                  //         !snapshot.hasData) {
+                  //       return SizedBox(
+                  //         height: chartHeight,
+                  //         child: const HavkaProgressIndicator(),
+                  //       );
+                  //     }
+                  //     final List<UserConsumptionItem> userConsumption =
+                  //         snapshot.data!;
+                  //     final DateTime? minDate = [
+                  //       for (UserConsumptionItem userConsumptionItem
+                  //           in userConsumption)
+                  //         userConsumptionItem.consumedAt ??
+                  //             userConsumptionItem.createdAt
+                  //     ].reduce(
+                  //       (value, element) =>
+                  //           value!.isBefore(element!) ? value : element,
+                  //     );
+                  //     final DateTime? maxDate = [
+                  //       for (UserConsumptionItem userConsumptionItem
+                  //           in userConsumption)
+                  //         userConsumptionItem.consumedAt ??
+                  //             userConsumptionItem.createdAt
+                  //     ].reduce(
+                  //       (value, element) =>
+                  //           value!.isAfter(element!) ? value : element,
+                  //     );
+                  //     final List<DateTime> datesPeriod =
+                  //         getDaysInBetween(minDate!, maxDate!);
+                  //     final List<DataItem> weeklyData = [];
+                  //     for (final DateTime date in datesPeriod) {
+                  //       weeklyData.add(
+                  //         DataItem(
+                  //           userConsumption.fold(0, (previousValue, element) {
+                  //             if ((element.consumedAt ?? element.createdAt)!
+                  //                     .difference(date)
+                  //                     .inDays ==
+                  //                 0) {
+                  //               return previousValue += element.amount!.value;
+                  //             }
+                  //             return previousValue;
+                  //           }),
+                  //           DateFormat('MMM dd').format(date),
+                  //           Colors.amber[500]!,
+                  //         ),
+                  //       );
+                  //     }
+                  //     return Padding(
+                  //       padding: const EdgeInsets.symmetric(
+                  //         horizontal: 40.0,
+                  //         vertical: 10.0,
+                  //       ),
+                  //       child: SizedBox(
+                  //         height: chartHeight,
+                  //         child: CustomPaint(
+                  //           painter: HavkaBarChart(weeklyData),
+                  //           child: Container(),
+                  //         ),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  // FutureBuilder(
+                  //   future: fetchUserProducts(),
+                  //   // future: _apiRoutes.getUserProductsList(),
+                  //   builder: (
+                  //     BuildContext context,
+                  //     AsyncSnapshot snapshot,
+                  //   ) {
+                  //     if (snapshot.connectionState != ConnectionState.done) {
+                  //       return SizedBox(
+                  //         height: chartHeight,
+                  //         child: const HavkaProgressIndicator(),
+                  //       );
+                  //     }
+                  //     // final List<UserProduct> userProducts = snapshot.data!;
+                  //     final double proteins = userProducts.fold<double>(
+                  //       0.0,
+                  //       (sum, element) {
+                  //         if (element.product!.nutrition != null &&
+                  //             element.product!.nutrition!.protein != null) {
+                  //           return sum + element.product!.nutrition!.protein!;
+                  //         }
+                  //         return sum;
+                  //       },
+                  //     );
+                  //     final double fats = userProducts.fold<double>(
+                  //       0.0,
+                  //       (sum, element) {
+                  //         if (element.product!.nutrition != null &&
+                  //             element.product!.nutrition!.fat != null) {
+                  //           return sum + element.product!.nutrition!.fat!;
+                  //         }
+                  //         return sum;
+                  //       },
+                  //     );
+                  //     final double carbs = userProducts.fold<double>(
+                  //       0.0,
+                  //       (sum, element) {
+                  //         if (element.product!.nutrition != null &&
+                  //             element.product!.nutrition!.carbs != null) {
+                  //           return sum + element.product!.nutrition!.carbs!;
+                  //         }
+                  //         return sum;
+                  //       },
+                  //     );
+                  //     final List<PFCDataItem> nutritionData = [
+                  //       PFCDataItem(
+                  //         proteins,
+                  //         "Protein",
+                  //         HavkaColors.protein,
+                  //         FontAwesomeIcons.dna,
+                  //       ),
+                  //       PFCDataItem(
+                  //         fats,
+                  //         "Fat",
+                  //         HavkaColors.fat,
+                  //         FontAwesomeIcons.droplet,
+                  //       ),
+                  //       PFCDataItem(
+                  //         carbs,
+                  //         "Carbs",
+                  //         HavkaColors.carbs,
+                  //         FontAwesomeIcons.wheatAwn,
+                  //       ),
+                  //     ];
+                  //     final int numberOfUserProducts = userProducts.length;
+                  //     return Column(
+                  //       children: [
+                  //         Padding(
+                  //           padding: const EdgeInsets.symmetric(
+                  //             horizontal: 40.0,
+                  //             vertical: 10.0,
+                  //           ),
+                  //           child: Column(
+                  //             children: [
+                  //               HavkaStackBarChart(
+                  //                 data: nutritionData,
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //         Padding(
+                  //           padding: const EdgeInsets.symmetric(
+                  //             horizontal: 40.0,
+                  //             vertical: 40.0,
+                  //           ),
+                  //           child: SizedBox(
+                  //             height: chartHeight,
+                  //             width: MediaQuery.of(context).size.width * 0.7,
+                  //             child: CustomPaint(
+                  //               painter: HavkaDonutChart(
+                  //                 data: nutritionData,
+                  //                 centerText: numberOfUserProducts.toString(),
+                  //               ),
+                  //               child: Container(),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     );
+                  //   },
+                  // ),
+                  ValueListenableBuilder(
+                    valueListenable: userProductsListener,
                     builder: (
                       BuildContext context,
-                      AsyncSnapshot<List<UserConsumptionItem>> snapshot,
+                      List<UserProduct>? value,
+                      _,
                     ) {
-                      if (snapshot.connectionState != ConnectionState.done ||
-                          !snapshot.hasData) {
-                        return SizedBox(
-                          height: chartHeight,
-                          child: const HavkaProgressIndicator(),
-                        );
+                      if (value == null) {
+                        return const Center(child: HavkaProgressIndicator());
                       }
-                      final List<UserConsumptionItem> userConsumption =
-                          snapshot.data!;
-                      final DateTime? minDate = [
-                        for (UserConsumptionItem userConsumptionItem
-                            in userConsumption)
-                          userConsumptionItem.consumedAt ??
-                              userConsumptionItem.createdAt
-                      ].reduce(
-                        (value, element) =>
-                            value!.isBefore(element!) ? value : element,
-                      );
-                      final DateTime? maxDate = [
-                        for (UserConsumptionItem userConsumptionItem
-                            in userConsumption)
-                          userConsumptionItem.consumedAt ??
-                              userConsumptionItem.createdAt
-                      ].reduce(
-                        (value, element) =>
-                            value!.isAfter(element!) ? value : element,
-                      );
-                      final List<DateTime> datesPeriod =
-                          getDaysInBetween(minDate!, maxDate!);
-                      final List<DataItem> weeklyData = [];
-                      for (final DateTime date in datesPeriod) {
-                        weeklyData.add(
-                          DataItem(
-                            userConsumption.fold(0, (previousValue, element) {
-                              if ((element.consumedAt ?? element.createdAt)!
-                                      .difference(date)
-                                      .inDays ==
-                                  0) {
-                                return previousValue += element.amount!.value;
-                              }
-                              return previousValue;
-                            }),
-                            DateFormat('MMM dd').format(date),
-                            Colors.amber[500]!,
-                          ),
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                          vertical: 10.0,
-                        ),
-                        child: SizedBox(
-                          height: chartHeight,
-                          child: CustomPaint(
-                            painter: HavkaBarChart(weeklyData),
-                            child: Container(),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  FutureBuilder(
-                    future: _apiRoutes.getUserProductsList(),
-                    builder: (
-                      BuildContext context,
-                      AsyncSnapshot<List<UserProduct>> snapshot,
-                    ) {
-                      if (snapshot.connectionState != ConnectionState.done ||
-                          !snapshot.hasData) {
-                        return SizedBox(
-                          height: chartHeight,
-                          child: const HavkaProgressIndicator(),
-                        );
-                      }
-                      final List<UserProduct> userProducts = snapshot.data!;
-                      final double proteins = userProducts.fold<double>(
-                        0.0,
-                        (sum, element) {
-                          if (element.product!.nutrition != null &&
-                              element.product!.nutrition!.protein != null) {
-                            return sum + element.product!.nutrition!.protein!;
-                          }
-                          return sum;
-                        },
-                      );
-                      final double fats = userProducts.fold<double>(
-                        0.0,
-                        (sum, element) {
-                          if (element.product!.nutrition != null &&
-                              element.product!.nutrition!.fat != null) {
-                            return sum + element.product!.nutrition!.fat!;
-                          }
-                          return sum;
-                        },
-                      );
-                      final double carbs = userProducts.fold<double>(
-                        0.0,
-                        (sum, element) {
-                          if (element.product!.nutrition != null &&
-                              element.product!.nutrition!.carbs != null) {
-                            return sum + element.product!.nutrition!.carbs!;
-                          }
-                          return sum;
-                        },
-                      );
-                      final List<PFCDataItem> nutritionData = [
-                        PFCDataItem(
-                          proteins,
-                          "Protein",
-                          HavkaColors.protein,
-                          FontAwesomeIcons.dna,
-                        ),
-                        PFCDataItem(
-                          fats,
-                          "Fat",
-                          HavkaColors.fat,
-                          FontAwesomeIcons.droplet,
-                        ),
-                        PFCDataItem(
-                          carbs,
-                          "Carbs",
-                          HavkaColors.carbs,
-                          FontAwesomeIcons.wheatAwn,
-                        ),
-                      ];
-                      final int numberOfUserProducts = userProducts.length;
                       return Column(
                         children: [
                           Padding(

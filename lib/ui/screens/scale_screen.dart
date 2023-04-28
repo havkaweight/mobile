@@ -14,7 +14,6 @@ import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/utils/utils.dart';
-import 'package:intl/intl.dart';
 
 class ScaleScreen extends StatefulWidget {
   final UserProduct? userProduct;

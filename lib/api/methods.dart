@@ -15,6 +15,7 @@ import 'package:health_tracker/model/user_product_weighting.dart';
 import 'package:health_tracker/ui/screens/authorization.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ApiRoutes {
   Future<bool> signUp(String email, String password) async {

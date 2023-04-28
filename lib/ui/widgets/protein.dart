@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,11 +28,17 @@ class HavkaProteinIcon extends CustomPainter {
         final path = Path()
           ..moveTo((left + size.width / 3) * 0.95, top * 1.01)
           ..lineTo(
-              (left + size.width / 8) * 1.05, (top - size.height / 3) * 1.05)
+            (left + size.width / 8) * 1.05,
+            (top - size.height / 3) * 1.05,
+          )
           ..moveTo(
-              (left + size.width / 3) * 0.95, (top + size.height / 6) * 0.99)
-          ..lineTo((left + size.width / 8) * 1.05,
-              (top + size.height / 6 - size.height / 3) * 0.95);
+            (left + size.width / 3) * 0.95,
+            (top + size.height / 6) * 0.99,
+          )
+          ..lineTo(
+            (left + size.width / 8) * 1.05,
+            (top + size.height / 6 - size.height / 3) * 0.95,
+          );
         canvas.drawPath(path, strokePaint);
       }
       left += size.width / 8;

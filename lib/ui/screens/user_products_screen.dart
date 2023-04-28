@@ -1,20 +1,21 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/user.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
-import 'package:health_tracker/ui/widgets/ble_status_tracking_widget.dart';
 import 'package:health_tracker/ui/widgets/fridgeitem.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/modal_scale.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/shimmer.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 List<Map<String, String>> userProductsList = [];

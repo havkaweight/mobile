@@ -1,13 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:health_tracker/model/user_consumption_item.dart';
-import 'package:health_tracker/utils/utils.dart';
-import 'package:intl/intl.dart';
-
 import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/model/user_product_weighting.dart';
+import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
+import 'package:health_tracker/utils/utils.dart';
 
 class UserConsumptionScreen extends StatefulWidget {
   @override

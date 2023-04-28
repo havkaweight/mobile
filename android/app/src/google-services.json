@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:201798139028:android:b51486045a32965b374881",
         "android_client_info": {
-          "package_name": "com.example.health_tracker"
+          "package_name": "com.havka.havkaandroid"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "201798139028-8das38boc85d0jtosljrr5b87b57rjqt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.health_tracker",
+            "package_name": "com.havka.havkaandroid",
             "certificate_hash": "bf9e2c185aced142603acc7a5d4180586bc3ea0f"
           }
         },
@@ -25,7 +25,7 @@
           "client_id": "201798139028-dmmr8vrl7mutlkdh1dia6h0lqtr1besd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.health_tracker",
+            "package_name": "com.havka.havkaandroid",
             "certificate_hash": "8cbf1b77c35d6ebd30e30b9818abb9e1ea2f3f43"
           }
         },

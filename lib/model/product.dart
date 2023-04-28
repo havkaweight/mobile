@@ -95,7 +95,11 @@ class Product {
               },
         'net_weight': baseValue,
         'barcode': barcode,
-        'imgs': img,
+        'imgs': img == null
+            ? null
+            : {
+                'foody': {'original': img}
+              },
       };
 
   Map<String, dynamic> productIdToJson() => {'product_id': id};

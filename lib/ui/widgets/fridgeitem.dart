@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/screens/user_product_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 

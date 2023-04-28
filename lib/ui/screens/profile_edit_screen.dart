@@ -1,36 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/components/profile.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/device_service.dart';
 import 'package:health_tracker/model/user.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/ui/screens/devices_screen.dart';
-import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
-import 'package:health_tracker/ui/widgets/bar_chart_timeline.dart';
-import 'package:health_tracker/ui/widgets/donut_chart.dart';
-import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/line_chart.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/protein.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   final User user;
