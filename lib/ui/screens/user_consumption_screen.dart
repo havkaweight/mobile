@@ -11,80 +11,88 @@ class UserConsumptionScreen extends StatefulWidget {
 
 class _UserConsumptionScreenState extends State<UserConsumptionScreen> {
   final ApiRoutes _apiRoutes = ApiRoutes();
+  ScrollPhysics scrollPhysics = const AlwaysScrollableScrollPhysics();
+  List<UserConsumptionItem>? userConsumption;
+  late ValueNotifier<List<UserConsumptionItem>?> userConsumptionListener;
 
   @override
   void initState() {
     super.initState();
+    userConsumptionListener = ValueNotifier(userConsumption);
+    () async {
+      userConsumption = await _apiRoutes.getUserConsumption();
+      userConsumptionListener.value = userConsumption;
+    }();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-      },
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<List<UserConsumptionItem>>(
-              future: _apiRoutes.getUserConsumption(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<List<UserConsumptionItem>> snapshot,
-              ) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(
-                    child: HavkaProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasData) {
-                  final double mHeight = MediaQuery.of(context).size.height;
-                  if (snapshot.data!.isNotEmpty) {
-                    return SizedBox(
-                      height: mHeight * 0.82,
-                      child: ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, index) {
-                            snapshot.data!.sort(
-                              (a, b) => (b.consumedAt ?? b.createdAt!)
-                                  .compareTo(a.consumedAt ?? a.createdAt!),
-                            );
-                            final UserConsumptionItem userConsumptionItem =
-                                snapshot.data![index];
-                            return ListTile(
-                              title: Text(
-                                userConsumptionItem.product!.name!,
-                                style:
-                                    Theme.of(context).textTheme.displayMedium,
+    final double mHeight = MediaQuery.of(context).size.height;
+    return SingleChildScrollView(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: mHeight * 0.82,
+                child: NotificationListener<ScrollNotification>(
+                  child: ValueListenableBuilder(
+                    valueListenable: userConsumptionListener,
+                    builder: (
+                      BuildContext context,
+                      List<UserConsumptionItem>? value,
+                      _,
+                    ) {
+                      if (value == null) {
+                        return const Center(child: HavkaProgressIndicator());
+                      }
+                      return ListView.builder(
+                        physics: scrollPhysics,
+                        itemCount: userConsumption!.length,
+                        itemBuilder: (BuildContext context, index) {
+                          userConsumption!.sort(
+                            (a, b) => (b.consumedAt ?? b.createdAt!)
+                                .compareTo(a.consumedAt ?? a.createdAt!),
+                          );
+                          final UserConsumptionItem userConsumptionItem =
+                              userConsumption![index];
+                          return ListTile(
+                            title: Text(
+                              userConsumptionItem.product!.name!,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                            subtitle: Text(
+                              formatDate(
+                                userConsumptionItem.consumedAt ??
+                                    userConsumptionItem.createdAt!,
                               ),
-                              subtitle: Text(
-                                formatDate(
-                                  userConsumptionItem.consumedAt ??
-                                      userConsumptionItem.createdAt!,
-                                ),
-                                style: Theme.of(context).textTheme.displaySmall,
-                              ),
-                              trailing: Text(
-                                '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
-                                style: Theme.of(context).textTheme.displayLarge,
-                              ),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            );
-                          }),
-                    );
-                  } else {
-                    return SizedBox(
-                        height: mHeight * 0.82,
-                        child: const Center(child: Text('History not found')));
-                  }
-                }
-                return const Center(child: Text('Error internet connection'));
-              },
-            )
-          ],
+                              style: Theme.of(context).textTheme.displaySmall,
+                            ),
+                            trailing: Text(
+                              '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
+                              style: Theme.of(context).textTheme.displayLarge,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

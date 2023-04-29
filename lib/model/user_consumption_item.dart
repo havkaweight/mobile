@@ -47,11 +47,14 @@ class UserConsumptionItem {
   Map<String, dynamic> toJson() => {
         '_id': id,
         'product': product == null ? null : product!.toJson(),
+        'user_product': userProduct == null ? null : userProduct!.toJson(),
         'user_id': userId,
         'amount': amount == null ? null : amount!.toJson(),
-        'created_at':
-            DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(createdAt!),
-        'consumed_at':
-            DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(consumedAt!),
+        'created_at': createdAt == null
+            ? null
+            : DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(createdAt!),
+        'consumed_at': consumedAt == null
+            ? null
+            : DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(consumedAt!),
       };
 }

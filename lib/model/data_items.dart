@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DataItem {
-  final double value;
+  late double value;
   final String label;
   final Color color;
 

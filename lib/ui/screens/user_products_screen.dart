@@ -75,6 +75,9 @@ class _UserProductsScreenState extends State<UserProductsScreen>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
+    () async {
+      await _apiRoutes.getMe();
+    }();
   }
 
   void _removeItem(UserProduct userProduct, int index, BuildContext context) {

@@ -56,12 +56,17 @@ class _ProfileScreenState extends State<ProfileScreen>
   late int numberOfUserProducts;
   late ValueNotifier<List<UserProduct>?> userProductsListener;
 
+  late List<UserConsumptionItem> userConsumption;
+  late ValueNotifier<List<UserConsumptionItem>?> userConsumptionListener;
+
   @override
   void initState() {
     super.initState();
     userProductsListener = ValueNotifier<List<UserProduct>?>(null);
+    userConsumptionListener = ValueNotifier<List<UserConsumptionItem>?>(null);
     () async {
       await fetchUserProducts();
+      await fetchUserConsumption();
     }();
   }
 
@@ -98,18 +103,11 @@ class _ProfileScreenState extends State<ProfileScreen>
     const String fileName = "userProducts.json";
     final dir = await getTemporaryDirectory();
     final File file = File("${dir.path}/$fileName");
-    // file.delete();
     if (file.existsSync()) {
-      print('sfsdgsdg1211212');
       final jsonData = jsonDecode(file.readAsStringSync()) as List;
-      // print(jsonData);
       final List<UserProduct> newUserProducts = jsonData.map<UserProduct>(
         (json) {
-          // print(json);
-          final UserProduct userProduct =
-              UserProduct.fromJson(json as Map<String, dynamic>);
-          // print(userProduct);
-          return userProduct;
+          return UserProduct.fromJson(json as Map<String, dynamic>);
         },
       ).toList();
       userProducts = newUserProducts;
@@ -171,58 +169,31 @@ class _ProfileScreenState extends State<ProfileScreen>
       jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
       flush: true,
     );
-    userProductsListener.value = userProducts!;
-    final double proteins = userProducts.fold<double>(
-      0.0,
-      (sum, element) {
-        if (element.product!.nutrition != null &&
-            element.product!.nutrition!.protein != null) {
-          return sum + element.product!.nutrition!.protein!;
-        }
-        return sum;
-      },
+    userProductsListener.value = userProducts;
+  }
+
+  Future<void> fetchUserConsumption() async {
+    const String fileName = "userConsumption.json";
+    final dir = await getTemporaryDirectory();
+    final File file = File("${dir.path}/$fileName");
+    if (file.existsSync()) {
+      final jsonData = jsonDecode(file.readAsStringSync()) as List;
+      final List<UserConsumptionItem> newUserConsumption =
+          jsonData.map<UserConsumptionItem>(
+        (json) {
+          return UserConsumptionItem.fromJson(json as Map<String, dynamic>);
+        },
+      ).toList();
+      userConsumption = newUserConsumption;
+      userConsumptionListener.value = userConsumption;
+    }
+    userConsumption = await _apiRoutes.getUserConsumption();
+    file.writeAsStringSync(
+      jsonEncode(
+          [for (UserConsumptionItem uci in userConsumption) uci.toJson()]),
+      flush: true,
     );
-    final double fats = userProducts.fold<double>(
-      0.0,
-      (sum, element) {
-        if (element.product!.nutrition != null &&
-            element.product!.nutrition!.fat != null) {
-          return sum + element.product!.nutrition!.fat!;
-        }
-        return sum;
-      },
-    );
-    final double carbs = userProducts.fold<double>(
-      0.0,
-      (sum, element) {
-        if (element.product!.nutrition != null &&
-            element.product!.nutrition!.carbs != null) {
-          return sum + element.product!.nutrition!.carbs!;
-        }
-        return sum;
-      },
-    );
-    nutritionData = [
-      PFCDataItem(
-        proteins,
-        "Protein",
-        HavkaColors.protein,
-        FontAwesomeIcons.dna,
-      ),
-      PFCDataItem(
-        fats,
-        "Fat",
-        HavkaColors.fat,
-        FontAwesomeIcons.droplet,
-      ),
-      PFCDataItem(
-        carbs,
-        "Carbs",
-        HavkaColors.carbs,
-        FontAwesomeIcons.wheatAwn,
-      ),
-    ];
-    numberOfUserProducts = userProducts.length;
+    userConsumptionListener.value = userConsumption;
   }
 
   @override
@@ -475,115 +446,37 @@ class _ProfileScreenState extends State<ProfileScreen>
                   //       ),
                   //       child: SizedBox(
                   //         height: chartHeight,
-                  //         child: CustomPaint(
-                  //           painter: HavkaBarChart(weeklyData),
-                  //           child: Container(),
+                  //         child: HavkaBarChart(
+                  //           initialData: userConsumption,
                   //         ),
                   //       ),
                   //     );
                   //   },
                   // ),
-                  // FutureBuilder(
-                  //   future: fetchUserProducts(),
-                  //   // future: _apiRoutes.getUserProductsList(),
-                  //   builder: (
-                  //     BuildContext context,
-                  //     AsyncSnapshot snapshot,
-                  //   ) {
-                  //     if (snapshot.connectionState != ConnectionState.done) {
-                  //       return SizedBox(
-                  //         height: chartHeight,
-                  //         child: const HavkaProgressIndicator(),
-                  //       );
-                  //     }
-                  //     // final List<UserProduct> userProducts = snapshot.data!;
-                  //     final double proteins = userProducts.fold<double>(
-                  //       0.0,
-                  //       (sum, element) {
-                  //         if (element.product!.nutrition != null &&
-                  //             element.product!.nutrition!.protein != null) {
-                  //           return sum + element.product!.nutrition!.protein!;
-                  //         }
-                  //         return sum;
-                  //       },
-                  //     );
-                  //     final double fats = userProducts.fold<double>(
-                  //       0.0,
-                  //       (sum, element) {
-                  //         if (element.product!.nutrition != null &&
-                  //             element.product!.nutrition!.fat != null) {
-                  //           return sum + element.product!.nutrition!.fat!;
-                  //         }
-                  //         return sum;
-                  //       },
-                  //     );
-                  //     final double carbs = userProducts.fold<double>(
-                  //       0.0,
-                  //       (sum, element) {
-                  //         if (element.product!.nutrition != null &&
-                  //             element.product!.nutrition!.carbs != null) {
-                  //           return sum + element.product!.nutrition!.carbs!;
-                  //         }
-                  //         return sum;
-                  //       },
-                  //     );
-                  //     final List<PFCDataItem> nutritionData = [
-                  //       PFCDataItem(
-                  //         proteins,
-                  //         "Protein",
-                  //         HavkaColors.protein,
-                  //         FontAwesomeIcons.dna,
-                  //       ),
-                  //       PFCDataItem(
-                  //         fats,
-                  //         "Fat",
-                  //         HavkaColors.fat,
-                  //         FontAwesomeIcons.droplet,
-                  //       ),
-                  //       PFCDataItem(
-                  //         carbs,
-                  //         "Carbs",
-                  //         HavkaColors.carbs,
-                  //         FontAwesomeIcons.wheatAwn,
-                  //       ),
-                  //     ];
-                  //     final int numberOfUserProducts = userProducts.length;
-                  //     return Column(
-                  //       children: [
-                  //         Padding(
-                  //           padding: const EdgeInsets.symmetric(
-                  //             horizontal: 40.0,
-                  //             vertical: 10.0,
-                  //           ),
-                  //           child: Column(
-                  //             children: [
-                  //               HavkaStackBarChart(
-                  //                 data: nutritionData,
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //         Padding(
-                  //           padding: const EdgeInsets.symmetric(
-                  //             horizontal: 40.0,
-                  //             vertical: 40.0,
-                  //           ),
-                  //           child: SizedBox(
-                  //             height: chartHeight,
-                  //             width: MediaQuery.of(context).size.width * 0.7,
-                  //             child: CustomPaint(
-                  //               painter: HavkaDonutChart(
-                  //                 data: nutritionData,
-                  //                 centerText: numberOfUserProducts.toString(),
-                  //               ),
-                  //               child: Container(),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     );
-                  //   },
-                  // ),
+                  ValueListenableBuilder(
+                    valueListenable: userConsumptionListener,
+                    builder: (
+                      BuildContext context,
+                      List<UserConsumptionItem>? value,
+                      _,
+                    ) {
+                      if (value == null) {
+                        return const Center(child: HavkaProgressIndicator());
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0,
+                          vertical: 10.0,
+                        ),
+                        child: SizedBox(
+                          height: chartHeight,
+                          child: HavkaBarChart(
+                            initialData: userConsumption,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   ValueListenableBuilder(
                     valueListenable: userProductsListener,
                     builder: (
@@ -601,12 +494,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               horizontal: 40.0,
                               vertical: 10.0,
                             ),
-                            child: Column(
-                              children: [
-                                HavkaStackBarChart(
-                                  data: nutritionData,
-                                ),
-                              ],
+                            child: HavkaStackBarChart(
+                              initialData: userProducts,
                             ),
                           ),
                           Padding(
@@ -617,12 +506,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             child: SizedBox(
                               height: chartHeight,
                               width: MediaQuery.of(context).size.width * 0.7,
-                              child: CustomPaint(
-                                painter: HavkaDonutChart(
-                                  data: nutritionData,
-                                  centerText: numberOfUserProducts.toString(),
-                                ),
-                                child: Container(),
+                              child: HavkaDonutChart(
+                                initialData: value,
                               ),
                             ),
                           ),
