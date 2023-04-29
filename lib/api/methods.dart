@@ -528,9 +528,7 @@ class ApiRoutes {
   }
 
   Future<void> addUserConsumptionItem({
-    required UserProduct userProduct,
-    required double netWeight,
-    required DateTime consumedAt,
+    required UserConsumptionItem userConsumptionItem,
     UserDevice? userDevice,
   }) async {
     final token = await storage.read(key: 'jwt');
@@ -538,21 +536,13 @@ class ApiRoutes {
       'Content-type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    final Map<String, dynamic> body = {
-      // 'product_id': userProduct.product!.id,
-      'user_product_id': userProduct.id!,
-      // 'user_device_id': userDevice.id,
-      'amount': ProductAmount(value: netWeight, unit: 'g').toJson(),
-      'consumed_at':
-          DateFormat('yyyy-MM-ddTHH:mm:ss.000000').format(consumedAt),
-    };
     final http.Response response = await http.post(
       Uri.https(
         Api.host,
         '${Api.prefix}${Api.monolithService}${Api.consumption}',
       ),
       headers: headers,
-      body: json.encode(body),
+      body: json.encode(userConsumptionItem.toJsonAdding()),
     );
 
     debugPrint('${response.statusCode} ${response.body}');

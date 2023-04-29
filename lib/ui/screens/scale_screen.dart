@@ -8,6 +8,8 @@ import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/constants/scale.dart';
 import 'package:health_tracker/constants/utils.dart';
+import 'package:health_tracker/model/product_amount.dart';
+import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
@@ -403,11 +405,14 @@ class _ScaleScreenState extends State<ScaleScreen> {
                         });
                         return;
                       }
-                      _apiRoutes.addUserConsumptionItem(
-                        userProduct: widget.userProduct!,
-                        netWeight: weight!,
+                      final UserConsumptionItem userConsumptionItem =
+                          UserConsumptionItem(
+                        userProduct: widget.userProduct,
+                        amount: ProductAmount(value: weight!, unit: 'g'),
                         consumedAt: selectedDateTime,
                       );
+                      _apiRoutes.addUserConsumptionItem(
+                          userConsumptionItem: userConsumptionItem);
                       Navigator.pop(context);
                     },
                   )

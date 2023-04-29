@@ -73,6 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void dispose() {
     super.dispose();
+    userProductsListener.dispose();
+    userConsumptionListener.dispose();
     // WidgetsBinding.instance.removeObserver(this);
   }
 
@@ -241,7 +243,113 @@ class _ProfileScreenState extends State<ProfileScreen>
                     builder:
                         (BuildContext context, AsyncSnapshot<User> snapshot) {
                       if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: HavkaProgressIndicator());
+                        // return const Center(child: HavkaProgressIndicator());
+                        return Container(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  height: 150,
+                                  width: 150,
+                                  color: HavkaColors.bone[100],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Container(
+                                            height: 20,
+                                            width: 150,
+                                            color: HavkaColors.bone[100],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10.0,
+                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Row(
+                                            children: [
+                                              const FaIcon(
+                                                FontAwesomeIcons.rulerVertical,
+                                                color: Colors.black,
+                                                size: 20,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                  8,
+                                                  0,
+                                                  20,
+                                                  0,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                    height: 20,
+                                                    width: 50,
+                                                    color:
+                                                        HavkaColors.bone[100],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              const FaIcon(
+                                                FontAwesomeIcons.weightScale,
+                                                color: Colors.black,
+                                                size: 20,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                  8,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                    height: 20,
+                                                    width: 50,
+                                                    color:
+                                                        HavkaColors.bone[100],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       }
                       if (!snapshot.hasData) {
                         return const Center(child: HavkaProgressIndicator());
@@ -255,7 +363,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                               borderRadius: BorderRadius.circular(20),
                               child: Image.network(
                                 'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
+                                fit: BoxFit.cover,
                                 width: MediaQuery.of(context).size.width * 0.3,
+                                loadingBuilder: (
+                                  BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress,
+                                ) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                             Container(
@@ -359,100 +487,48 @@ class _ProfileScreenState extends State<ProfileScreen>
                       );
                     },
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 11.0),
-                            child: Text(
-                              '${DateTime.now().day}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Weekly progress',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Stack(
+                            //   alignment: AlignmentDirectional.center,
+                            //   children: [
+                            //     Container(
+                            //       margin: const EdgeInsets.only(top: 11.0),
+                            //       child: Text(
+                            //         '${DateTime.now().day}',
+                            //         style:
+                            //             const TextStyle(fontWeight: FontWeight.bold),
+                            //       ),
+                            //     ),
+                            //     IconButton(
+                            //       onPressed: _showCalendar,
+                            //       icon: const Icon(FontAwesomeIcons.calendar),
+                            //       iconSize: 33,
+                            //     ),
+                            //   ],
+                            // ),
+                            RoundedButton(
+                              text: 'Show history',
+                              onPressed: _buildWeightingsHistory,
                             ),
-                          ),
-                          IconButton(
-                            onPressed: _showCalendar,
-                            icon: const Icon(FontAwesomeIcons.calendar),
-                            iconSize: 33,
-                          ),
-                        ],
-                      ),
-                      RoundedButton(
-                        text: 'Show history',
-                        onPressed: _buildWeightingsHistory,
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  // FutureBuilder(
-                  //   future: _apiRoutes.getUserConsumption(),
-                  //   builder: (
-                  //     BuildContext context,
-                  //     AsyncSnapshot<List<UserConsumptionItem>> snapshot,
-                  //   ) {
-                  //     if (snapshot.connectionState != ConnectionState.done ||
-                  //         !snapshot.hasData) {
-                  //       return SizedBox(
-                  //         height: chartHeight,
-                  //         child: const HavkaProgressIndicator(),
-                  //       );
-                  //     }
-                  //     final List<UserConsumptionItem> userConsumption =
-                  //         snapshot.data!;
-                  //     final DateTime? minDate = [
-                  //       for (UserConsumptionItem userConsumptionItem
-                  //           in userConsumption)
-                  //         userConsumptionItem.consumedAt ??
-                  //             userConsumptionItem.createdAt
-                  //     ].reduce(
-                  //       (value, element) =>
-                  //           value!.isBefore(element!) ? value : element,
-                  //     );
-                  //     final DateTime? maxDate = [
-                  //       for (UserConsumptionItem userConsumptionItem
-                  //           in userConsumption)
-                  //         userConsumptionItem.consumedAt ??
-                  //             userConsumptionItem.createdAt
-                  //     ].reduce(
-                  //       (value, element) =>
-                  //           value!.isAfter(element!) ? value : element,
-                  //     );
-                  //     final List<DateTime> datesPeriod =
-                  //         getDaysInBetween(minDate!, maxDate!);
-                  //     final List<DataItem> weeklyData = [];
-                  //     for (final DateTime date in datesPeriod) {
-                  //       weeklyData.add(
-                  //         DataItem(
-                  //           userConsumption.fold(0, (previousValue, element) {
-                  //             if ((element.consumedAt ?? element.createdAt)!
-                  //                     .difference(date)
-                  //                     .inDays ==
-                  //                 0) {
-                  //               return previousValue += element.amount!.value;
-                  //             }
-                  //             return previousValue;
-                  //           }),
-                  //           DateFormat('MMM dd').format(date),
-                  //           Colors.amber[500]!,
-                  //         ),
-                  //       );
-                  //     }
-                  //     return Padding(
-                  //       padding: const EdgeInsets.symmetric(
-                  //         horizontal: 40.0,
-                  //         vertical: 10.0,
-                  //       ),
-                  //       child: SizedBox(
-                  //         height: chartHeight,
-                  //         child: HavkaBarChart(
-                  //           initialData: userConsumption,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
                   ValueListenableBuilder(
                     valueListenable: userConsumptionListener,
                     builder: (
@@ -466,16 +542,34 @@ class _ProfileScreenState extends State<ProfileScreen>
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 40.0,
-                          vertical: 10.0,
+                          vertical: 20.0,
                         ),
                         child: SizedBox(
-                          height: chartHeight,
+                          height: MediaQuery.of(context).size.height * 0.2,
                           child: HavkaBarChart(
                             initialData: userConsumption,
                           ),
                         ),
                       );
                     },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 20.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'PFC Split',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   ValueListenableBuilder(
                     valueListenable: userProductsListener,
@@ -501,10 +595,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 40.0,
-                              vertical: 40.0,
+                              vertical: 20.0,
                             ),
                             child: SizedBox(
-                              height: chartHeight,
+                              height: MediaQuery.of(context).size.width * 0.7,
                               width: MediaQuery.of(context).size.width * 0.7,
                               child: HavkaDonutChart(
                                 initialData: value,
@@ -514,6 +608,24 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ],
                       );
                     },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 20.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Other',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(

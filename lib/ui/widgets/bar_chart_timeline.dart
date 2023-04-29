@@ -22,9 +22,9 @@ class HavkaBarChartPainter extends CustomPainter {
     final int valuesCount = data.length;
     final double barWidth = size.width / valuesCount;
     for (final di in data) {
-      final height = di.value / maxValue * size.height / 3.0;
+      final height = di.value / maxValue * size.height * 0.9;
       final rect = RRect.fromRectAndCorners(
-        Rect.fromLTWH(left, size.height / 1.5, barWidth * 0.9, -height),
+        Rect.fromLTWH(left, size.height * 0.9, barWidth * 0.9, -height),
         topLeft: const Radius.circular(5.0),
         topRight: const Radius.circular(5.0),
       );
@@ -48,7 +48,7 @@ class HavkaBarChartPainter extends CustomPainter {
       datePainter.layout();
       datePainter.paint(
         canvas,
-        Offset(left + barWidth * 0.9 / 2.0, size.height / 1.4) +
+        Offset(left + barWidth * 0.9 / 2.0, size.height * 0.98) +
             Offset(-datePainter.width / 2.0, -datePainter.height / 2.0),
       );
 
@@ -68,7 +68,10 @@ class HavkaBarChartPainter extends CustomPainter {
       valuePainter.layout();
       valuePainter.paint(
         canvas,
-        Offset(left + barWidth * 0.9 / 2.0, -height + size.height / 1.6) +
+        Offset(
+              left + barWidth * 0.9 / 2.0,
+              -(di.value / maxValue * size.height * 0.9) + size.height * 0.84,
+            ) +
             Offset(-valuePainter.width / 2.0, -valuePainter.height / 2.0),
       );
       left += barWidth;
@@ -190,7 +193,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
       final List<DataItem> tempWeightsData = oldWeightsData;
       const int milliseconds = 40;
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
-        if (maxDiff < 0.01) {
+        if (maxDiff < 0.1) {
           timer.cancel();
         } else {
           setState(() {
