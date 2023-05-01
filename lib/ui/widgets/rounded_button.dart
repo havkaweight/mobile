@@ -24,24 +24,21 @@ class RoundedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: TextButton(
-          focusNode: focusNode,
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 5.0),
-            backgroundColor: color,
+      child: TextButton(
+        focusNode: focusNode,
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
           ),
-          child: Text(
-            text!,
-            style: TextStyle(
-              color: textColor,
-              fontSize: Theme.of(context).textTheme.displaySmall!.fontSize,
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          backgroundColor: color,
+        ),
+        child: Text(
+          text!,
+          style: TextStyle(
+            color: textColor,
+            fontSize: Theme.of(context).textTheme.displaySmall!.fontSize,
           ),
         ),
       ),

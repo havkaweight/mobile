@@ -547,7 +547,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.2,
                           child: HavkaBarChart(
-                            initialData: userConsumption,
+                            initialData: value,
                           ),
                         ),
                       );
@@ -598,7 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               vertical: 20.0,
                             ),
                             child: SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.7,
+                              height: chartHeight,
                               width: MediaQuery.of(context).size.width * 0.7,
                               child: HavkaDonutChart(
                                 initialData: value,

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +7,17 @@ class DataItem {
   final Color color;
 
   DataItem(this.value, this.label, this.color);
+
+  DataItem.fromJson(Map<String, dynamic> json)
+      : value = json['value'] as double,
+        label = json['label'] as String,
+        color = json['color'] as Color;
+
+  Map<String, dynamic> toJson() => {
+        'value': value,
+        'label': label,
+        'color': color.toString(),
+      };
 }
 
 class DataPoint {

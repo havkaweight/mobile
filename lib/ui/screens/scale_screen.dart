@@ -19,9 +19,14 @@ import 'package:health_tracker/utils/utils.dart';
 
 class ScaleScreen extends StatefulWidget {
   final UserProduct? userProduct;
+  final List<UserConsumptionItem>? userConsumption;
   final UserDevice? userDevice;
 
-  const ScaleScreen({this.userProduct, this.userDevice});
+  const ScaleScreen({
+    this.userProduct,
+    this.userConsumption,
+    this.userDevice,
+  });
 
   @override
   _ScaleScreenState createState() => _ScaleScreenState();
@@ -106,7 +111,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
     );
 
     protein = widget.userProduct!.product!.nutrition != null
-        ? widget.userProduct!.product!.nutrition!.protein! * weight! / 100.0
+        ? widget.userProduct!.product!.nutrition!.protein! * weight! / 100
         : 0;
     fats = widget.userProduct!.product!.nutrition != null
         ? widget.userProduct!.product!.nutrition!.fat! * weight! / 100
@@ -137,7 +142,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SingleChildScrollView(
           child: SafeArea(
-            child: Center(
+            child: Align(
               child:
                   // StreamBuilder<List<int>>(
                   //     stream: flutterReactiveBle
@@ -159,80 +164,301 @@ class _ScaleScreenState extends State<ScaleScreen> {
                   Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Hero(
-                    tag: 'userProductImage-${widget.userProduct!.id}',
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 300,
-                        height: 300,
-                        margin: const EdgeInsets.only(bottom: 30.0),
-                        decoration: BoxDecoration(
-                          color: const Color(0xff7c94b6),
-                          image: widget.userProduct!.product!.img != null
-                              ? DecorationImage(
-                                  image: NetworkImage(
-                                    widget.userProduct!.product!.img!,
-                                  ),
-                                  fit: BoxFit.cover,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Hero(
+                          tag: 'userProductImage-${widget.userProduct!.id}',
+                          child: GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: widget.userProduct!.product!.img != null
+                                  ? Container(
+                                      width: 150,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff7c94b6),
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            widget.userProduct!.product!.img!,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        border: Border.all(
+                                          width: 4.0,
+                                          color: HavkaColors.kcal,
+                                        ),
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Container(
+                                        width: 150,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(50.0),
+                                          ),
+                                          border: Border.all(
+                                            width: 4.0,
+                                            color: HavkaColors.kcal,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          FontAwesomeIcons.bowlFood,
+                                          color: HavkaColors.kcal,
+                                          size: 60,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 15.0),
+                              child: Text(
+                                widget.userProduct!.product!.name!,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Table(
+                              defaultColumnWidth: const IntrinsicColumnWidth(),
+                              children: [
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 6.0),
+                                      child: Icon(
+                                        FontAwesomeIcons.dna,
+                                        size: 12,
+                                        color: HavkaColors.protein,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Protein ',
+                                      style: TextStyle(
+                                        color: HavkaColors.protein,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.userProduct!.product!.nutrition !=
+                                              null
+                                          ? widget.userProduct!.product!
+                                              .nutrition!.protein
+                                              .toString()
+                                          : '-',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HavkaColors.protein,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    Text(
+                                      widget.userProduct!.amount != null
+                                          ? ' ${widget.userProduct!.amount!.unit}'
+                                          : ' g',
+                                      style: const TextStyle(
+                                        color: HavkaColors.protein,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 6.0),
+                                      child: Icon(
+                                        FontAwesomeIcons.droplet,
+                                        size: 12,
+                                        color: HavkaColors.fat,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Fat ',
+                                      style: TextStyle(
+                                        color: HavkaColors.fat,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.userProduct!.product!.nutrition !=
+                                              null
+                                          ? widget.userProduct!.product!
+                                              .nutrition!.fat
+                                              .toString()
+                                          : '-',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HavkaColors.fat,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    Text(
+                                      widget.userProduct!.amount != null
+                                          ? ' ${widget.userProduct!.amount!.unit}'
+                                          : ' g',
+                                      style: const TextStyle(
+                                        color: HavkaColors.fat,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 6.0),
+                                      child: Icon(
+                                        FontAwesomeIcons.wheatAwn,
+                                        size: 12,
+                                        color: HavkaColors.carbs,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Carbs ',
+                                      style: TextStyle(
+                                        color: HavkaColors.carbs,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.userProduct!.product!.nutrition !=
+                                              null
+                                          ? widget.userProduct!.product!
+                                              .nutrition!.carbs
+                                              .toString()
+                                          : '-',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HavkaColors.carbs,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    Text(
+                                      widget.userProduct!.amount != null
+                                          ? ' ${widget.userProduct!.amount!.unit}'
+                                          : ' g',
+                                      style: const TextStyle(
+                                        color: HavkaColors.carbs,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    for (int i = 0; i < 4; i++)
+                                      Container(
+                                        height: 20,
+                                      )
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 6.0),
+                                      child: Icon(
+                                        FontAwesomeIcons.utensils,
+                                        size: 12,
+                                        color: HavkaColors.kcal,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Calories ',
+                                      style: TextStyle(
+                                        color: HavkaColors.kcal,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.userProduct!.product!.nutrition !=
+                                              null
+                                          ? widget.userProduct!.product!
+                                              .nutrition!.energy!.first.value
+                                              .toString()
+                                          : '-',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HavkaColors.kcal,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    const Text(
+                                      ' kcal',
+                                      style: TextStyle(
+                                        color: HavkaColors.kcal,
+                                      ),
+                                    )
+                                  ],
                                 )
-                              : null,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(50.0)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: HavkaColors.bone[100],
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 8.0,
+                        ),
+                        child: Text(
+                          'Grab your portion here',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                   ),
-                  ScreenSubHeader(text: widget.userProduct!.product!.name!),
-                  // ScreenSubHeader(text: widget.userProduct!.product!.brand ?? '-'),
+                  SizedBox(
+                    width: 300,
+                    child: RoundedTextField(
+                      errorText: weightError,
+                      focusNode: _weightFocusNode,
+                      width: 100,
+                      controller: weightController,
+                      textAlign: TextAlign.center,
+                      suffixText: widget.userProduct!.amount != null
+                          ? widget.userProduct!.amount!.unit
+                          : 'g',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^(\d+)?[\.\,]?\d{0,2}'),
+                        ),
+                        LengthLimitingTextInputFormatter(4),
+                      ],
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 200,
-                        child: RoundedTextField(
-                          errorText: weightError,
-                          focusNode: _weightFocusNode,
-                          width: 100,
-                          controller: weightController,
-                          textAlign: TextAlign.center,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^(\d+)?[\.\,]?\d{0,2}'),
-                            )
-                          ],
-                        ),
-                      ),
-                      Text(
-                        widget.userProduct!.amount != null
-                            ? widget.userProduct!.amount!.unit
-                            : ' g',
-                      )
-                    ],
-                  ),
-                  Table(
-                    defaultColumnWidth: const IntrinsicColumnWidth(),
-                    children: [
-                      TableRow(
+                      Row(
                         children: [
                           const Padding(
-                            padding: EdgeInsets.only(right: 6.0),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Icon(
                               FontAwesomeIcons.dna,
                               size: 12,
                               color: HavkaColors.protein,
                             ),
                           ),
-                          const Text(
-                            'Protein ',
-                            style: TextStyle(
-                              color: HavkaColors.protein,
-                            ),
-                          ),
                           Text(
-                            protein!.toStringAsFixed(2),
+                            protein!.toStringAsFixed(1),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: HavkaColors.protein,
@@ -249,24 +475,18 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           )
                         ],
                       ),
-                      TableRow(
+                      Row(
                         children: [
                           const Padding(
-                            padding: EdgeInsets.only(right: 6.0),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Icon(
                               FontAwesomeIcons.droplet,
                               size: 12,
                               color: HavkaColors.fat,
                             ),
                           ),
-                          const Text(
-                            'Fat ',
-                            style: TextStyle(
-                              color: HavkaColors.fat,
-                            ),
-                          ),
                           Text(
-                            fats!.toStringAsFixed(2),
+                            fats!.toStringAsFixed(1),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: HavkaColors.fat,
@@ -283,24 +503,18 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           )
                         ],
                       ),
-                      TableRow(
+                      Row(
                         children: [
                           const Padding(
-                            padding: EdgeInsets.only(right: 6.0),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Icon(
                               FontAwesomeIcons.wheatAwn,
                               size: 12,
                               color: HavkaColors.carbs,
                             ),
                           ),
-                          const Text(
-                            'Carbs ',
-                            style: TextStyle(
-                              color: HavkaColors.carbs,
-                            ),
-                          ),
                           Text(
-                            carbs!.toStringAsFixed(2),
+                            carbs!.toStringAsFixed(1),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: HavkaColors.carbs,
@@ -317,32 +531,18 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           )
                         ],
                       ),
-                      TableRow(
-                        children: [
-                          for (int i = 0; i < 4; i++)
-                            Container(
-                              height: 20,
-                            )
-                        ],
-                      ),
-                      TableRow(
+                      Row(
                         children: [
                           const Padding(
-                            padding: EdgeInsets.only(right: 6.0),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Icon(
                               FontAwesomeIcons.utensils,
                               size: 12,
                               color: HavkaColors.kcal,
                             ),
                           ),
-                          const Text(
-                            'Calories ',
-                            style: TextStyle(
-                              color: HavkaColors.kcal,
-                            ),
-                          ),
                           Text(
-                            kcal!.toStringAsFixed(2),
+                            kcal!.toStringAsFixed(1),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: HavkaColors.kcal,
@@ -396,7 +596,7 @@ class _ScaleScreenState extends State<ScaleScreen> {
                     child: Text(formatDate(selectedDateTime)),
                   ),
                   RoundedButton(
-                    text: 'Save',
+                    text: 'Add',
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                       if (weightController.text.isEmpty) {
@@ -415,7 +615,70 @@ class _ScaleScreenState extends State<ScaleScreen> {
                           userConsumptionItem: userConsumptionItem);
                       Navigator.pop(context);
                     },
-                  )
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: HavkaColors.bone[100],
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 8.0,
+                        ),
+                        child: Text(
+                          'Consumption History',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.userConsumption!.isNotEmpty)
+                    SizedBox(
+                      height: 400,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: ListView.builder(
+                          itemCount: widget.userConsumption!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final List<UserConsumptionItem> _userConsumption =
+                                widget.userConsumption!;
+                            _userConsumption.sort(
+                              (prev, next) =>
+                                  (next.consumedAt ?? next.createdAt!)
+                                      .compareTo(
+                                prev.consumedAt ?? prev.createdAt!,
+                              ),
+                            );
+                            final UserConsumptionItem userConsumptionItem =
+                                _userConsumption[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 30.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge,
+                                  ),
+                                  Text(
+                                    formatDate(
+                                      userConsumptionItem.consumedAt ??
+                                          userConsumptionItem.createdAt!,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  else
+                    const Center(child: Text('No history found')),
                 ],
               ),
               // })

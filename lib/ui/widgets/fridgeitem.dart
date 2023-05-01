@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
+import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 
 class FridgeItem extends StatefulWidget {
   final UserProduct userProduct;
+  final List<UserConsumptionItem>? userConsumption;
   final Function()? onPressed;
 
   const FridgeItem({
     super.key,
     required this.userProduct,
+    this.userConsumption,
     this.onPressed,
   });
 
@@ -69,24 +74,30 @@ class _FridgeItemState extends State<FridgeItem> {
                       children: <Widget>[
                         Hero(
                           tag: 'userProductImage-${widget.userProduct.id}',
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xff7c94b6),
-                              image: widget.userProduct.product!.img != null
-                                  ? DecorationImage(
+                          child: widget.userProduct.product!.img != null
+                              ? Container(
+                                  width: 50,
+                                  height: 50,
+                                  margin: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xff7c94b6),
+                                    image: DecorationImage(
                                       image: NetworkImage(
                                         widget.userProduct.product!.img!,
                                       ),
                                       fit: BoxFit.cover,
-                                    )
-                                  : null,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(50.0)),
-                            ),
-                          ),
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(50.0),
+                                    ),
+                                  ),
+                                )
+                              : const Center(
+                                  child: Icon(
+                                    FontAwesomeIcons.bowlFood,
+                                    color: HavkaColors.kcal,
+                                  ),
+                                ),
                         ),
                         SizedBox(
                           width: 50,
@@ -133,6 +144,7 @@ class _FridgeItemState extends State<FridgeItem> {
                       SharpPageRoute(
                         builder: (context) => ScaleScreen(
                           userProduct: widget.userProduct,
+                          userConsumption: widget.userConsumption,
                         ),
                       ),
                     );

@@ -93,7 +93,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
     proteins = widget.initialData.fold<double>(
       0,
       (sum, element) {
-        if (element.product!.nutrition!.protein != null) {
+        if (element.product!.nutrition != null) {
           return sum + element.product!.nutrition!.protein!;
         }
         return sum;
@@ -103,7 +103,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
     fats = widget.initialData.fold<double>(
       0,
       (sum, element) {
-        if (element.product!.nutrition!.fat != null) {
+        if (element.product!.nutrition != null) {
           return sum + element.product!.nutrition!.fat!;
         }
         return sum;
@@ -113,7 +113,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
     carbs = widget.initialData.fold<double>(
       0,
       (sum, element) {
-        if (element.product!.nutrition!.carbs != null) {
+        if (element.product!.nutrition != null) {
           return sum + element.product!.nutrition!.carbs!;
         }
         return sum;
@@ -148,7 +148,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double oldProteins = oldWidget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.protein != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.protein!;
           }
           return sum;
@@ -158,7 +158,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double oldFats = oldWidget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.fat != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.fat!;
           }
           return sum;
@@ -168,7 +168,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double oldCarbs = oldWidget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.carbs != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.carbs!;
           }
           return sum;
@@ -178,7 +178,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double newProteins = widget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.protein != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.protein!;
           }
           return sum;
@@ -188,7 +188,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double newFats = widget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.fat != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.fat!;
           }
           return sum;
@@ -198,7 +198,7 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
       final double newCarbs = widget.initialData.fold<double>(
         0,
         (sum, element) {
-          if (element.product!.nutrition!.carbs != null) {
+          if (element.product!.nutrition != null) {
             return sum + element.product!.nutrition!.carbs!;
           }
           return sum;

@@ -53,7 +53,7 @@ class HavkaBarChartPainter extends CustomPainter {
       );
 
       final TextSpan valueSpan = TextSpan(
-        text: di.value.toStringAsFixed(1),
+        text: di.value.toStringAsFixed(0),
         style: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
@@ -116,7 +116,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
             }
             return previousValue;
           }),
-          DateFormat('MMM dd').format(date),
+          DateFormat('MMM d').format(date),
           Colors.amber[500]!,
         ),
       );
@@ -159,7 +159,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
               }
               return previousValue;
             }),
-            DateFormat('MMM dd').format(date),
+            DateFormat('MMM d').format(date),
             Colors.amber[500]!,
           ),
         );
@@ -193,7 +193,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
       final List<DataItem> tempWeightsData = oldWeightsData;
       const int milliseconds = 40;
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
-        if (maxDiff < 0.1) {
+        if (maxDiff < 1) {
           timer.cancel();
         } else {
           setState(() {
