@@ -506,6 +506,29 @@ class ApiRoutes {
     }
   }
 
+  Future<bool> updateProduct(Product product) async {
+    try {
+      final token = await storage.read(key: 'jwt');
+      final Map<String, String> headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $token'
+      };
+      final http.Response response = await http.patch(
+        Uri.https(
+          Api.host,
+          '${Api.prefix}${Api.monolithService}${Api.products}/${product.id}',
+        ),
+        headers: headers,
+        body: jsonEncode(product.toJson()),
+      );
+      debugPrint('${response.statusCode} ${response.body}');
+      return true;
+    } catch (error) {
+      debugPrint("Error $error");
+      return false;
+    }
+  }
+
   Future<List<UserProductWeighting>> getWeightingsHistory() async {
     final token = await storage.read(key: 'jwt');
     final http.Response response = await http.get(

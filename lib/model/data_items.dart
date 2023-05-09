@@ -11,12 +11,21 @@ class DataItem {
   DataItem.fromJson(Map<String, dynamic> json)
       : value = json['value'] as double,
         label = json['label'] as String,
-        color = json['color'] as Color;
+        color = Color.fromRGBO(
+          json['color']['r'] as int,
+          json['color']['g'] as int,
+          json['color']['b'] as int,
+          1,
+        );
 
   Map<String, dynamic> toJson() => {
         'value': value,
         'label': label,
-        'color': color.toString(),
+        'color': {
+          'r': color.red,
+          'g': color.green,
+          'b': color.blue,
+        },
       };
 }
 
@@ -31,7 +40,14 @@ class PFCDataItem {
   final double value;
   final String label;
   final Color color;
-  final IconData icon;
+  final IconData? icon;
+  double radius;
 
-  PFCDataItem(this.value, this.label, this.color, this.icon);
+  PFCDataItem({
+    required this.value,
+    required this.label,
+    required this.color,
+    this.icon,
+    this.radius = 1,
+  });
 }

@@ -1,8 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/model/user.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
+import 'package:health_tracker/ui/screens/authorization.dart';
+import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 
@@ -41,6 +46,21 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
     super.dispose();
   }
 
+  void logout() {
+    setState(() {
+      removeToken();
+      final googleSignIn = GoogleSignIn(scopes: ["email", "profile"]);
+      googleSignIn.signOut();
+      googleSignIn.disconnect();
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        SharpPageRoute(builder: (context) => SignInScreen()),
+        (route) => false,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -59,6 +79,10 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
               Column(
                 children: [
                   RoundedTextField(
+                    prefixIcon: const Icon(
+                      FontAwesomeIcons.at,
+                      size: 18,
+                    ),
                     hintText: 'Username',
                     controller: _usernameTextController,
                   ),
@@ -73,7 +97,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
                   RoundedTextField(
                     prefixIcon: const Icon(
                       FontAwesomeIcons.rulerVertical,
-                      size: 20,
+                      size: 18,
                     ),
                     suffixText: 'cm',
                     hintText: 'Height',
@@ -82,13 +106,20 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
                   RoundedTextField(
                     prefixIcon: const Icon(
                       FontAwesomeIcons.weightScale,
-                      size: 20,
+                      size: 18,
                     ),
                     suffixText: 'kg',
                     hintText: 'Weight',
                     controller: _weightTextController,
                   ),
                 ],
+              ),
+              TextButton(
+                onPressed: logout,
+                child: const Text(
+                  'Log out',
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               RoundedButton(
                 text: 'Save',

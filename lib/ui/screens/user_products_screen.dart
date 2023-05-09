@@ -23,7 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 List<Map<String, String>> userProductsList = [];
 OverlayEntry? _overlayEntry;
 
-enum SortingType { dateAddedAsc, dateAddedDesc }
+enum SortingType { dateAddedDesc, dateAddedAsc }
 
 String? barcode;
 
@@ -38,7 +38,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     with SingleTickerProviderStateMixin {
   final barcodeController = TextEditingController();
   late Icon sortIcon;
-  SortingType sortingType = SortingType.dateAddedDesc;
+  late SortingType sortingType;
 
   final ApiRoutes _apiRoutes = ApiRoutes();
   late List<UserProduct> userProducts;
@@ -87,6 +87,19 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     () async {
       await _apiRoutes.getMe();
       await fetchUserConsumption();
+      final prefs = await SharedPreferences.getInstance();
+      sortingType = prefs.getString('sortingType') != null
+          ? SortingType.values.byName(prefs.getString('sortingType')!)
+          : SortingType.dateAddedDesc;
+      switch (sortingType) {
+        case SortingType.dateAddedDesc:
+          sortIcon = const Icon(Icons.south);
+          break;
+        case SortingType.dateAddedAsc:
+          sortIcon = const Icon(Icons.north);
+          break;
+      }
+      setState(() {});
       userProducts = await _apiRoutes.getUserProductsList();
       _sortList();
       userProductsListener.value = userProducts;
@@ -131,6 +144,15 @@ class _UserProductsScreenState extends State<UserProductsScreen>
         );
         break;
     }
+  }
+
+  @override
+  void dispose() {
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('sortingType', sortingType.name);
+    }();
+    super.dispose();
   }
 
   void _removeItem(UserProduct userProduct, int index, BuildContext context) {
@@ -209,24 +231,19 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: sortIcon,
-                    onPressed: () {
-                      if (sortIcon.icon == Icons.south) {
-                        sortingType = SortingType.dateAddedAsc;
-                      } else {
-                        sortingType = SortingType.dateAddedDesc;
-                      }
-                      _sortList();
-                      setState(() {});
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                  ),
-                ],
+              IconButton(
+                icon: sortIcon,
+                onPressed: () {
+                  if (sortingType == SortingType.dateAddedDesc) {
+                    sortingType = SortingType.dateAddedAsc;
+                  } else {
+                    sortingType = SortingType.dateAddedDesc;
+                  }
+                  _sortList();
+                  setState(() {});
+                },
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
               ),
             ],
           ),

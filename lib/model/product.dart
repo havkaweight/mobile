@@ -85,7 +85,7 @@ class Product {
                         .replaceAll('?', '%3F');
 
   Map<String, dynamic> toJson() => {
-        '_id': id,
+        if (id != null) '_id': id,
         'name': name,
         'brand': brand,
         'nutrition': nutrition == null

@@ -5,21 +5,21 @@ import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/product.dart';
 import 'package:health_tracker/model/product_energy.dart';
 import 'package:health_tracker/model/product_measure.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 
-class ProductAddingScreen extends StatefulWidget {
-  final String? barcode;
+class ProductUpdatingScreen extends StatefulWidget {
+  final Product product;
 
-  const ProductAddingScreen({this.barcode = ''});
-  const ProductAddingScreen.withBarcode({required this.barcode});
+  const ProductUpdatingScreen({required this.product});
 
   @override
-  _ProductAddingScreenState createState() => _ProductAddingScreenState();
+  _ProductUpdatingScreenState createState() => _ProductUpdatingScreenState();
 }
 
-class _ProductAddingScreenState extends State<ProductAddingScreen> {
+class _ProductUpdatingScreenState extends State<ProductUpdatingScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
   final TextEditingController proteinController = TextEditingController();
@@ -49,7 +49,16 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   @override
   void initState() {
     super.initState();
-    barcodeController.text = widget.barcode!;
+
+    barcodeController.text = widget.product.barcode ?? '';
+    nameController.text = widget.product.name ?? '';
+    brandController.text = widget.product.brand ?? '';
+    proteinController.text = widget.product.nutrition?.protein.toString() ?? '';
+    fatsController.text = widget.product.nutrition?.fat.toString() ?? '';
+    carbsController.text = widget.product.nutrition?.carbs.toString() ?? '';
+    energyValueController.text =
+        widget.product.nutrition?.energy?.first.value.toString() ?? '';
+
     energyUnit = energyUnits.first;
     proteinController.addListener(_changeNutritionValues);
     fatsController.addListener(_changeNutritionValues);
@@ -142,7 +151,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       child: Hero(
                         tag: "product-add",
                         child: FaIcon(
-                          FontAwesomeIcons.squarePlus,
+                          FontAwesomeIcons.squarePen,
                           color: HavkaColors.green,
                           size: 80,
                         ),
@@ -297,7 +306,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                     RoundedButton(
                       text: 'Done',
                       onPressed: () {
-                        _addProduct();
+                        _updateProduct();
                         Navigator.pop(context);
                       },
                     ),
@@ -319,8 +328,9 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
     }
   }
 
-  void _addProduct() {
+  void _updateProduct() {
     final Product product = Product(
+      id: widget.product.id,
       name: nameController.text,
       brand: brandController.text,
       nutrition: ProductNutrition(
@@ -345,7 +355,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
       ),
       barcode: barcodeController.text,
     );
-    _apiRoutes.addProduct(product);
+    _apiRoutes.updateProduct(product);
   }
 
   Future _buildBarcodeScanner() {

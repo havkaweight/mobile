@@ -18,7 +18,7 @@ class HavkaBarChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     double left = 0.0;
-    final double maxValue = data.map((di) => di.value).reduce(max);
+    final double maxValue = max(data.map((di) => di.value).reduce(max), 5);
     final int valuesCount = data.length;
     final double barWidth = size.width / valuesCount;
     for (final di in data) {
@@ -83,7 +83,7 @@ class HavkaBarChartPainter extends CustomPainter {
 }
 
 class HavkaBarChart extends StatefulWidget {
-  final List<UserConsumptionItem> initialData;
+  final List<DataItem> initialData;
   const HavkaBarChart({required this.initialData});
 
   @override
@@ -91,36 +91,12 @@ class HavkaBarChart extends StatefulWidget {
 }
 
 class _HavkaBarChartState extends State<HavkaBarChart> {
-  late List<DataItem> weightsData;
-  late List<DateTime> datesPeriod;
+  late List<DataItem> data;
 
   @override
   void initState() {
     super.initState();
-    final DateTime currentDate = DateTime.now();
-    final DateTime maxDate =
-        DateTime(currentDate.year, currentDate.month, currentDate.day);
-    final DateTime minDate = maxDate.subtract(const Duration(days: 6));
-    datesPeriod = getDaysInBetween(minDate, maxDate);
-    weightsData = [];
-    for (final DateTime date in datesPeriod) {
-      weightsData.add(
-        DataItem(
-          widget.initialData.fold(0, (previousValue, element) {
-            if ((element.consumedAt ?? element.createdAt)!
-                        .difference(date)
-                        .inDays ==
-                    0 &&
-                (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
-              return previousValue += element.amount!.value;
-            }
-            return previousValue;
-          }),
-          DateFormat('MMM d').format(date),
-          Colors.amber[500]!,
-        ),
-      );
-    }
+    data = widget.initialData;
   }
 
   @override
@@ -128,7 +104,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: CustomPaint(
-        painter: HavkaBarChartPainter(data: weightsData),
+        painter: HavkaBarChartPainter(data: data),
         child: Container(
           height: 40,
         ),
@@ -140,50 +116,9 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
   void didUpdateWidget(covariant HavkaBarChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialData != oldWidget.initialData) {
-      final List<DataItem> oldWeightsData = [];
-      final DateTime currentDate = DateTime.now();
-      final DateTime maxDate =
-          DateTime(currentDate.year, currentDate.month, currentDate.day);
-      final DateTime minDate = maxDate.subtract(const Duration(days: 6));
-      datesPeriod = getDaysInBetween(minDate, maxDate);
-      for (final DateTime date in datesPeriod) {
-        oldWeightsData.add(
-          DataItem(
-            oldWidget.initialData.fold(0, (previousValue, element) {
-              if ((element.consumedAt ?? element.createdAt)!
-                          .difference(date)
-                          .inDays ==
-                      0 &&
-                  (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
-                return previousValue += element.amount!.value;
-              }
-              return previousValue;
-            }),
-            DateFormat('MMM d').format(date),
-            Colors.amber[500]!,
-          ),
-        );
-      }
+      final List<DataItem> oldWeightsData = oldWidget.initialData;
+      final List<DataItem> newWeightsData = widget.initialData;
 
-      final List<DataItem> newWeightsData = [];
-      for (final DateTime date in datesPeriod) {
-        newWeightsData.add(
-          DataItem(
-            widget.initialData.fold(0, (previousValue, element) {
-              if ((element.consumedAt ?? element.createdAt)!
-                          .difference(date)
-                          .inDays ==
-                      0 &&
-                  (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
-                return previousValue += element.amount!.value;
-              }
-              return previousValue;
-            }),
-            DateFormat('MMM dd').format(date),
-            Colors.amber[500]!,
-          ),
-        );
-      }
       final List<double> weightsDiff = [
         for (int i = 0; i < oldWeightsData.length; i++)
           newWeightsData[i].value - oldWeightsData[i].value
@@ -203,7 +138,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
                       milliseconds *
                       10;
             }
-            weightsData = tempWeightsData;
+            data = tempWeightsData;
           });
         }
       });

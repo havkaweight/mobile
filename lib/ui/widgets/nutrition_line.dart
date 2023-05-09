@@ -7,28 +7,28 @@ import 'package:health_tracker/model/product.dart';
 Widget buildNutritionLine(ProductNutrition? nutritionData) {
   final List<PFCDataItem> nutritionDataList = [
     PFCDataItem(
-      nutritionData!.protein ?? 0,
-      "Protein",
-      HavkaColors.protein,
-      FontAwesomeIcons.dna,
+      value: nutritionData!.protein ?? 0,
+      label: "Protein",
+      color: HavkaColors.protein,
+      icon: FontAwesomeIcons.dna,
     ),
     PFCDataItem(
-      nutritionData.fat ?? 0,
-      "Fat",
-      HavkaColors.fat,
-      FontAwesomeIcons.droplet,
+      value: nutritionData.fat ?? 0,
+      label: "Fat",
+      color: HavkaColors.fat,
+      icon: FontAwesomeIcons.droplet,
     ),
     PFCDataItem(
-      nutritionData.carbs ?? 0,
-      "Carbs",
-      HavkaColors.carbs,
-      FontAwesomeIcons.wheatAwn,
+      value: nutritionData.carbs ?? 0,
+      label: "Carbs",
+      color: HavkaColors.carbs,
+      icon: FontAwesomeIcons.wheatAwn,
     ),
     PFCDataItem(
-      nutritionData.energy?.first.value ?? 0,
-      "Kcal",
-      HavkaColors.kcal,
-      FontAwesomeIcons.utensils,
+      value: nutritionData.energy?.first.value ?? 0,
+      label: "Kcal",
+      color: HavkaColors.kcal,
+      icon: FontAwesomeIcons.utensils,
     ),
   ];
   return ListView.builder(

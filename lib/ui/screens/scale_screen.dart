@@ -12,6 +12,8 @@ import 'package:health_tracker/model/product_amount.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_device.dart';
 import 'package:health_tracker/model/user_product.dart';
+import 'package:health_tracker/routes/sharp_page_route.dart';
+import 'package:health_tracker/ui/screens/product_updating_screen.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
@@ -171,65 +173,88 @@ class _ScaleScreenState extends State<ScaleScreen> {
                     ),
                     child: Row(
                       children: [
-                        Hero(
-                          tag: 'userProductImage-${widget.userProduct!.id}',
-                          child: GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: widget.userProduct!.product!.img != null
-                                  ? Container(
-                                      width: 150,
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xff7c94b6),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            widget.userProduct!.product!.img!,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(50.0),
-                                        ),
-                                        border: Border.all(
-                                          width: 4.0,
-                                          color: HavkaColors.kcal,
-                                        ),
-                                      ),
-                                    )
-                                  : Center(
-                                      child: Container(
-                                        width: 150,
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(50.0),
-                                          ),
-                                          border: Border.all(
-                                            width: 4.0,
-                                            color: HavkaColors.kcal,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          FontAwesomeIcons.bowlFood,
-                                          color: HavkaColors.kcal,
-                                          size: 60,
-                                        ),
-                                      ),
-                                    ),
+                        Column(
+                          children: [
+                            Hero(
+                              tag: 'userProductImage-${widget.userProduct!.id}',
+                              child: GestureDetector(
+                                onTap: () => Navigator.pop(context),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0),
+                                  child:
+                                      widget.userProduct!.product!.img != null
+                                          ? Container(
+                                              width: 150,
+                                              height: 150,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xff7c94b6),
+                                                image: DecorationImage(
+                                                  image: NetworkImage(
+                                                    widget.userProduct!.product!
+                                                        .img!,
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                  Radius.circular(50.0),
+                                                ),
+                                                border: Border.all(
+                                                  width: 4.0,
+                                                  color: HavkaColors.kcal,
+                                                ),
+                                              ),
+                                            )
+                                          : Center(
+                                              child: Container(
+                                                width: 150,
+                                                height: 150,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                    Radius.circular(50.0),
+                                                  ),
+                                                  border: Border.all(
+                                                    width: 4.0,
+                                                    color: HavkaColors.kcal,
+                                                  ),
+                                                ),
+                                                child: const Icon(
+                                                  FontAwesomeIcons.bowlFood,
+                                                  color: HavkaColors.kcal,
+                                                  size: 60,
+                                                ),
+                                              ),
+                                            ),
+                                ),
+                              ),
                             ),
-                          ),
+                            TextButton(
+                              child: const Text('Edit'),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductUpdatingScreen(
+                                      product: widget.userProduct!.product!,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(bottom: 15.0),
                               child: Text(
-                                widget.userProduct!.product!.name!,
+                                showUsername(
+                                  widget.userProduct!.product!.name!,
+                                ),
                                 style: const TextStyle(
-                                  fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -593,7 +618,24 @@ class _ScaleScreenState extends State<ScaleScreen> {
                         },
                       );
                     },
-                    child: Text(formatDate(selectedDateTime)),
+                    child: SizedBox(
+                      width: 180,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                CupertinoIcons.calendar,
+                                // FontAwesomeIcons.calendar,
+                                size: 22,
+                              ),
+                            ),
+                            Text(
+                              formatDate(selectedDateTime),
+                            ),
+                          ]),
+                    ),
                   ),
                   RoundedButton(
                     text: 'Add',

@@ -55,16 +55,23 @@ class _ProfileScreenState extends State<ProfileScreen>
   late List<PFCDataItem> nutritionData;
   late int numberOfUserProducts;
   late ValueNotifier<List<UserProduct>?> userProductsListener;
+  late ValueNotifier<List<PFCDataItem>?> nutritionFactsListener;
+
+  // late User? user;
+  late ValueNotifier<User?> userListener;
 
   late List<UserConsumptionItem> userConsumption;
-  late ValueNotifier<List<UserConsumptionItem>?> userConsumptionListener;
+  late ValueNotifier<List<DataItem>?> userDailyKcalListener;
 
   @override
   void initState() {
     super.initState();
+    userListener = ValueNotifier<User?>(null);
     userProductsListener = ValueNotifier<List<UserProduct>?>(null);
-    userConsumptionListener = ValueNotifier<List<UserConsumptionItem>?>(null);
+    nutritionFactsListener = ValueNotifier<List<PFCDataItem>?>(null);
+    userDailyKcalListener = ValueNotifier<List<DataItem>?>(null);
     () async {
+      userListener.value = await _apiRoutes.getMe();
       await fetchUserProducts();
       await fetchUserConsumption();
     }();
@@ -74,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     super.dispose();
     userProductsListener.dispose();
-    userConsumptionListener.dispose();
+    userDailyKcalListener.dispose();
     // WidgetsBinding.instance.removeObserver(this);
   }
 
@@ -86,19 +93,86 @@ class _ProfileScreenState extends State<ProfileScreen>
   //   print(_notification);
   // }
 
-  void logout() {
-    setState(() {
-      removeToken();
-      final googleSignIn = GoogleSignIn(scopes: ["email", "profile"]);
-      googleSignIn.signOut();
-      googleSignIn.disconnect();
+  List<PFCDataItem> extractNutritionFacts(List<UserProduct> userProducts) {
+    final proteins = userProducts.fold<double>(
+      0,
+      (sum, element) {
+        if (element.product!.nutrition != null) {
+          return sum + element.product!.nutrition!.protein!;
+        }
+        return sum;
+      },
+    );
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        SharpPageRoute(builder: (context) => SignInScreen()),
-        (route) => false,
+    final fats = userProducts.fold<double>(
+      0,
+      (sum, element) {
+        if (element.product!.nutrition != null) {
+          return sum + element.product!.nutrition!.fat!;
+        }
+        return sum;
+      },
+    );
+
+    final carbs = userProducts.fold<double>(
+      0,
+      (sum, element) {
+        if (element.product!.nutrition != null) {
+          return sum + element.product!.nutrition!.carbs!;
+        }
+        return sum;
+      },
+    );
+    final nutritionData = [
+      PFCDataItem(
+        value: proteins,
+        label: "Protein",
+        color: HavkaColors.protein,
+        icon: FontAwesomeIcons.dna,
+      ),
+      PFCDataItem(
+        value: fats,
+        label: "Fat",
+        color: HavkaColors.fat,
+        icon: FontAwesomeIcons.droplet,
+      ),
+      PFCDataItem(
+        value: carbs,
+        label: "Carbs",
+        color: HavkaColors.carbs,
+        icon: FontAwesomeIcons.wheatAwn,
+      ),
+    ];
+    return nutritionData;
+  }
+
+  List<DataItem> extractDailyKcals(List<UserConsumptionItem> userConsumption) {
+    final DateTime currentDate = DateTime.now();
+    final DateTime maxDate =
+        DateTime(currentDate.year, currentDate.month, currentDate.day);
+    final DateTime minDate = maxDate.subtract(const Duration(days: 6));
+    final List<DateTime> datesPeriod = getDaysInBetween(minDate, maxDate);
+    final List<DataItem> data = [];
+    for (final DateTime date in datesPeriod) {
+      data.add(
+        DataItem(
+          userConsumption.fold(0, (previousValue, element) {
+            if ((element.consumedAt ?? element.createdAt)!
+                        .difference(date)
+                        .inDays ==
+                    0 &&
+                (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
+              return previousValue +=
+                  element.product!.nutrition!.energy!.first.value;
+            }
+            return previousValue;
+          }),
+          DateFormat('MMM d').format(date),
+          Colors.amber[500]!,
+        ),
       );
-    });
+    }
+    return data;
   }
 
   Future<void> fetchUserProducts() async {
@@ -113,7 +187,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         },
       ).toList();
       userProducts = newUserProducts;
-      userProductsListener.value = userProducts!;
+      nutritionFactsListener.value = extractNutritionFacts(userProducts);
+      // nutritionFactsListener.value =
       final double proteins = userProducts.fold<double>(
         0.0,
         (sum, element) {
@@ -146,22 +221,22 @@ class _ProfileScreenState extends State<ProfileScreen>
       );
       nutritionData = [
         PFCDataItem(
-          proteins,
-          "Protein",
-          HavkaColors.protein,
-          FontAwesomeIcons.dna,
+          value: proteins,
+          label: "Protein",
+          color: HavkaColors.protein,
+          icon: FontAwesomeIcons.dna,
         ),
         PFCDataItem(
-          fats,
-          "Fat",
-          HavkaColors.fat,
-          FontAwesomeIcons.droplet,
+          value: fats,
+          label: "Fat",
+          color: HavkaColors.fat,
+          icon: FontAwesomeIcons.droplet,
         ),
         PFCDataItem(
-          carbs,
-          "Carbs",
-          HavkaColors.carbs,
-          FontAwesomeIcons.wheatAwn,
+          value: carbs,
+          label: "Carbs",
+          color: HavkaColors.carbs,
+          icon: FontAwesomeIcons.wheatAwn,
         ),
       ];
       numberOfUserProducts = userProducts.length;
@@ -171,31 +246,29 @@ class _ProfileScreenState extends State<ProfileScreen>
       jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
       flush: true,
     );
-    userProductsListener.value = userProducts;
+    nutritionFactsListener.value = extractNutritionFacts(userProducts);
   }
 
   Future<void> fetchUserConsumption() async {
-    const String fileName = "userConsumption.json";
+    const String fileName = "userDailyKcals.json";
     final dir = await getTemporaryDirectory();
     final File file = File("${dir.path}/$fileName");
     if (file.existsSync()) {
       final jsonData = jsonDecode(file.readAsStringSync()) as List;
-      final List<UserConsumptionItem> newUserConsumption =
-          jsonData.map<UserConsumptionItem>(
+      final List<DataItem> newDailyKcals = jsonData.map<DataItem>(
         (json) {
-          return UserConsumptionItem.fromJson(json as Map<String, dynamic>);
+          return DataItem.fromJson(json as Map<String, dynamic>);
         },
       ).toList();
-      userConsumption = newUserConsumption;
-      userConsumptionListener.value = userConsumption;
+      userDailyKcalListener.value = newDailyKcals;
     }
     userConsumption = await _apiRoutes.getUserConsumption();
+    userDailyKcalListener.value = extractDailyKcals(userConsumption);
     file.writeAsStringSync(
       jsonEncode(
-          [for (UserConsumptionItem uci in userConsumption) uci.toJson()]),
+          [for (DataItem di in userDailyKcalListener.value!) di.toJson()]),
       flush: true,
     );
-    userConsumptionListener.value = userConsumption;
   }
 
   @override
@@ -238,12 +311,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  FutureBuilder(
-                    future: _apiRoutes.getMe(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<User> snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        // return const Center(child: HavkaProgressIndicator());
+                  ValueListenableBuilder(
+                    valueListenable: userListener,
+                    builder: (BuildContext context, User? user, _) {
+                      if (user == null) {
                         return Container(
                           padding: const EdgeInsets.all(20.0),
                           child: Row(
@@ -252,8 +323,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  height: 150,
-                                  width: 150,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   color: HavkaColors.bone[100],
                                 ),
                               ),
@@ -351,9 +424,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         );
                       }
-                      if (!snapshot.hasData) {
-                        return const Center(child: HavkaProgressIndicator());
-                      }
                       return Container(
                         padding: const EdgeInsets.all(20.0),
                         child: Row(
@@ -397,7 +467,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   Row(
                                     children: [
                                       Text(
-                                        showUsername(snapshot.data!.username!),
+                                        showUsername(
+                                          '@${user.username!}',
+                                        ),
                                         style: Theme.of(context)
                                             .textTheme
                                             .displayLarge,
@@ -409,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   ProfileEditingScreen(
-                                                user: snapshot.data!,
+                                                user: user,
                                               ),
                                             ),
                                           );
@@ -444,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 0,
                                               ),
                                               child: Text(
-                                                '${snapshot.data!.bodyStats!.height!.value!.toInt()} cm',
+                                                '${user.bodyStats!.height!.value!.toInt()} cm',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .displayMedium,
@@ -468,7 +540,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 0,
                                               ),
                                               child: Text(
-                                                '${snapshot.data!.bodyStats!.weight!.value} kg',
+                                                '${user.bodyStats!.weight!.value} kg',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .displayMedium,
@@ -530,14 +602,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   ),
                   ValueListenableBuilder(
-                    valueListenable: userConsumptionListener,
+                    valueListenable: userDailyKcalListener,
                     builder: (
                       BuildContext context,
-                      List<UserConsumptionItem>? value,
+                      List<DataItem>? value,
                       _,
                     ) {
+                      late List<DataItem> userDailyKcal;
                       if (value == null) {
                         return const Center(child: HavkaProgressIndicator());
+                      } else {
+                        userDailyKcal = value;
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(
@@ -547,7 +622,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.2,
                           child: HavkaBarChart(
-                            initialData: value,
+                            initialData: userDailyKcal,
                           ),
                         ),
                       );
@@ -572,10 +647,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   ),
                   ValueListenableBuilder(
-                    valueListenable: userProductsListener,
+                    valueListenable: nutritionFactsListener,
                     builder: (
                       BuildContext context,
-                      List<UserProduct>? value,
+                      List<PFCDataItem>? value,
                       _,
                     ) {
                       if (value == null) {
@@ -640,10 +715,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: Container(),
                       ),
                     ),
-                  ),
-                  RoundedButton(
-                    text: 'Log out',
-                    onPressed: logout,
                   ),
                 ],
               ),

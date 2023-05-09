@@ -104,22 +104,22 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
     );
     nutritionData = [
       PFCDataItem(
-        proteins,
-        "Protein",
-        HavkaColors.protein,
-        FontAwesomeIcons.dna,
+        value: proteins,
+        label: "Protein",
+        color: HavkaColors.protein,
+        icon: FontAwesomeIcons.dna,
       ),
       PFCDataItem(
-        fats,
-        "Fat",
-        HavkaColors.fat,
-        FontAwesomeIcons.droplet,
+        value: fats,
+        label: "Fat",
+        color: HavkaColors.fat,
+        icon: FontAwesomeIcons.droplet,
       ),
       PFCDataItem(
-        carbs,
-        "Carbs",
-        HavkaColors.carbs,
-        FontAwesomeIcons.wheatAwn,
+        value: carbs,
+        label: "Carbs",
+        color: HavkaColors.carbs,
+        icon: FontAwesomeIcons.wheatAwn,
       ),
     ];
   }
@@ -271,22 +271,22 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
             carbs = tempCarbs;
             nutritionData = [
               PFCDataItem(
-                proteins,
-                "Protein",
-                HavkaColors.protein,
-                FontAwesomeIcons.dna,
+                value: proteins,
+                label: "Protein",
+                color: HavkaColors.protein,
+                icon: FontAwesomeIcons.dna,
               ),
               PFCDataItem(
-                fats,
-                "Fat",
-                HavkaColors.fat,
-                FontAwesomeIcons.droplet,
+                value: fats,
+                label: "Fat",
+                color: HavkaColors.fat,
+                icon: FontAwesomeIcons.droplet,
               ),
               PFCDataItem(
-                carbs,
-                "Carbs",
-                HavkaColors.carbs,
-                FontAwesomeIcons.wheatAwn,
+                value: carbs,
+                label: "Carbs",
+                color: HavkaColors.carbs,
+                icon: FontAwesomeIcons.wheatAwn,
               ),
             ];
           });

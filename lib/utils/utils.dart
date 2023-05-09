@@ -18,11 +18,11 @@ String formatDate(DateTime dateTime) {
 }
 
 String showUsername(String username) {
-  const showingLength = 13;
+  const showingLength = 20;
   if (username.length > showingLength) {
-    return '@${username.substring(0, showingLength)}...';
+    return '${username.substring(0, showingLength)}...';
   }
-  return '@$username';
+  return username;
 }
 
 List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
