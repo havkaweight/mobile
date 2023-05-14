@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
+import 'package:health_tracker/model/user_product.dart';
 import 'package:intl/intl.dart';
 
 String formatDate(DateTime dateTime) {
@@ -34,7 +37,8 @@ List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
 }
 
 List<DataItem> userConsumptionToBarChartData(
-    List<UserConsumptionItem> userConsumption) {
+  List<UserConsumptionItem> userConsumption,
+) {
   final DateTime currentDate = DateTime.now();
   final DateTime maxDate =
       DateTime(currentDate.year, currentDate.month, currentDate.day);
@@ -60,4 +64,66 @@ List<DataItem> userConsumptionToBarChartData(
     );
   }
   return weightsData;
+}
+
+List<PFCDataItem> extractNutritionFacts(List<UserProduct> userProducts) {
+  final proteins = userProducts.fold<double>(
+    0,
+    (sum, element) {
+      if (element.product!.nutrition != null) {
+        return sum +
+            element.product!.nutrition!.protein! /
+                100 *
+                (element.amount!.value > 0 ? element.amount!.value : 0);
+      }
+      return sum;
+    },
+  );
+
+  final fats = userProducts.fold<double>(
+    0,
+    (sum, element) {
+      if (element.product!.nutrition != null) {
+        return sum +
+            element.product!.nutrition!.fat! /
+                100 *
+                (element.amount!.value > 0 ? element.amount!.value : 0);
+      }
+      return sum;
+    },
+  );
+
+  final carbs = userProducts.fold<double>(
+    0,
+    (sum, element) {
+      if (element.product!.nutrition != null) {
+        return sum +
+            element.product!.nutrition!.carbs! /
+                100 *
+                (element.amount!.value > 0 ? element.amount!.value : 0);
+      }
+      return sum;
+    },
+  );
+  final nutritionData = [
+    PFCDataItem(
+      value: proteins,
+      label: "Protein",
+      color: HavkaColors.protein,
+      icon: FontAwesomeIcons.dna,
+    ),
+    PFCDataItem(
+      value: fats,
+      label: "Fat",
+      color: HavkaColors.fat,
+      icon: FontAwesomeIcons.droplet,
+    ),
+    PFCDataItem(
+      value: carbs,
+      label: "Carbs",
+      color: HavkaColors.carbs,
+      icon: FontAwesomeIcons.wheatAwn,
+    ),
+  ];
+  return nutritionData;
 }

@@ -88,38 +88,35 @@ class _ModalScaleState extends State<ModalScale> with TickerProviderStateMixin {
                   }
                 });
               },
-              child: Container(
-                height: 75,
-                width: 150,
-                decoration: BoxDecoration(
-                  boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 50.0,
-                      spreadRadius: 1.0,
-                      color: Colors.black38,
-                    )
-                  ],
-                  color: HavkaColors.bone[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: StreamBuilder(
-                    stream: Stream.periodic(
-                      const Duration(seconds: 1),
-                      (_) => Random().nextInt(300),
+              child: PhysicalModel(
+                color: HavkaColors.cream,
+                elevation: 10,
+                child: Container(
+                  height: 75,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: HavkaColors.bone[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: StreamBuilder(
+                      stream: Stream.periodic(
+                        const Duration(seconds: 1),
+                        (_) => Random().nextInt(300),
+                      ),
+                      builder: (context, snapshot) {
+                        return Text(
+                          '${snapshot.data ?? 10}g',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.none,
+                          ),
+                        );
+                      },
                     ),
-                    builder: (context, snapshot) {
-                      return Text(
-                        '${snapshot.data ?? 10}g',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                        ),
-                      );
-                    },
                   ),
                 ),
               ),

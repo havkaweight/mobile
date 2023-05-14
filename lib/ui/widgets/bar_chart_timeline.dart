@@ -37,7 +37,7 @@ class HavkaBarChartPainter extends CustomPainter {
         text: di.label,
         style: const TextStyle(
           color: Colors.black,
-          fontSize: 12,
+          fontSize: 11,
         ),
       );
       final TextPainter datePainter = TextPainter(
@@ -126,7 +126,7 @@ class _HavkaBarChartState extends State<HavkaBarChart> {
       final double maxDiff = weightsDiff
           .reduce((value, element) => max(value.abs(), element.abs()));
       final List<DataItem> tempWeightsData = oldWeightsData;
-      const int milliseconds = 40;
+      const int milliseconds = 30;
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
         if (maxDiff < 1) {
           timer.cancel();

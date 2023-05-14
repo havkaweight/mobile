@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:async/async.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -29,6 +30,8 @@ import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
 import 'package:health_tracker/ui/widgets/bar_chart_timeline.dart';
 import 'package:health_tracker/ui/widgets/donut_chart.dart';
+import 'package:health_tracker/ui/widgets/progress_bar.dart';
+import 'package:health_tracker/ui/widgets/slider.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/line_chart.dart';
 import 'package:health_tracker/ui/widgets/progress_indicator.dart';
@@ -56,32 +59,39 @@ class _ProfileScreenState extends State<ProfileScreen>
   late int numberOfUserProducts;
   late ValueNotifier<List<UserProduct>?> userProductsListener;
   late ValueNotifier<List<PFCDataItem>?> nutritionFactsListener;
-
-  // late User? user;
   late ValueNotifier<User?> userListener;
-
   late List<UserConsumptionItem> userConsumption;
   late ValueNotifier<List<DataItem>?> userDailyKcalListener;
+  late ValueNotifier<double> progressBarValueNotifier;
+  late Future<void> _myFuture;
+  late CancelableOperation _cancelOperation;
 
   @override
   void initState() {
     super.initState();
+    progressBarValueNotifier = ValueNotifier<double>(0.5);
     userListener = ValueNotifier<User?>(null);
     userProductsListener = ValueNotifier<List<UserProduct>?>(null);
     nutritionFactsListener = ValueNotifier<List<PFCDataItem>?>(null);
     userDailyKcalListener = ValueNotifier<List<DataItem>?>(null);
-    () async {
+    _myFuture = () async {
       userListener.value = await _apiRoutes.getMe();
       await fetchUserProducts();
       await fetchUserConsumption();
     }();
+    _cancelOperation =
+        CancelableOperation.fromFuture(_myFuture, onCancel: () {});
   }
 
   @override
   void dispose() {
     super.dispose();
+    _cancelOperation.cancel();
     userProductsListener.dispose();
     userDailyKcalListener.dispose();
+    nutritionFactsListener.dispose();
+    userListener.dispose();
+    progressBarValueNotifier.dispose();
     // WidgetsBinding.instance.removeObserver(this);
   }
 
@@ -92,59 +102,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   //   setState(() { _notification = state; });
   //   print(_notification);
   // }
-
-  List<PFCDataItem> extractNutritionFacts(List<UserProduct> userProducts) {
-    final proteins = userProducts.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.protein!;
-        }
-        return sum;
-      },
-    );
-
-    final fats = userProducts.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.fat!;
-        }
-        return sum;
-      },
-    );
-
-    final carbs = userProducts.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.carbs!;
-        }
-        return sum;
-      },
-    );
-    final nutritionData = [
-      PFCDataItem(
-        value: proteins,
-        label: "Protein",
-        color: HavkaColors.protein,
-        icon: FontAwesomeIcons.dna,
-      ),
-      PFCDataItem(
-        value: fats,
-        label: "Fat",
-        color: HavkaColors.fat,
-        icon: FontAwesomeIcons.droplet,
-      ),
-      PFCDataItem(
-        value: carbs,
-        label: "Carbs",
-        color: HavkaColors.carbs,
-        icon: FontAwesomeIcons.wheatAwn,
-      ),
-    ];
-    return nutritionData;
-  }
 
   List<DataItem> extractDailyKcals(List<UserConsumptionItem> userConsumption) {
     final DateTime currentDate = DateTime.now();
@@ -188,58 +145,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       ).toList();
       userProducts = newUserProducts;
       nutritionFactsListener.value = extractNutritionFacts(userProducts);
-      // nutritionFactsListener.value =
-      final double proteins = userProducts.fold<double>(
-        0.0,
-        (sum, element) {
-          if (element.product!.nutrition != null &&
-              element.product!.nutrition!.protein != null) {
-            return sum + element.product!.nutrition!.protein!;
-          }
-          return sum;
-        },
-      );
-      final double fats = userProducts.fold<double>(
-        0.0,
-        (sum, element) {
-          if (element.product!.nutrition != null &&
-              element.product!.nutrition!.fat != null) {
-            return sum + element.product!.nutrition!.fat!;
-          }
-          return sum;
-        },
-      );
-      final double carbs = userProducts.fold<double>(
-        0.0,
-        (sum, element) {
-          if (element.product!.nutrition != null &&
-              element.product!.nutrition!.carbs != null) {
-            return sum + element.product!.nutrition!.carbs!;
-          }
-          return sum;
-        },
-      );
-      nutritionData = [
-        PFCDataItem(
-          value: proteins,
-          label: "Protein",
-          color: HavkaColors.protein,
-          icon: FontAwesomeIcons.dna,
-        ),
-        PFCDataItem(
-          value: fats,
-          label: "Fat",
-          color: HavkaColors.fat,
-          icon: FontAwesomeIcons.droplet,
-        ),
-        PFCDataItem(
-          value: carbs,
-          label: "Carbs",
-          color: HavkaColors.carbs,
-          icon: FontAwesomeIcons.wheatAwn,
-        ),
-      ];
-      numberOfUserProducts = userProducts.length;
     }
     userProducts = await _apiRoutes.getUserProductsList();
     file.writeAsStringSync(
@@ -664,7 +569,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               vertical: 10.0,
                             ),
                             child: HavkaStackBarChart(
-                              initialData: userProducts,
+                              initialData: value,
+                              onTapBar: (_) {},
                             ),
                           ),
                           Padding(

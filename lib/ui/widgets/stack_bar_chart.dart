@@ -1,20 +1,25 @@
 import 'dart:async';
-
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/constants/colors.dart';
-
 import 'package:health_tracker/model/data_items.dart';
+import 'package:health_tracker/model/user_product.dart';
 
-import '../../model/user_product.dart';
-
-class HavkaStackBarChartPainter extends CustomPainter {
+class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
   final List<PFCDataItem> nutritionData;
-  HavkaStackBarChartPainter({required this.nutritionData});
+  final Function(int)? onTapBar;
+  HavkaStackBarChartPainter({
+    required this.nutritionData,
+    this.onTapBar,
+  });
+
+  late List<Path> bars;
 
   @override
   void paint(Canvas canvas, Size size) {
+    bars = [];
     final linePaint = Paint()
       ..strokeWidth = 6
       ..style = PaintingStyle.stroke
@@ -27,7 +32,12 @@ class HavkaStackBarChartPainter extends CustomPainter {
     for (final di in nutritionData) {
       final double barWidth = di.value / valuesSum * size.width;
       final rect = RRect.fromRectAndCorners(
-        Rect.fromLTWH(left, 0, barWidth, size.height),
+        Rect.fromLTWH(
+          left,
+          (size.height - size.height * di.radius) / 2.0,
+          barWidth,
+          size.height * di.radius,
+        ),
         topLeft:
             di == nutritionData.first ? const Radius.circular(10) : Radius.zero,
         bottomLeft:
@@ -41,6 +51,7 @@ class HavkaStackBarChartPainter extends CustomPainter {
         ..style = PaintingStyle.fill
         ..color = di.color;
       canvas.drawRRect(rect, barPaint);
+      bars.add(Path()..addRRect(rect));
       left += barWidth;
       if (di != nutritionData.last) {
         canvas.drawLine(
@@ -54,74 +65,93 @@ class HavkaStackBarChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant HavkaStackBarChartPainter oldDelegate) => true;
+
+  @override
+  bool hitTest(Offset position) {
+    final List<double> oldRadiuses =
+        nutritionData.map((e) => e.radius).toList();
+
+    final state =
+        nutritionData.fold<double>(0, (sum, element) => sum + element.radius);
+    for (final Path bar in bars) {
+      if (bar.contains(position)) {
+        if (state > 2.9 || nutritionData[bars.indexOf(bar)].radius < 0.9) {
+          onTapBar!(bars.indexOf(bar));
+          for (final Path b in bars) {
+            if (b != bar) {
+              nutritionData[bars.indexOf(b)].radius = 0.7;
+            } else {
+              nutritionData[bars.indexOf(b)].radius = 1.0;
+            }
+          }
+        } else {
+          onTapBar!(-1);
+          for (final Path b in bars) {
+            nutritionData[bars.indexOf(b)].radius = 1.0;
+          }
+        }
+      }
+    }
+
+    final List<double> newRadiuses =
+        nutritionData.map((e) => e.radius).toList();
+
+    final List<double> tempRadiuses = oldRadiuses;
+    const int milliseconds = 30;
+    Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
+      if ((newRadiuses
+                      .asMap()
+                      .map(
+                        (int index, double doub) =>
+                            MapEntry(index, doub * pow(10, index)),
+                      )
+                      .values
+                      .toList()
+                      .fold<double>(0, (sum, el) => sum + el) -
+                  tempRadiuses
+                      .asMap()
+                      .map(
+                        (int index, double doub) =>
+                            MapEntry(index, doub * pow(10, index)),
+                      )
+                      .values
+                      .toList()
+                      .fold<double>(0, (sum, el) => sum + el))
+              .abs() <
+          0.01) {
+        timer.cancel();
+      } else {
+        for (int i = 0; i < tempRadiuses.length; i++) {
+          tempRadiuses[i] = tempRadiuses[i] +
+              (newRadiuses[i] - tempRadiuses[i]) / milliseconds * 10;
+          nutritionData[i].radius = tempRadiuses[i];
+          notifyListeners();
+        }
+      }
+    });
+    return true;
+  }
 }
 
 class HavkaStackBarChart extends StatefulWidget {
-  final List<UserProduct> initialData;
-  const HavkaStackBarChart({required this.initialData});
+  final List<PFCDataItem> initialData;
+  final Function(int)? onTapBar;
+  const HavkaStackBarChart({
+    required this.initialData,
+    this.onTapBar,
+  });
 
   @override
   _HavkaStackBarChartState createState() => _HavkaStackBarChartState();
 }
 
 class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
-  late double proteins;
-  late double fats;
-  late double carbs;
   late List<PFCDataItem> nutritionData;
 
   @override
   void initState() {
     super.initState();
-    proteins = widget.initialData.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.protein!;
-        }
-        return sum;
-      },
-    );
-
-    fats = widget.initialData.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.fat!;
-        }
-        return sum;
-      },
-    );
-
-    carbs = widget.initialData.fold<double>(
-      0,
-      (sum, element) {
-        if (element.product!.nutrition != null) {
-          return sum + element.product!.nutrition!.carbs!;
-        }
-        return sum;
-      },
-    );
-    nutritionData = [
-      PFCDataItem(
-        value: proteins,
-        label: "Protein",
-        color: HavkaColors.protein,
-        icon: FontAwesomeIcons.dna,
-      ),
-      PFCDataItem(
-        value: fats,
-        label: "Fat",
-        color: HavkaColors.fat,
-        icon: FontAwesomeIcons.droplet,
-      ),
-      PFCDataItem(
-        value: carbs,
-        label: "Carbs",
-        color: HavkaColors.carbs,
-        icon: FontAwesomeIcons.wheatAwn,
-      ),
-    ];
+    nutritionData = widget.initialData;
   }
 
   @override
@@ -180,7 +210,8 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: CustomPaint(
-            painter: HavkaStackBarChartPainter(nutritionData: nutritionData),
+            painter: HavkaStackBarChartPainter(
+                nutritionData: nutritionData, onTapBar: widget.onTapBar),
             child: Container(
               height: 40,
             ),
@@ -194,65 +225,14 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
   void didUpdateWidget(covariant HavkaStackBarChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialData != oldWidget.initialData) {
-      final double oldProteins = oldWidget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.protein!;
-          }
-          return sum;
-        },
-      );
+      final double oldProteins = oldWidget.initialData[0].value;
+      final double oldFats = oldWidget.initialData[1].value;
+      final double oldCarbs = oldWidget.initialData[2].value;
 
-      final double oldFats = oldWidget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.fat!;
-          }
-          return sum;
-        },
-      );
+      final double newProteins = widget.initialData[0].value;
+      final double newFats = widget.initialData[1].value;
+      final double newCarbs = widget.initialData[2].value;
 
-      final double oldCarbs = oldWidget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.carbs!;
-          }
-          return sum;
-        },
-      );
-
-      final double newProteins = widget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.protein!;
-          }
-          return sum;
-        },
-      );
-
-      final double newFats = widget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.fat!;
-          }
-          return sum;
-        },
-      );
-
-      final double newCarbs = widget.initialData.fold<double>(
-        0,
-        (sum, element) {
-          if (element.product!.nutrition != null) {
-            return sum + element.product!.nutrition!.carbs!;
-          }
-          return sum;
-        },
-      );
       double tempProteins = oldProteins;
       double tempFats = oldFats;
       double tempCarbs = oldCarbs;
@@ -264,26 +244,23 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
           setState(() {
             tempProteins =
                 tempProteins + (newProteins - tempProteins) / milliseconds * 10;
-            proteins = tempProteins;
             tempFats = tempFats + (newFats - tempFats) / milliseconds * 10;
-            fats = tempFats;
             tempCarbs = tempCarbs + (newCarbs - tempCarbs) / milliseconds * 10;
-            carbs = tempCarbs;
             nutritionData = [
               PFCDataItem(
-                value: proteins,
+                value: tempProteins,
                 label: "Protein",
                 color: HavkaColors.protein,
                 icon: FontAwesomeIcons.dna,
               ),
               PFCDataItem(
-                value: fats,
+                value: tempFats,
                 label: "Fat",
                 color: HavkaColors.fat,
                 icon: FontAwesomeIcons.droplet,
               ),
               PFCDataItem(
-                value: carbs,
+                value: tempCarbs,
                 label: "Carbs",
                 color: HavkaColors.carbs,
                 icon: FontAwesomeIcons.wheatAwn,

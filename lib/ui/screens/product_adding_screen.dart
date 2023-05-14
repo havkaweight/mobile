@@ -23,7 +23,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
   final TextEditingController proteinController = TextEditingController();
-  final TextEditingController fatsController = TextEditingController();
+  final TextEditingController fatController = TextEditingController();
   final TextEditingController carbsController = TextEditingController();
   final TextEditingController energyValueController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
@@ -36,7 +36,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
   final FocusNode nameFocusNode = FocusNode();
   final FocusNode brandFocusNode = FocusNode();
   final FocusNode proteinFocusNode = FocusNode();
-  final FocusNode fatsFocusNode = FocusNode();
+  final FocusNode fatFocusNode = FocusNode();
   final FocusNode carbsFocusNode = FocusNode();
   final FocusNode energyValueFocusNode = FocusNode();
   final FocusNode energyUnitFocusNode = FocusNode();
@@ -52,7 +52,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
     barcodeController.text = widget.barcode!;
     energyUnit = energyUnits.first;
     proteinController.addListener(_changeNutritionValues);
-    fatsController.addListener(_changeNutritionValues);
+    fatController.addListener(_changeNutritionValues);
     carbsController.addListener(_changeNutritionValues);
     energyValueController.addListener(_changeNutritionValues);
   }
@@ -73,20 +73,20 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
     } else {
       proteinController.text = '';
     }
-    if (fatsController.text.isNotEmpty) {
-      if (prevText != fatsController.text) {
-        String newText = fatsController.text;
+    if (fatController.text.isNotEmpty) {
+      if (prevText != fatController.text) {
+        String newText = fatController.text;
         if (newText.contains(',')) {
           newText = newText.replaceAll(',', '.');
-          fatsController.text = fatsController.text.replaceAll(',', '.');
-          fatsController.selection = TextSelection.fromPosition(
-            TextPosition(offset: fatsController.text.length),
+          fatController.text = fatController.text.replaceAll(',', '.');
+          fatController.selection = TextSelection.fromPosition(
+            TextPosition(offset: fatController.text.length),
           );
         }
         prevText = newText;
       }
     } else {
-      fatsController.text = '';
+      fatController.text = '';
     }
     if (carbsController.text.isNotEmpty) {
       if (prevText != carbsController.text) {
@@ -203,7 +203,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       hintText: 'Brand',
                       controller: brandController,
                       focusNode: brandFocusNode,
-                      onSubmitted: (_) => proteinFocusNode.requestFocus(),
+                      onSubmitted: (_) => energyValueFocusNode.requestFocus(),
                     ),
                     SizedBox(
                       height: 40,
@@ -231,30 +231,6 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                         ],
                       ),
                     ),
-                    RoundedTextField(
-                      hintText: 'Protein',
-                      controller: proteinController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      focusNode: proteinFocusNode,
-                      onSubmitted: (_) => fatsFocusNode.requestFocus(),
-                    ),
-                    RoundedTextField(
-                      hintText: 'Fats',
-                      controller: fatsController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      focusNode: fatsFocusNode,
-                      onSubmitted: (_) => carbsFocusNode.requestFocus(),
-                    ),
-                    RoundedTextField(
-                      hintText: 'Carbs',
-                      controller: carbsController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      focusNode: carbsFocusNode,
-                      onSubmitted: (_) => energyValueFocusNode.requestFocus(),
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -264,9 +240,10 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                             hintText: 'Energy',
                             controller: energyValueController,
                             keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
+                              decimal: true,
+                            ),
                             focusNode: energyValueFocusNode,
-                            // onSubmitted: (_) => Focus.of(context).unfocus(),
+                            onSubmitted: (_) => fatFocusNode.requestFocus(),
                           ),
                         ),
                         Padding(
@@ -293,6 +270,31 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    RoundedTextField(
+                      hintText: 'Fat',
+                      controller: fatController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      focusNode: fatFocusNode,
+                      onSubmitted: (_) => carbsFocusNode.requestFocus(),
+                    ),
+                    RoundedTextField(
+                      hintText: 'Carbs',
+                      controller: carbsController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      focusNode: carbsFocusNode,
+                      onSubmitted: (_) => proteinFocusNode.requestFocus(),
+                    ),
+                    RoundedTextField(
+                      hintText: 'Protein',
+                      controller: proteinController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      focusNode: proteinFocusNode,
+                      onSubmitted: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
                     ),
                     RoundedButton(
                       text: 'Done',
@@ -328,8 +330,8 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
         protein: proteinController.text.isNotEmpty
             ? double.parse(proteinController.text)
             : null,
-        fat: fatsController.text.isNotEmpty
-            ? double.parse(fatsController.text)
+        fat: fatController.text.isNotEmpty
+            ? double.parse(fatController.text)
             : null,
         carbs: carbsController.text.isNotEmpty
             ? double.parse(carbsController.text)

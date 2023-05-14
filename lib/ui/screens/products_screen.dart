@@ -93,6 +93,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       itemBuilder: (BuildContext context, index) {
                         final Product product = snapshot.data![index];
                         return ListTile(
+                          tileColor: Colors.transparent,
                           leading: Container(
                             width: 50.0,
                             height: 50.0,
@@ -169,6 +170,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     itemBuilder: (BuildContext context, index) {
                       final Product product = snapshot.data![index];
                       return ListTile(
+                        tileColor: Colors.transparent,
                         leading: Container(
                           width: 50.0,
                           height: 50.0,

@@ -38,61 +38,60 @@ class _UserConsumptionScreenState extends State<UserConsumptionScreen> {
         onTap: () {
           Navigator.pop(context);
         },
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: mHeight * 0.82,
-                child: NotificationListener<ScrollNotification>(
-                  child: ValueListenableBuilder(
-                    valueListenable: userConsumptionListener,
-                    builder: (
-                      BuildContext context,
-                      List<UserConsumptionItem>? value,
-                      _,
-                    ) {
-                      if (value == null) {
-                        return const Center(child: HavkaProgressIndicator());
-                      }
-                      return ListView.builder(
-                        physics: scrollPhysics,
-                        itemCount: userConsumption!.length,
-                        itemBuilder: (BuildContext context, index) {
-                          userConsumption!.sort(
-                            (a, b) => (b.consumedAt ?? b.createdAt!)
-                                .compareTo(a.consumedAt ?? a.createdAt!),
-                          );
-                          final UserConsumptionItem userConsumptionItem =
-                              userConsumption![index];
-                          return ListTile(
-                            title: Text(
-                              userConsumptionItem.product!.name!,
-                              style: Theme.of(context).textTheme.displayMedium,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: mHeight * 0.82,
+              child: NotificationListener<ScrollNotification>(
+                child: ValueListenableBuilder(
+                  valueListenable: userConsumptionListener,
+                  builder: (
+                    BuildContext context,
+                    List<UserConsumptionItem>? value,
+                    _,
+                  ) {
+                    if (value == null) {
+                      return const Center(child: HavkaProgressIndicator());
+                    }
+                    return ListView.builder(
+                      physics: scrollPhysics,
+                      itemCount: userConsumption!.length,
+                      itemBuilder: (BuildContext context, index) {
+                        userConsumption!.sort(
+                          (a, b) => (b.consumedAt ?? b.createdAt!)
+                              .compareTo(a.consumedAt ?? a.createdAt!),
+                        );
+                        final UserConsumptionItem userConsumptionItem =
+                            userConsumption![index];
+                        return ListTile(
+                          tileColor: Colors.transparent,
+                          title: Text(
+                            userConsumptionItem.product!.name!,
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
+                          subtitle: Text(
+                            formatDate(
+                              userConsumptionItem.consumedAt ??
+                                  userConsumptionItem.createdAt!,
                             ),
-                            subtitle: Text(
-                              formatDate(
-                                userConsumptionItem.consumedAt ??
-                                    userConsumptionItem.createdAt!,
-                              ),
-                              style: Theme.of(context).textTheme.displaySmall,
-                            ),
-                            trailing: Text(
-                              '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
-                              style: Theme.of(context).textTheme.displayLarge,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          trailing: Text(
+                            '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
+                            style: Theme.of(context).textTheme.displayLarge,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

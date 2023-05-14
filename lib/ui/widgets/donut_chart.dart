@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/user_product.dart';
 
 class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
   List<PFCDataItem> nutritionData;
@@ -16,109 +15,33 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
   });
 
   late List<Path> segments;
-  static const double deltaAngle = 2.0 * pi / 360;
-
-  static const double maxRadiusFactorNotSelected = 0.6;
-  static const double minRadiusFactorNotSelected = 0.3;
-
-  static const double maxRadiusFactorSelected = 1;
-  static const double minRadiusFactorSelected = 0.6;
+  static const double deltaAngle = 2.0 * pi / 360.0;
 
   late double maxRadiusFactor;
   late double minRadiusFactor;
-
-  final midPaint = Paint()
-    ..color = HavkaColors.cream
-    ..style = PaintingStyle.fill;
 
   @override
   void paint(Canvas canvas, Size size) {
     segments = [];
     final center = Offset(size.width / 2.0, size.height / 2.0);
     double startAngle = 0.0;
-    final radius = size.width;
+    final radius = size.width / 2.0;
     final totalSum =
         nutritionData.map((di) => di.value).reduce((a, b) => a + b);
     for (final di in nutritionData) {
       final sweepAngle = di.value / totalSum * 2.0 * pi;
-      final dx = radius * maxRadiusFactorSelected / 2.0 * cos(startAngle);
-      final dy = radius * maxRadiusFactorSelected / 2.0 * sin(startAngle);
-      final p2 = center + Offset(dx, dy);
       final paint = Paint()
         ..style = PaintingStyle.fill
         ..color = di.color;
       maxRadiusFactor = di.radius;
       minRadiusFactor = 0.5;
       canvas.drawPath(
-          Path()
-            ..addArc(
-              Rect.fromCenter(
-                center: center,
-                width: radius * maxRadiusFactor,
-                height: radius * maxRadiusFactor,
-              ),
-              startAngle,
-              sweepAngle - deltaAngle,
-            )
-            ..lineTo(
-                (center +
-                        Offset(
-                          radius *
-                              minRadiusFactor /
-                              2.0 *
-                              cos(startAngle + sweepAngle - deltaAngle),
-                          radius *
-                              minRadiusFactor /
-                              2.0 *
-                              sin(
-                                startAngle + sweepAngle - deltaAngle,
-                              ),
-                        ))
-                    .dx,
-                (center +
-                        Offset(
-                          radius *
-                              minRadiusFactor /
-                              2.0 *
-                              cos(startAngle + sweepAngle - deltaAngle),
-                          radius *
-                              minRadiusFactor /
-                              2.0 *
-                              sin(
-                                startAngle + sweepAngle - deltaAngle,
-                              ),
-                        ))
-                    .dy)
-            ..addArc(
-              Rect.fromCenter(
-                center: center,
-                width: radius * minRadiusFactor,
-                height: radius * minRadiusFactor,
-              ),
-              startAngle + sweepAngle - deltaAngle,
-              -sweepAngle + deltaAngle,
-            )
-            ..lineTo(
-                (center +
-                        Offset(
-                          radius * maxRadiusFactor / 2.0 * cos(startAngle),
-                          radius * maxRadiusFactor / 2.0 * sin(startAngle),
-                        ))
-                    .dx,
-                (center +
-                        Offset(
-                          radius * maxRadiusFactor / 2.0 * cos(startAngle),
-                          radius * maxRadiusFactor / 2.0 * sin(startAngle),
-                        ))
-                    .dy),
-          paint);
-      segments.add(
         Path()
           ..addArc(
             Rect.fromCenter(
               center: center,
-              width: radius * maxRadiusFactor,
-              height: radius * maxRadiusFactor,
+              width: radius * 2.0 * maxRadiusFactor,
+              height: radius * 2.0 * maxRadiusFactor,
             ),
             startAngle,
             sweepAngle - deltaAngle,
@@ -127,33 +50,33 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
             (center +
                     Offset(
                       radius *
-                          minRadiusFactor /
-                          2.0 *
+                          minRadiusFactor *
                           cos(startAngle + sweepAngle - deltaAngle),
                       radius *
-                          minRadiusFactor /
-                          2.0 *
-                          sin(startAngle + sweepAngle - deltaAngle),
+                          minRadiusFactor *
+                          sin(
+                            startAngle + sweepAngle - deltaAngle,
+                          ),
                     ))
                 .dx,
             (center +
                     Offset(
                       radius *
-                          minRadiusFactor /
-                          2.0 *
+                          minRadiusFactor *
                           cos(startAngle + sweepAngle - deltaAngle),
                       radius *
-                          minRadiusFactor /
-                          2.0 *
-                          sin(startAngle + sweepAngle - deltaAngle),
+                          minRadiusFactor *
+                          sin(
+                            startAngle + sweepAngle - deltaAngle,
+                          ),
                     ))
                 .dy,
           )
           ..addArc(
             Rect.fromCenter(
               center: center,
-              width: radius * minRadiusFactor,
-              height: radius * minRadiusFactor,
+              width: radius * 2.0 * minRadiusFactor,
+              height: radius * 2.0 * minRadiusFactor,
             ),
             startAngle + sweepAngle - deltaAngle,
             -sweepAngle + deltaAngle,
@@ -161,14 +84,72 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
           ..lineTo(
             (center +
                     Offset(
-                      radius * maxRadiusFactor / 2.0 * cos(startAngle),
-                      radius * maxRadiusFactor / 2.0 * sin(startAngle),
+                      radius * maxRadiusFactor * cos(startAngle),
+                      radius * maxRadiusFactor * sin(startAngle),
                     ))
                 .dx,
             (center +
                     Offset(
-                      radius * maxRadiusFactor / 2.0 * cos(startAngle),
-                      radius * maxRadiusFactor / 2.0 * sin(startAngle),
+                      radius * maxRadiusFactor * cos(startAngle),
+                      radius * maxRadiusFactor * sin(startAngle),
+                    ))
+                .dy,
+          ),
+        paint,
+      );
+      segments.add(
+        Path()
+          ..addArc(
+            Rect.fromCenter(
+              center: center,
+              width: radius * 2.0 * maxRadiusFactor,
+              height: radius * 2.0 * maxRadiusFactor,
+            ),
+            startAngle,
+            sweepAngle - deltaAngle,
+          )
+          ..lineTo(
+            (center +
+                    Offset(
+                      radius *
+                          minRadiusFactor *
+                          cos(startAngle + sweepAngle - deltaAngle),
+                      radius *
+                          minRadiusFactor *
+                          sin(startAngle + sweepAngle - deltaAngle),
+                    ))
+                .dx,
+            (center +
+                    Offset(
+                      radius *
+                          minRadiusFactor *
+                          cos(startAngle + sweepAngle - deltaAngle),
+                      radius *
+                          minRadiusFactor *
+                          sin(startAngle + sweepAngle - deltaAngle),
+                    ))
+                .dy,
+          )
+          ..addArc(
+            Rect.fromCenter(
+              center: center,
+              width: radius * 2.0 * minRadiusFactor,
+              height: radius * 2.0 * minRadiusFactor,
+            ),
+            startAngle + sweepAngle - deltaAngle,
+            -sweepAngle + deltaAngle,
+          )
+          ..lineTo(
+            (center +
+                    Offset(
+                      radius * maxRadiusFactor * cos(startAngle),
+                      radius * maxRadiusFactor * sin(startAngle),
+                    ))
+                .dx,
+            (center +
+                    Offset(
+                      radius * maxRadiusFactor * cos(startAngle),
+                      radius * maxRadiusFactor * sin(startAngle),
                     ))
                 .dy,
           ),
@@ -215,14 +196,14 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
             if (s != segment) {
               nutritionData[segments.indexOf(s)].radius = 0.8;
             } else {
-              nutritionData[segments.indexOf(s)].radius = 1;
+              nutritionData[segments.indexOf(s)].radius = 1.0;
             }
             centerText =
                 '${nutritionData[segments.indexOf(segment)].value.toStringAsFixed(1)}g\n${nutritionData[segments.indexOf(segment)].label}';
           }
         } else {
           for (final Path s in segments) {
-            nutritionData[segments.indexOf(s)].radius = 1;
+            nutritionData[segments.indexOf(s)].radius = 1.0;
           }
           centerText = null;
         }
@@ -237,15 +218,19 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
     Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
       if ((newRadiuses
                       .asMap()
-                      .map((int index, double doub) =>
-                          MapEntry(index, doub * pow(10, index)))
+                      .map(
+                        (int index, double doub) =>
+                            MapEntry(index, doub * pow(10, index)),
+                      )
                       .values
                       .toList()
                       .fold<double>(0, (sum, el) => sum + el) -
                   tempRadiuses
                       .asMap()
-                      .map((int index, double doub) =>
-                          MapEntry(index, doub * pow(10, index)))
+                      .map(
+                        (int index, double doub) =>
+                            MapEntry(index, doub * pow(10, index)),
+                      )
                       .values
                       .toList()
                       .fold<double>(0, (sum, el) => sum + el))

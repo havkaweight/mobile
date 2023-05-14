@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
 import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
 import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 import 'package:health_tracker/ui/widgets/nutrition_line.dart';
 
@@ -57,56 +54,53 @@ class _FridgeItemState extends State<FridgeItem> {
           Transform.translate(
             offset: Offset(dragDistance, 0.0),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 5.0,
+                horizontal: 10.0,
+              ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: HavkaColors.bone[100]!,
-                  ),
+                  border: Border.all(color: HavkaColors.bone[100]!),
                 ),
                 child: ListTile(
+                  tileColor: Colors.transparent,
                   leading: SizedBox(
                     width: 50,
                     height: 50,
                     child: Stack(
                       children: <Widget>[
-                        Hero(
-                          tag: 'userProductImage-${widget.userProduct.id}',
-                          child: widget.userProduct.product!.img != null
-                              ? Container(
-                                  width: 50,
-                                  height: 50,
-                                  margin: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xff7c94b6),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        widget.userProduct.product!.img!,
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(50.0),
-                                    ),
-                                  ),
-                                )
-                              : const Center(
-                                  child: Icon(
-                                    FontAwesomeIcons.bowlFood,
-                                    color: HavkaColors.kcal,
-                                  ),
+                        if (widget.userProduct.product!.img != null)
+                          Container(
+                            width: 50,
+                            height: 50,
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff7c94b6),
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  widget.userProduct.product!.img!,
                                 ),
-                        ),
-                        SizedBox(
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                            ),
+                          )
+                        else
+                          const Center(
+                            child: Icon(
+                              FontAwesomeIcons.bowlFood,
+                              color: HavkaColors.kcal,
+                            ),
+                          ),
+                        const SizedBox(
                           width: 50,
                           height: 50,
                           child: CircularProgressBar(
-                            value: widget.userProduct.amount != null
-                                ? widget.userProduct.amount!.value
-                                : 0.9,
+                            value: 1,
                           ),
                         ),
                       ],
@@ -132,9 +126,10 @@ class _FridgeItemState extends State<FridgeItem> {
                           height: 20,
                         ),
                       Text(
-                        widget.userProduct.amount != null
+                        widget.userProduct.amount != null ||
+                                widget.userProduct.amount!.value > 0.01
                             ? '${widget.userProduct.amount!.value.toInt()} ${widget.userProduct.amount!.unit}'
-                            : '-',
+                            : '0 g',
                         style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],
@@ -142,7 +137,7 @@ class _FridgeItemState extends State<FridgeItem> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      SharpPageRoute(
+                      MaterialPageRoute(
                         builder: (context) => ScaleScreen(
                           userProduct: widget.userProduct,
                           userConsumption: widget.userConsumption,
@@ -186,7 +181,7 @@ class EmptyFridgeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),

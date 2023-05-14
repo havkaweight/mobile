@@ -6,24 +6,36 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
+import 'package:health_tracker/model/data_items.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
+import 'package:health_tracker/ui/screens/product_updating_screen.dart';
 import 'package:health_tracker/ui/screens/products_screen.dart';
 import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/widgets/fridgeitem.dart';
 import 'package:health_tracker/ui/widgets/holder.dart';
 import 'package:health_tracker/ui/widgets/modal_scale.dart';
+import 'package:health_tracker/ui/widgets/popup.dart';
+import 'package:health_tracker/ui/widgets/progress_indicator.dart';
 import 'package:health_tracker/ui/widgets/rounded_button.dart';
 import 'package:health_tracker/ui/widgets/screen_header.dart';
 import 'package:health_tracker/ui/widgets/shimmer.dart';
+import 'package:health_tracker/ui/widgets/stack_bar_chart.dart';
+import 'package:health_tracker/utils/utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 List<Map<String, String>> userProductsList = [];
 OverlayEntry? _overlayEntry;
 
-enum SortingType { dateAddedDesc, dateAddedAsc }
+enum SortingType {
+  dateAddedDesc,
+  dateAddedAsc,
+  proteinDesc,
+  fatDesc,
+  carbsDesc,
+}
 
 String? barcode;
 
@@ -37,16 +49,59 @@ class UserProductsScreen extends StatefulWidget {
 class _UserProductsScreenState extends State<UserProductsScreen>
     with SingleTickerProviderStateMixin {
   final barcodeController = TextEditingController();
-  late Icon sortIcon;
+  Icon sortIcon = const Icon(null);
   late SortingType sortingType;
 
   final ApiRoutes _apiRoutes = ApiRoutes();
   late List<UserProduct> userProducts;
   late List<UserConsumptionItem>? userConsumption;
-  ValueNotifier<List<UserProduct>?> userProductsListener = ValueNotifier(null);
+  ValueNotifier<List<UserProduct>?> userProductsListener =
+      ValueNotifier<List<UserProduct>?>(null);
+  ValueNotifier<List<PFCDataItem>?> nutritionFactsListener =
+      ValueNotifier<List<PFCDataItem>?>(null);
   late Widget childWidget;
   late AnimationController _animationController;
   bool isScaleShowed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    () async {
+      await _apiRoutes.getMe();
+      await fetchUserConsumption();
+      final prefs = await SharedPreferences.getInstance();
+      sortingType = prefs.getString('sortingType') != null
+          ? SortingType.values.byName(prefs.getString('sortingType')!)
+          : SortingType.dateAddedDesc;
+      switch (sortingType) {
+        case SortingType.dateAddedDesc:
+          sortIcon = const Icon(Icons.south);
+          break;
+        case SortingType.dateAddedAsc:
+          sortIcon = const Icon(Icons.north);
+          break;
+        default:
+          sortIcon = const Icon(null);
+          break;
+      }
+      setState(() {});
+      await fetchUserProducts();
+    }();
+  }
+
+  @override
+  void dispose() {
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('sortingType', sortingType.name);
+    }();
+    nutritionFactsListener.dispose();
+    super.dispose();
+  }
 
   void showModalScale() {
     _overlayEntry = OverlayEntry(
@@ -76,34 +131,29 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     prefs.setBool('isScaleShowed', !isScaleShowed);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    sortIcon = const Icon(Icons.south);
-    () async {
-      await _apiRoutes.getMe();
-      await fetchUserConsumption();
-      final prefs = await SharedPreferences.getInstance();
-      sortingType = prefs.getString('sortingType') != null
-          ? SortingType.values.byName(prefs.getString('sortingType')!)
-          : SortingType.dateAddedDesc;
-      switch (sortingType) {
-        case SortingType.dateAddedDesc:
-          sortIcon = const Icon(Icons.south);
-          break;
-        case SortingType.dateAddedAsc:
-          sortIcon = const Icon(Icons.north);
-          break;
-      }
-      setState(() {});
-      userProducts = await _apiRoutes.getUserProductsList();
+  Future<void> fetchUserProducts() async {
+    const String fileName = "userProducts.json";
+    final dir = await getTemporaryDirectory();
+    final File file = File("${dir.path}/$fileName");
+    if (file.existsSync()) {
+      final jsonData = jsonDecode(file.readAsStringSync()) as List;
+      final List<UserProduct> newUserProducts = jsonData.map<UserProduct>(
+        (json) {
+          return UserProduct.fromJson(json as Map<String, dynamic>);
+        },
+      ).toList();
+      userProducts = newUserProducts;
       _sortList();
       userProductsListener.value = userProducts;
-    }();
+      nutritionFactsListener.value = extractNutritionFacts(userProducts);
+    }
+    userProducts = await _apiRoutes.getUserProductsList();
+    file.writeAsStringSync(
+      jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
+      flush: true,
+    );
+    userProductsListener.value = userProducts;
+    nutritionFactsListener.value = extractNutritionFacts(userProducts);
   }
 
   Future<void> fetchUserConsumption() async {
@@ -143,16 +193,30 @@ class _UserProductsScreenState extends State<UserProductsScreen>
           (prev, next) => prev.createdAt!.compareTo(next.createdAt!),
         );
         break;
+      case SortingType.proteinDesc:
+        sortIcon = const Icon(null);
+        userProducts.sort(
+          (prev, next) => next.product!.nutrition!.protein!
+              .compareTo(prev.product!.nutrition!.protein!),
+        );
+        break;
+      case SortingType.fatDesc:
+        sortIcon = const Icon(null);
+        userProducts.sort(
+          (prev, next) => next.product!.nutrition!.fat!
+              .compareTo(prev.product!.nutrition!.fat!),
+        );
+        break;
+      case SortingType.carbsDesc:
+        sortIcon = const Icon(null);
+        userProducts.sort(
+          (prev, next) => next.product!.nutrition!.carbs!
+              .compareTo(prev.product!.nutrition!.carbs!),
+        );
+        break;
     }
-  }
-
-  @override
-  void dispose() {
-    () async {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('sortingType', sortingType.name);
-    }();
-    super.dispose();
+    userProductsListener.value = userProducts;
+    userProductsListener.notifyListeners();
   }
 
   void _removeItem(UserProduct userProduct, int index, BuildContext context) {
@@ -248,6 +312,51 @@ class _UserProductsScreenState extends State<UserProductsScreen>
             ],
           ),
         ),
+        ValueListenableBuilder(
+          valueListenable: nutritionFactsListener,
+          builder: (
+            BuildContext context,
+            List<PFCDataItem>? value,
+            _,
+          ) {
+            if (value == null) {
+              return const SizedBox(
+                height: 70,
+                child: HavkaProgressIndicator(),
+              );
+            }
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 10.0,
+                  ),
+                  child: HavkaStackBarChart(
+                    initialData: value,
+                    onTapBar: (key) {
+                      switch (key) {
+                        case 0:
+                          sortingType = SortingType.proteinDesc;
+                          break;
+                        case 1:
+                          sortingType = SortingType.fatDesc;
+                          break;
+                        case 2:
+                          sortingType = SortingType.carbsDesc;
+                          break;
+                        default:
+                          sortingType = SortingType.dateAddedDesc;
+                          break;
+                      }
+                      _sortList();
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
         Expanded(
           child: ValueListenableBuilder(
             valueListenable: userProductsListener,
@@ -300,24 +409,69 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               final UserProduct userProduct = value[index];
-                              return FridgeItem(
-                                userProduct: userProduct,
-                                userConsumption: userConsumption!
-                                    .where(
-                                      (element) =>
-                                          element.product!.id ==
-                                          value[index].product!.id,
-                                    )
-                                    .toList(),
-                                onPressed: () {
-                                  _apiRoutes
-                                      .deleteUserProduct(userProduct)
-                                      .whenComplete(() {
-                                    setState(() {
-                                      value.removeAt(index);
-                                    });
-                                  });
-                                },
+                              return CupertinoContextMenu.builder(
+                                actions: [
+                                  SizedBox(
+                                    height: 45,
+                                    child: CupertinoContextMenuAction(
+                                      trailingIcon: CupertinoIcons.pen,
+                                      child: const Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductUpdatingScreen(
+                                              product: userProduct.product!,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 45,
+                                    child: CupertinoContextMenuAction(
+                                      isDestructiveAction: true,
+                                      trailingIcon: CupertinoIcons.trash,
+                                      child: const Text(
+                                        'Remove',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  )
+                                ],
+                                builder: (context, animation) => Material(
+                                  color: Colors.transparent,
+                                  child: FridgeItem(
+                                    userProduct: userProduct,
+                                    userConsumption: userConsumption!
+                                        .where(
+                                          (element) =>
+                                              element.product!.id ==
+                                              value[index].product!.id,
+                                        )
+                                        .toList(),
+                                    onPressed: () {
+                                      _apiRoutes
+                                          .deleteUserProduct(userProduct)
+                                          .whenComplete(() {
+                                        setState(() {
+                                          value.removeAt(index);
+                                        });
+                                      });
+                                    },
+                                  ),
+                                ),
                               );
                             },
                             childCount: value.length,
