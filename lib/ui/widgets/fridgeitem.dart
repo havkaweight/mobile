@@ -96,11 +96,14 @@ class _FridgeItemState extends State<FridgeItem> {
                               color: HavkaColors.kcal,
                             ),
                           ),
-                        const SizedBox(
+                        SizedBox(
                           width: 50,
                           height: 50,
-                          child: CircularProgressBar(
-                            value: 1,
+                          child: HavkaCircularProgressBar(
+                            value: widget.userProduct.amount != null &&
+                                    widget.userProduct.amount!.value > 0.01
+                                ? widget.userProduct.amount!.value
+                                : 0.01,
                           ),
                         ),
                       ],

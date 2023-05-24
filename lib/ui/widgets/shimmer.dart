@@ -16,7 +16,7 @@ Shimmer getShimmerLoading() {
         ).createShader(Rect.fromLTRB(0, 0, bounds.width, bounds.height));
       },
       child: Column(
-        children: List.filled(7, const EmptyFridgeItem()),
+        children: List.filled(6, const EmptyFridgeItem()),
       ),
     ),
   );

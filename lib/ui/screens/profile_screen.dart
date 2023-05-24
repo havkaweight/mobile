@@ -29,6 +29,7 @@ import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
 import 'package:health_tracker/ui/screens/sign_in_screen.dart';
 import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
 import 'package:health_tracker/ui/widgets/bar_chart_timeline.dart';
+import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
 import 'package:health_tracker/ui/widgets/donut_chart.dart';
 import 'package:health_tracker/ui/widgets/progress_bar.dart';
 import 'package:health_tracker/ui/widgets/slider.dart';
@@ -65,10 +66,16 @@ class _ProfileScreenState extends State<ProfileScreen>
   late ValueNotifier<double> progressBarValueNotifier;
   late Future<void> _myFuture;
   late CancelableOperation _cancelOperation;
+  late double userWeight;
+  late double userHeight;
+  late double userAge;
 
   @override
   void initState() {
     super.initState();
+    userWeight = 66.0;
+    userHeight = 175.0;
+    userAge = 29.0;
     progressBarValueNotifier = ValueNotifier<double>(0.5);
     userListener = ValueNotifier<User?>(null);
     userProductsListener = ValueNotifier<List<UserProduct>?>(null);
@@ -463,6 +470,55 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ),
                       );
                     },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Container(
+                      height: 50,
+                      child: HavkaSlider(
+                        value: userWeight,
+                        onUpdate: (value) {
+                          setState(() {
+                            userWeight = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Container(
+                      height: 50,
+                      child: HavkaSlider(
+                        value: userHeight,
+                        maxValue: 250,
+                        onUpdate: (value) {
+                          setState(() {
+                            userHeight = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          '${(662 - (9.53 * userAge) + 1.0 * (15.91 * userWeight + 5.396 * userHeight)).toStringAsFixed(0)}',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'kcal / day',
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40.0),

@@ -7,6 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:health_tracker/api/methods.dart';
 import 'package:health_tracker/constants/colors.dart';
 import 'package:health_tracker/model/data_items.dart';
+import 'package:health_tracker/model/product.dart';
+import 'package:health_tracker/model/product_amount.dart';
+import 'package:health_tracker/model/product_measure.dart';
 import 'package:health_tracker/model/user_consumption_item.dart';
 import 'package:health_tracker/model/user_product.dart';
 import 'package:health_tracker/ui/screens/havka_barcode_scanner.dart';
@@ -48,6 +51,8 @@ class UserProductsScreen extends StatefulWidget {
 
 class _UserProductsScreenState extends State<UserProductsScreen>
     with SingleTickerProviderStateMixin {
+  final GlobalKey<SliverAnimatedListState> _userProductsListKey =
+      GlobalKey<SliverAnimatedListState>();
   final barcodeController = TextEditingController();
   Icon sortIcon = const Icon(null);
   late SortingType sortingType;
@@ -152,6 +157,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
       jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
       flush: true,
     );
+    _sortList();
     userProductsListener.value = userProducts;
     nutritionFactsListener.value = extractNutritionFacts(userProducts);
   }
@@ -219,16 +225,60 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     userProductsListener.notifyListeners();
   }
 
+  void _insertItem(UserProduct newUserProduct) {
+    _userProductsListKey.currentState?.insertItem(0);
+    setState(() {
+      userProducts.insert(0, newUserProduct);
+    });
+  }
+
   void _removeItem(UserProduct userProduct, int index, BuildContext context) {
-    _apiRoutes.deleteUserProduct(userProduct).whenComplete(() {
-      AnimatedList.of(context).removeItem(
-        index,
-        (_, animation) {
-          return FadeTransition(
-            opacity: Tween<double>(
-              begin: 0.0,
-              end: 1.0,
-            ).animate(animation),
+    // _apiRoutes.deleteUserProduct(userProduct).whenComplete(() async {
+    //   userProducts = await _apiRoutes.getUserProductsList();
+    //   _sortList();
+    //   userProductsListener.value = userProducts;
+    //   nutritionFactsListener.value = extractNutritionFacts(userProducts);
+    //   AnimatedList.of(context).removeItem(
+    //     index,
+    //     (_, animation) {
+    //       return FadeTransition(
+    //         opacity: Tween<double>(
+    //           begin: 0.0,
+    //           end: 1.0,
+    //         ).animate(animation),
+    //         child: SizeTransition(
+    //           sizeFactor: animation,
+    //           child: SlideTransition(
+    //             position: Tween<Offset>(
+    //               begin: const Offset(0, -0.5),
+    //               end: Offset.zero,
+    //             ).animate(animation),
+    //             child: FridgeItem(
+    //               userProduct: userProduct,
+    //               userConsumption: userConsumption!
+    //                   .where(
+    //                     (element) =>
+    //                         element.product!.id == userProduct.product!.id,
+    //                   )
+    //                   .toList(),
+    //             ),
+    //           ),
+    //         ),
+    //       );
+    //     },
+    //     duration: const Duration(milliseconds: 200),
+    //   );
+    // });
+    AnimatedList.of(context).removeItem(
+      index,
+      (_, animation) {
+        return FadeTransition(
+          opacity: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(animation),
+          child: SizeTransition(
+            sizeFactor: animation,
             child: SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(0, -0.5),
@@ -244,11 +294,11 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                     .toList(),
               ),
             ),
-          );
-        },
-        duration: const Duration(milliseconds: 200),
-      );
-    });
+          ),
+        );
+      },
+      duration: const Duration(milliseconds: 200),
+    );
   }
 
   @override
@@ -266,7 +316,25 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                   RoundedButton(
                     text: 'Add havka',
                     onPressed: () {
-                      _buildProductsList(context).then((_) => setState(() {}));
+                      _buildProductsList(context).then((_) async {
+                        _insertItem(UserProduct(
+                            product: Product(
+                                name: 'Product name',
+                                nutrition: ProductNutrition(
+                                    protein: 100,
+                                    fat: 100,
+                                    carbs: 100,
+                                    productMeasure:
+                                        ProductMeasure(unit: 'g', value: 100))),
+                            netWeightLeft: 100,
+                            createdAt: DateTime.now(),
+                            amount: ProductAmount(unit: 'g', value: 100)));
+                        userProducts = await _apiRoutes.getUserProductsList();
+                        _sortList();
+                        userProductsListener.value = userProducts;
+                        nutritionFactsListener.value =
+                            extractNutritionFacts(userProducts);
+                      });
                     },
                   ),
                   IconButton(
@@ -275,7 +343,13 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                       color: HavkaColors.green,
                     ),
                     onPressed: () {
-                      _buildBarcodeScanner().then((_) => setState(() {}));
+                      _buildBarcodeScanner().then((_) async {
+                        userProducts = await _apiRoutes.getUserProductsList();
+                        _sortList();
+                        userProductsListener.value = userProducts;
+                        nutritionFactsListener.value =
+                            extractNutritionFacts(userProducts);
+                      });
                     },
                   ),
                 ],
@@ -320,40 +394,44 @@ class _UserProductsScreenState extends State<UserProductsScreen>
             _,
           ) {
             if (value == null) {
-              return const SizedBox(
-                height: 70,
-                child: HavkaProgressIndicator(),
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+                child: HavkaStackBarChart(
+                  initialData: [
+                    PFCDataItem(
+                        value: 1, label: 'Almost here...', color: Colors.green)
+                  ],
+                ),
               );
             }
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10.0,
-                  ),
-                  child: HavkaStackBarChart(
-                    initialData: value,
-                    onTapBar: (key) {
-                      switch (key) {
-                        case 0:
-                          sortingType = SortingType.proteinDesc;
-                          break;
-                        case 1:
-                          sortingType = SortingType.fatDesc;
-                          break;
-                        case 2:
-                          sortingType = SortingType.carbsDesc;
-                          break;
-                        default:
-                          sortingType = SortingType.dateAddedDesc;
-                          break;
-                      }
-                      _sortList();
-                    },
-                  ),
-                ),
-              ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
+              child: HavkaStackBarChart(
+                initialData: value,
+                onTapBar: (key) {
+                  switch (key) {
+                    case 0:
+                      sortingType = SortingType.proteinDesc;
+                      break;
+                    case 1:
+                      sortingType = SortingType.fatDesc;
+                      break;
+                    case 2:
+                      sortingType = SortingType.carbsDesc;
+                      break;
+                    default:
+                      sortingType = SortingType.dateAddedDesc;
+                      break;
+                  }
+                  _sortList();
+                },
+              ),
             );
           },
         ),
@@ -405,77 +483,68 @@ class _UserProductsScreenState extends State<UserProductsScreen>
                         CupertinoSliverRefreshControl(
                           onRefresh: _refreshUserProducts,
                         ),
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final UserProduct userProduct = value[index];
-                              return CupertinoContextMenu.builder(
-                                actions: [
-                                  SizedBox(
-                                    height: 45,
-                                    child: CupertinoContextMenuAction(
-                                      trailingIcon: CupertinoIcons.pen,
-                                      child: const Text(
-                                        'Edit',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProductUpdatingScreen(
-                                              product: userProduct.product!,
+                        SliverAnimatedList(
+                          key: _userProductsListKey,
+                          initialItemCount: value.length,
+                          itemBuilder: (context, index, animation) {
+                            final UserProduct userProduct = value[index];
+                            return SizeTransition(
+                              sizeFactor: animation,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: FridgeItem(
+                                  userProduct: userProduct,
+                                  userConsumption: userConsumption!
+                                      .where(
+                                        (element) =>
+                                            element.product!.id ==
+                                            value[index].product!.id,
+                                      )
+                                      .toList(),
+                                  onPressed: () {
+                                    _apiRoutes
+                                        .deleteUserProduct(userProduct)
+                                        .whenComplete(() {
+                                      SliverAnimatedList.of(context).removeItem(
+                                          index, (context, animation) {
+                                        return FadeTransition(
+                                          opacity: Tween<double>(
+                                            begin: 0.0,
+                                            end: 1.0,
+                                          ).animate(animation),
+                                          child: SizeTransition(
+                                            sizeFactor: animation,
+                                            child: SlideTransition(
+                                              position: Tween<Offset>(
+                                                begin: const Offset(0, -0.5),
+                                                end: Offset.zero,
+                                              ).animate(animation),
+                                              child: FridgeItem(
+                                                userProduct: userProduct,
+                                                userConsumption:
+                                                    userConsumption!
+                                                        .where(
+                                                          (element) =>
+                                                              element.product!
+                                                                  .id ==
+                                                              userProduct
+                                                                  .product!.id,
+                                                        )
+                                                        .toList(),
+                                              ),
                                             ),
                                           ),
                                         );
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 45,
-                                    child: CupertinoContextMenuAction(
-                                      isDestructiveAction: true,
-                                      trailingIcon: CupertinoIcons.trash,
-                                      child: const Text(
-                                        'Remove',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  )
-                                ],
-                                builder: (context, animation) => Material(
-                                  color: Colors.transparent,
-                                  child: FridgeItem(
-                                    userProduct: userProduct,
-                                    userConsumption: userConsumption!
-                                        .where(
-                                          (element) =>
-                                              element.product!.id ==
-                                              value[index].product!.id,
-                                        )
-                                        .toList(),
-                                    onPressed: () {
-                                      _apiRoutes
-                                          .deleteUserProduct(userProduct)
-                                          .whenComplete(() {
-                                        setState(() {
-                                          value.removeAt(index);
-                                        });
                                       });
-                                    },
-                                  ),
+                                      setState(() {
+                                        userProducts.removeAt(index);
+                                      });
+                                    });
+                                  },
                                 ),
-                              );
-                            },
-                            childCount: value.length,
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     );
@@ -499,6 +568,7 @@ class _UserProductsScreenState extends State<UserProductsScreen>
     userProducts = await _apiRoutes.getUserProductsList();
     _sortList();
     userProductsListener.value = userProducts;
+    nutritionFactsListener.value = extractNutritionFacts(userProducts);
   }
 
   Future<dynamic> _buildBarcodeScanner() {

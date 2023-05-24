@@ -33,7 +33,7 @@ class UserProduct {
             : ProductAmount.fromJson(json['amount'] as Map<String, dynamic>),
         createdAt = json['created_at'] == null
             ? null
-            : DateFormat('yyyy-MM-ddThh:mm:ss')
+            : DateFormat('yyyy-MM-ddTHH:mm:ss')
                 .parse(json['created_at'] as String, true)
                 .toLocal();
 
@@ -45,6 +45,6 @@ class UserProduct {
         'amount': amount == null ? null : amount!.toJson(),
         'created_at': createdAt == null
             ? null
-            : DateFormat('yyyy-MM-ddThh:mm:ss').format(createdAt!.toUtc()),
+            : DateFormat('yyyy-MM-ddTHH:mm:ss').format(createdAt!.toUtc()),
       };
 }

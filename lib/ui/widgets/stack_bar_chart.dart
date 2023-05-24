@@ -70,31 +70,30 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
   bool hitTest(Offset position) {
     final List<double> oldRadiuses =
         nutritionData.map((e) => e.radius).toList();
+    final List<double> newRadiuses =
+        nutritionData.map((e) => e.radius).toList();
 
     final state =
         nutritionData.fold<double>(0, (sum, element) => sum + element.radius);
     for (final Path bar in bars) {
       if (bar.contains(position)) {
-        if (state > 2.9 || nutritionData[bars.indexOf(bar)].radius < 0.9) {
+        if (state > 2.9 || oldRadiuses[bars.indexOf(bar)] < 0.9) {
           onTapBar!(bars.indexOf(bar));
           for (final Path b in bars) {
             if (b != bar) {
-              nutritionData[bars.indexOf(b)].radius = 0.7;
+              newRadiuses[bars.indexOf(b)] = 0.7;
             } else {
-              nutritionData[bars.indexOf(b)].radius = 1.0;
+              newRadiuses[bars.indexOf(b)] = 1.0;
             }
           }
         } else {
           onTapBar!(-1);
           for (final Path b in bars) {
-            nutritionData[bars.indexOf(b)].radius = 1.0;
+            newRadiuses[bars.indexOf(b)] = 1.0;
           }
         }
       }
     }
-
-    final List<double> newRadiuses =
-        nutritionData.map((e) => e.radius).toList();
 
     final List<double> tempRadiuses = oldRadiuses;
     const int milliseconds = 30;
@@ -119,15 +118,18 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
                       .fold<double>(0, (sum, el) => sum + el))
               .abs() <
           0.01) {
+        for (int i = 0; i < tempRadiuses.length; i++) {
+          nutritionData[i].radius = newRadiuses[i];
+        }
         timer.cancel();
       } else {
         for (int i = 0; i < tempRadiuses.length; i++) {
           tempRadiuses[i] = tempRadiuses[i] +
               (newRadiuses[i] - tempRadiuses[i]) / milliseconds * 10;
           nutritionData[i].radius = tempRadiuses[i];
-          notifyListeners();
         }
       }
+      notifyListeners();
     });
     return true;
   }

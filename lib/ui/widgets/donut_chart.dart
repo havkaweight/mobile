@@ -185,33 +185,31 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
   bool hitTest(Offset position) {
     final List<double> oldRadiuses =
         nutritionData.map((e) => e.radius).toList();
+    final List<double> newRadiuses =
+        nutritionData.map((e) => e.radius).toList();
 
     final state =
         nutritionData.fold<double>(0, (sum, element) => sum + element.radius);
     for (final Path segment in segments) {
       if (segment.contains(position)) {
-        if (state > 2.9 ||
-            nutritionData[segments.indexOf(segment)].radius < 0.9) {
+        if (state > 2.9 || oldRadiuses[segments.indexOf(segment)] < 0.9) {
           for (final Path s in segments) {
             if (s != segment) {
-              nutritionData[segments.indexOf(s)].radius = 0.8;
+              newRadiuses[segments.indexOf(s)] = 0.8;
             } else {
-              nutritionData[segments.indexOf(s)].radius = 1.0;
+              newRadiuses[segments.indexOf(s)] = 1.0;
             }
             centerText =
                 '${nutritionData[segments.indexOf(segment)].value.toStringAsFixed(1)}g\n${nutritionData[segments.indexOf(segment)].label}';
           }
         } else {
           for (final Path s in segments) {
-            nutritionData[segments.indexOf(s)].radius = 1.0;
+            newRadiuses[segments.indexOf(s)] = 1.0;
           }
           centerText = null;
         }
       }
     }
-
-    final List<double> newRadiuses =
-        nutritionData.map((e) => e.radius).toList();
 
     final List<double> tempRadiuses = oldRadiuses;
     const int milliseconds = 30;
@@ -236,15 +234,18 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
                       .fold<double>(0, (sum, el) => sum + el))
               .abs() <
           0.01) {
+        for (int i = 0; i < tempRadiuses.length; i++) {
+          nutritionData[i].radius = newRadiuses[i];
+        }
         timer.cancel();
       } else {
         for (int i = 0; i < tempRadiuses.length; i++) {
           tempRadiuses[i] = tempRadiuses[i] +
               (newRadiuses[i] - tempRadiuses[i]) / milliseconds * 10;
           nutritionData[i].radius = tempRadiuses[i];
-          notifyListeners();
         }
       }
+      notifyListeners();
     });
     return true;
   }
@@ -291,6 +292,28 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
 
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
         if ((newProteins - tempProteins).abs() < 0.01) {
+          setState(() {
+            nutritionData = [
+              PFCDataItem(
+                value: newProteins,
+                label: "Protein",
+                color: HavkaColors.protein,
+                icon: FontAwesomeIcons.dna,
+              ),
+              PFCDataItem(
+                value: newFats,
+                label: "Fat",
+                color: HavkaColors.fat,
+                icon: FontAwesomeIcons.droplet,
+              ),
+              PFCDataItem(
+                value: newCarbs,
+                label: "Carbs",
+                color: HavkaColors.carbs,
+                icon: FontAwesomeIcons.wheatAwn,
+              ),
+            ];
+          });
           timer.cancel();
         } else {
           setState(() {
