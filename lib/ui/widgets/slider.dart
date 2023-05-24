@@ -3,13 +3,18 @@ import 'package:health_tracker/constants/colors.dart';
 
 class HavkaSliderPainter extends CustomPainter with ChangeNotifier {
   final double value;
+  final double minValue;
+  final double maxValue;
   HavkaSliderPainter({
     required this.value,
+    required this.minValue,
+    required this.maxValue,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2.0, size.height / 2.0);
+    const double selectedCircleRadius = 8;
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -19,6 +24,11 @@ class HavkaSliderPainter extends CustomPainter with ChangeNotifier {
     final circlePaint = Paint()
       ..style = PaintingStyle.fill
       ..color = HavkaColors.protein;
+
+    final circleBorderPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white;
+
     canvas.drawPath(
       Path()
         ..moveTo(0, size.height / 2.0)
@@ -26,22 +36,28 @@ class HavkaSliderPainter extends CustomPainter with ChangeNotifier {
       linePaint,
     );
 
-    for (int i = 0; i < 6; i++) {
-      canvas.drawCircle(
-        Offset(i * 20 / 100 * size.width, size.height / 2.0),
-        3,
-        circlePaint,
-      );
-    }
+    // for (int i = 0; i < 6; i++) {
+    //   canvas.drawCircle(
+    //     Offset(i * 20 / maxValue * size.width, size.height / 2.0),
+    //     3,
+    //     circlePaint,
+    //   );
+    // }
 
     canvas.drawCircle(
-      Offset(value / 100 * size.width, size.height / 2.0),
-      8,
+      Offset(value / maxValue * size.width, size.height / 2.0),
+      selectedCircleRadius * 1.1,
+      circleBorderPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(value / maxValue * size.width, size.height / 2.0),
+      selectedCircleRadius,
       circlePaint,
     );
 
     final TextSpan textSpan = TextSpan(
-      text: '$value',
+      text: value.toStringAsFixed(1),
       style: const TextStyle(
         color: Colors.black,
         fontWeight: FontWeight.bold,
@@ -57,8 +73,9 @@ class HavkaSliderPainter extends CustomPainter with ChangeNotifier {
     textPainter.layout();
     textPainter.paint(
       canvas,
-      Offset(value / 100 * size.width, size.height / 2.0 * 0.87) -
-          Offset(textPainter.width / 2.0, textPainter.height / 2.0),
+      Offset(value / maxValue * size.width,
+              size.height / 2.0 - selectedCircleRadius) -
+          Offset(textPainter.width / 2.0, textPainter.height),
     );
   }
 
@@ -72,8 +89,14 @@ class HavkaSliderPainter extends CustomPainter with ChangeNotifier {
 
 class HavkaSlider extends StatefulWidget {
   final double value;
+  final double minValue;
+  final double maxValue;
+  final Function(double) onUpdate;
   const HavkaSlider({
-    this.value = 0,
+    this.value = 0.0,
+    this.minValue = 0.0,
+    this.maxValue = 100.0,
+    required this.onUpdate,
   });
 
   @override
@@ -82,10 +105,13 @@ class HavkaSlider extends StatefulWidget {
 
 class _HavkaSliderState extends State<HavkaSlider> {
   late double value;
+
+  late bool _isSliderSelected;
   @override
   void initState() {
     super.initState();
     value = widget.value;
+    _isSliderSelected = false;
   }
 
   @override
@@ -95,11 +121,47 @@ class _HavkaSliderState extends State<HavkaSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: HavkaSliderPainter(
-        value: value,
+    return GestureDetector(
+      onHorizontalDragStart: (details) {
+        if ((details.localPosition.dx /
+                        context.size!.width *
+                        (widget.maxValue - widget.minValue) -
+                    value)
+                .abs() <
+            (widget.maxValue - widget.minValue) * 0.1) {
+          _isSliderSelected = true;
+        }
+      },
+      onHorizontalDragEnd: (details) {
+        _isSliderSelected = false;
+      },
+      onHorizontalDragUpdate: (details) {
+        if (_isSliderSelected) if (value >= widget.minValue &&
+            value <= widget.maxValue) {
+          setState(() {
+            value += details.delta.dx /
+                context.size!.width *
+                (widget.maxValue - widget.minValue);
+            widget.onUpdate(value);
+          });
+        } else if (value < widget.minValue) {
+          setState(() {
+            value = widget.minValue;
+          });
+        } else if (value > widget.maxValue) {
+          setState(() {
+            value = widget.maxValue;
+          });
+        }
+      },
+      child: CustomPaint(
+        painter: HavkaSliderPainter(
+          value: value,
+          minValue: widget.minValue,
+          maxValue: widget.maxValue,
+        ),
+        child: Container(),
       ),
-      child: Container(),
     );
   }
 }
