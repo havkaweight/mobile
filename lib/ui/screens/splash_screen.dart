@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:health_tracker/constants/assets.dart';
-import 'package:health_tracker/ui/widgets/app_icon.dart';
+import 'package:havka/constants/assets.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/ui/widgets/app_icon.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -24,13 +25,32 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: const Center(
-        child: Hero(
-          tag: "splash-logo",
-          child: AppIcon(image: Assets.appLogo),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Hero(
+              tag: "splash-logo",
+              child: AppIcon(image: Assets.appLogo),
+            ),
+            Text(
+              "Havka",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: HavkaColors.green,
+                fontSize: 30
+              ),
+            )
+          ],
         ),
       ),
     );

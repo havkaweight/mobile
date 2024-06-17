@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/ui/widgets/fridgeitem.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/ui/widgets/fridgeitem.dart';
 import 'package:shimmer/shimmer.dart';
 
 Shimmer getShimmerLoading() {

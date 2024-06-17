@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/user_consumption_item.dart';
-import 'package:health_tracker/model/user_product.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/model/data_items.dart';
+import 'package:havka/model/user_consumption_item.dart';
+import 'package:havka/model/user_fridge_item.dart';
 import 'package:intl/intl.dart';
 
 String formatDate(DateTime dateTime) {
   if (dateTime.toLocal().year == DateTime.now().year &&
       dateTime.toLocal().month == DateTime.now().month &&
       dateTime.toLocal().day == DateTime.now().day) {
-    return 'Today ${DateFormat('HH:mm').format(dateTime.toLocal())}';
+    return "${DateFormat('HH:mm').format(dateTime.toLocal())}";
   } else if (dateTime.toLocal().year == DateTime.now().year &&
       dateTime.toLocal().month == DateTime.now().month &&
       dateTime.toLocal().day ==
           DateTime.now().subtract(const Duration(days: 1)).day) {
-    return 'Yesterday ${DateFormat('HH:mm').format(dateTime.toLocal())}';
+    return "Yesterday ${DateFormat('HH:mm').format(dateTime.toLocal())}";
   }
-  return DateFormat('dd MMM HH:mm').format(dateTime.toLocal());
+  return DateFormat("d MMM HH:mm").format(dateTime.toLocal());
 }
 
-String showUsername(String username) {
-  const showingLength = 20;
+dynamic formattedNumber(double? number) {
+  return number == number!.toInt()
+      ? number.toInt().toString()
+      : number.toStringAsFixed(1);
+}
+
+String showLabel(String username, {int maxSymbols=12}) {
+  final showingLength = maxSymbols;
   if (username.length > showingLength) {
     return '${username.substring(0, showingLength)}...';
   }
@@ -54,76 +60,15 @@ List<DataItem> userConsumptionToBarChartData(
                       .inDays ==
                   0 &&
               (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
-            return previousValue += element.amount!.value;
+            return previousValue += element.consumedAmount!.value;
           }
           return previousValue;
         }),
         DateFormat('MMM d').format(date),
+        date,
         Colors.amber[500]!,
       ),
     );
   }
   return weightsData;
-}
-
-List<PFCDataItem> extractNutritionFacts(List<UserProduct> userProducts) {
-  final proteins = userProducts.fold<double>(
-    0,
-    (sum, element) {
-      if (element.product!.nutrition != null) {
-        return sum +
-            element.product!.nutrition!.protein! /
-                100 *
-                (element.amount!.value > 0 ? element.amount!.value : 0);
-      }
-      return sum;
-    },
-  );
-
-  final fats = userProducts.fold<double>(
-    0,
-    (sum, element) {
-      if (element.product!.nutrition != null) {
-        return sum +
-            element.product!.nutrition!.fat! /
-                100 *
-                (element.amount!.value > 0 ? element.amount!.value : 0);
-      }
-      return sum;
-    },
-  );
-
-  final carbs = userProducts.fold<double>(
-    0,
-    (sum, element) {
-      if (element.product!.nutrition != null) {
-        return sum +
-            element.product!.nutrition!.carbs! /
-                100 *
-                (element.amount!.value > 0 ? element.amount!.value : 0);
-      }
-      return sum;
-    },
-  );
-  final nutritionData = [
-    PFCDataItem(
-      value: proteins,
-      label: "Protein",
-      color: HavkaColors.protein,
-      icon: FontAwesomeIcons.dna,
-    ),
-    PFCDataItem(
-      value: fats,
-      label: "Fat",
-      color: HavkaColors.fat,
-      icon: FontAwesomeIcons.droplet,
-    ),
-    PFCDataItem(
-      value: carbs,
-      label: "Carbs",
-      color: HavkaColors.carbs,
-      icon: FontAwesomeIcons.wheatAwn,
-    ),
-  ];
-  return nutritionData;
 }

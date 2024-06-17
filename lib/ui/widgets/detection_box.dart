@@ -1,11 +1,28 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
-class DetectionBox extends CustomPainter {
+class DetectionBoxPainter extends CustomPainter {
+  final double width;
+  final double height;
+  final double lineWidth;
+  final double lineRadius;
+
+  const DetectionBoxPainter({
+    required this.width,
+    required this.height,
+    required this.lineWidth,
+    required this.lineRadius,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
+    final dx = this.width;
+    final dy = this.height;
+    final lineWidth = this.lineWidth;
+    final radius = this.lineRadius;
+
     final cornersPaint = Paint()
       ..strokeWidth = 5
       ..color = HavkaColors.green
@@ -13,11 +30,7 @@ class DetectionBox extends CustomPainter {
 
     final bgPaint = Paint()..color = Colors.black.withOpacity(0.3);
 
-    final center = Offset(size.width / 2, size.height / 3);
-    final lineWidth = size.width / 12;
-    final radius = lineWidth / 5;
-    final dx = size.width / 3;
-    final dy = size.height / 7;
+    final center = Offset(size.width / 2, size.height / 2.5);
 
     final box = Path();
     box.addPolygon(
@@ -134,5 +147,34 @@ class DetectionBox extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant DetectionBox oldDelegate) => true;
+  bool shouldRepaint(covariant DetectionBoxPainter oldDelegate) => false;
+}
+
+class DetectionBox extends StatelessWidget {
+  final double width;
+  final double height;
+  final double lineWidth;
+  final double lineRadius;
+
+  const DetectionBox({
+    required this.width,
+    required this.height,
+    this.lineWidth = 1.0,
+    this.lineRadius = 1.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: CustomPaint(
+        painter: DetectionBoxPainter(
+          width: width,
+          height: height,
+          lineWidth: lineWidth,
+          lineRadius: lineRadius,
+        ),
+        child: Container(),
+      )
+    );
+  }
 }

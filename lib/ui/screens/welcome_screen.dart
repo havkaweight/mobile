@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/story_screen.dart';
+import 'package:havka/ui/screens/sign_in_screen.dart';
+import 'package:havka/ui/screens/story_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -9,7 +9,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  Widget? body;
 
   Future<bool> _skipOnboarding() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

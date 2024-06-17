@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/model/data_items.dart';
 
 class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
   List<PFCDataItem> nutritionData;
@@ -252,11 +252,13 @@ class HavkaDonutChartPainter extends CustomPainter with ChangeNotifier {
 }
 
 class HavkaDonutChart extends StatefulWidget {
+  final double height;
   final List<PFCDataItem> initialData;
   final String? centerText;
 
   const HavkaDonutChart({
     super.key,
+    this.height = 100,
     required this.initialData,
     this.centerText,
   });
@@ -354,7 +356,10 @@ class _HavkaDonutChartState extends State<HavkaDonutChart> {
         nutritionData: nutritionData,
         centerText: widget.centerText,
       ),
-      child: Container(),
+      child: Container(
+        height: widget.height,
+        width: widget.height,
+      ),
     );
   }
 }

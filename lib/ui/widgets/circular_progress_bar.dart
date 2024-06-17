@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class HavkaCircularProgressBarPainter extends CustomPainter {
   final double value;
@@ -17,7 +17,7 @@ class HavkaCircularProgressBarPainter extends CustomPainter {
       size.height / 2.0,
     );
     const double startAngle = -pi / 2;
-    const double maxValue = 100.0;
+    double maxValue = 1;
     const double maxRadiusFactor = 1.0;
     const double minRadiusFactor = 0.87;
     final double radius = size.width / 2.0;

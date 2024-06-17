@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class SearchTextField extends StatefulWidget {
   final String? labelText;
   final String? hintText;
   final double? width;
   final Color? color;
+  final Color? fillColor;
   final Icon? icon;
   final bool? obscureText;
   final bool? autoFocus;
@@ -20,6 +21,7 @@ class SearchTextField extends StatefulWidget {
     this.width = 0.7,
     this.icon,
     this.color,
+    this.fillColor = const Color(0x0D000000),
     this.controller,
     this.errorText,
     this.obscureText = false,
@@ -42,8 +44,8 @@ class SearchTextFieldState<T extends SearchTextField>
   Widget build(BuildContext context) {
     final double mWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: widget.width! * mWidth,
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      // width: widget.width! * mWidth,
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
       child: TextField(
         obscureText: widget.obscureText!,
         keyboardType: widget.keyboardType,
@@ -51,25 +53,13 @@ class SearchTextFieldState<T extends SearchTextField>
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-          fillColor: HavkaColors.bone[100],
+          fillColor: widget.fillColor,
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(15.0),
+            borderRadius: BorderRadius.circular(50.0),
           ),
           focusColor: const Color(0xFFFFFFFF),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: HavkaColors.green, width: 3.0),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFFFF0000), width: 2.0),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFFFF0000), width: 2.0),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
           hintText: widget.controller!.text.isEmpty
               ? widget.hintText
               : widget.controller!.text,

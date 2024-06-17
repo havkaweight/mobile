@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
-import 'package:health_tracker/ui/screens/onboarding_screens.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/widgets/story_bars.dart';
+import 'package:go_router/go_router.dart';
+import 'package:havka/routes/sharp_page_route.dart';
+import 'package:havka/ui/screens/onboarding_screens.dart';
+import 'package:havka/ui/screens/sign_in_screen.dart';
+import 'package:havka/ui/widgets/story_bars.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StoryPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _StoryPageState extends State<StoryPage> {
     OnboardingScreen1(),
     OnboardingScreen2(),
     OnboardingScreen3(),
+    OnboardingScreen4(),
   ];
 
   @override
@@ -30,7 +32,7 @@ class _StoryPageState extends State<StoryPage> {
       percentWatched.add(0);
     }
 
-    _startWatching(5);
+    _startWatching(seconds: 5);
   }
 
   @override
@@ -39,31 +41,33 @@ class _StoryPageState extends State<StoryPage> {
     super.dispose();
   }
 
-  Future<void> _startWatching(int seconds) async {
+  Future<void> _startWatching({int seconds = 0}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    watchingTimer =
-        Timer.periodic(Duration(milliseconds: seconds * 10), (Timer timer) {
-      setState(() {
-        if (percentWatched[currentStoryIndex] + 0.01 < 1) {
-          percentWatched[currentStoryIndex] += 0.01;
-        } else {
-          percentWatched[currentStoryIndex] = 1;
-          timer.cancel();
+    if (seconds > 0) {
+      watchingTimer =
+          Timer.periodic(Duration(milliseconds: seconds * 10), (Timer timer) {
+            setState(() {
+              if (percentWatched[currentStoryIndex] + 0.01 < 1) {
+                percentWatched[currentStoryIndex] += 0.01;
+              } else {
+                percentWatched[currentStoryIndex] = 1;
+                timer.cancel();
 
-          if (currentStoryIndex < stories.length - 1) {
-            currentStoryIndex++;
-            _startWatching(5);
-          } else {
-            prefs.setBool("skipOnboarding", true);
-            Navigator.pushAndRemoveUntil(
-              context,
-              SharpPageRoute(builder: (context) => SignInScreen()),
-              (r) => false,
-            );
-          }
-        }
+                if (currentStoryIndex < stories.length - 1) {
+                  currentStoryIndex++;
+                  _startWatching(seconds: seconds);
+                } else {
+                  prefs.setBool("skipOnboarding", true);
+                  context.go("/login");
+                }
+              }
+            });
+          });
+    } else {
+      setState(() {
+        percentWatched[currentStoryIndex] = 1;
       });
-    });
+    }
   }
 
   double _offset = 0;
@@ -91,11 +95,7 @@ class _StoryPageState extends State<StoryPage> {
             onVerticalDragEnd: (details) {
               if (_offset > 50) {
                 prefs!.setBool("skipOnboarding", true);
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  SharpPageRoute(builder: (context) => SignInScreen()),
-                  (r) => false,
-                );
+                context.go("/login");
               } else {
                 _offset = 0;
               }
@@ -131,6 +131,7 @@ class _StoryPageState extends State<StoryPage> {
                 children: [
                   stories[currentStoryIndex],
                   StoryBars(
+                    count: stories.length,
                     percentWatched: percentWatched,
                   )
                 ],

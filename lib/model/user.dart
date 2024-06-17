@@ -1,82 +1,25 @@
-class Height {
-  final String? unit;
-  final double? value;
+import 'dart:convert';
 
-  Height({
-    this.unit,
-    this.value,
+class UserRole {
+  final bool isUser;
+  final bool isAdmin;
+
+  UserRole({
+    required this.isUser,
+    required this.isAdmin,
   });
 
-  factory Height.fromJson(Map<String, dynamic> data) => Height(
-        unit: data['unit'] as String?,
-        value: data['value'] as double?,
-      );
+  factory UserRole.fromJson(Map<String, dynamic> json) => UserRole(
+    isUser: json["is_user"],
+    isAdmin: json["is_admin"],
+  );
 
   Map<String, dynamic> toJson() => {
-        'unit': unit,
-        'value': value,
-      };
+    "is_user": isUser,
+    "is_admin": isAdmin,
+  };
 }
 
-class Weight {
-  final String? unit;
-  final double? value;
-
-  Weight({
-    this.unit,
-    this.value,
-  });
-
-  factory Weight.fromJson(Map<String, dynamic> data) => Weight(
-        unit: data['unit'] as String?,
-        value: data['value'] as double?,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'unit': unit,
-        'value': value,
-      };
-}
-
-class ProfileInfo {
-  final String? firstName;
-  final String? lastName;
-
-  ProfileInfo({
-    this.firstName,
-    this.lastName,
-  });
-
-  factory ProfileInfo.fromJson(Map<String, dynamic> data) => ProfileInfo(
-        firstName: data['first_name'] as String?,
-        lastName: data['last_name'] as String?,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'first_name': firstName,
-        'last_name': lastName,
-      };
-}
-
-class BodyStats {
-  final Height? height;
-  final Weight? weight;
-
-  BodyStats({
-    this.height,
-    this.weight,
-  });
-
-  factory BodyStats.fromJson(Map<String, dynamic> data) => BodyStats(
-        height: Height.fromJson(data['height'] as Map<String, dynamic>),
-        weight: Weight.fromJson(data['weight'] as Map<String, dynamic>),
-      );
-
-  Map<String, dynamic> toJson() => {
-        'height': height,
-        'weight': weight,
-      };
-}
 
 class UserStatus {
   final bool? isActive;
@@ -102,45 +45,71 @@ class UserStatus {
       };
 }
 
-class User {
-  final String? id;
-  final String? email;
-  final String? username;
-  final ProfileInfo? profileInfo;
-  final BodyStats? bodyStats;
-  final UserStatus? userStatus;
 
-  User({
-    this.id,
-    this.email,
-    this.username,
-    this.profileInfo,
-    this.bodyStats,
-    this.userStatus,
+class AuthProvider {
+  final String provider;
+  final String hashedPassword;
+
+  AuthProvider({
+    required this.provider,
+    required this.hashedPassword,
   });
 
-  factory User.fromJson(Map<String, dynamic> data) => User(
-        id: data['_id'] as String?,
-        email: data['email'] as String?,
-        username: data['username'] as String?,
-        profileInfo: data['profile_info'] == null
-            ? null
-            : ProfileInfo.fromJson(
-                data['profile_info'] as Map<String, dynamic>),
-        bodyStats: data['body_stats'] == null
-            ? null
-            : BodyStats.fromJson(data['body_stats'] as Map<String, dynamic>),
-        userStatus: data['status'] == null
-            ? null
-            : UserStatus.fromJson(data['status'] as Map<String, dynamic>),
-      );
+  factory AuthProvider.fromJson(Map<String, dynamic> json) => AuthProvider(
+    provider: json["provider"],
+    hashedPassword: json["hashed_password"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "_id": id,
-        "email": email,
-        "username": username,
-        "profile_info": profileInfo == null ? null : profileInfo!.toJson(),
-        "body_stats": bodyStats == null ? null : bodyStats!.toJson(),
-        "status": userStatus == null ? null : userStatus!.toJson(),
-      };
+    "provider": provider,
+    "hashed_password": hashedPassword,
+  };
+}
+
+
+class User {
+  final String id;
+  final String email;
+  String username;
+  final List<AuthProvider> authProviders;
+  final UserRole userRoles;
+  final UserStatus userStatuses;
+
+  User({
+    required this.id,
+    required this.email,
+    required this.username,
+    required this.authProviders,
+    required this.userRoles,
+    required this.userStatuses,
+  });
+
+  @override
+  toString() => toJson().toString();
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    id: json["_id"],
+    email: json["email"],
+    username: json["username"],
+    authProviders: (json["auth_providers"] as Iterable).map((e) => AuthProvider.fromJson(e)).toList(),
+    userRoles: UserRole.fromJson(json["roles"]),
+    userStatuses: UserStatus.fromJson(json["status"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "_id": id,
+    "email": email,
+    "username": username,
+    "auth_providers": authProviders.map((e) => e.toJson()).toList(),
+    "roles": userRoles.toJson(),
+    "status": userStatuses.toJson(),
+  };
+
+  @override
+  bool operator == (Object other) {
+    if (other is User) {
+      return username == other.username;
+    }
+    return false;
+  }
 }

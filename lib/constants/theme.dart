@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/constants/font_family.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/constants/font_family.dart';
 
 final ThemeData themeData = ThemeData(
+  cardColor: Colors.white,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Colors.grey,
+    selectionColor: Colors.grey.withOpacity(0.3),
+    selectionHandleColor: Colors.grey.withOpacity(0.3),
+  ),
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
     primary: HavkaColors.green,
@@ -59,6 +65,8 @@ final ThemeData themeData = ThemeData(
   ),
   brightness: Brightness.light,
   primaryColor: HavkaColors.green,
+  splashColor: Colors.transparent,
+  highlightColor: Colors.transparent,
 );
 
 final ThemeData themeDataDark = ThemeData(

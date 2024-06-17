@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class HavkaBarcode extends CustomPainter {
   final List<int> data = [20, 9, 16, 9, 4, 15, 18];

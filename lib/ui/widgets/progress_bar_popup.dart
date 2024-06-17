@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/ui/widgets/progress_bar.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/ui/widgets/progress_bar.dart';
 
 class ProgressBarPopup extends StatefulWidget {
   final AnimationController animationController;
@@ -45,19 +45,26 @@ class _ProgressBarPopupState extends State<ProgressBarPopup>
         MediaQuery.of(context).size.width * 0.1,
         MediaQuery.of(context).size.height * 0.85,
         MediaQuery.of(context).size.width * 0.8,
-        MediaQuery.of(context).size.height * 0.07,
+        MediaQuery.of(context).size.height * 0.085,
       ),
       child: SlideTransition(
         position: slideAnimation,
         child: FadeTransition(
           opacity: fadeAnimation,
           child: PhysicalModel(
-            color: HavkaColors.cream,
+            color: HavkaColors.cream.withOpacity(0.95),
             elevation: 5,
             borderRadius: BorderRadius.circular(10),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    width: 0.4,
+                    color: HavkaColors.energy,
+                    strokeAlign: BorderSide.strokeAlignOutside),
+              ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     'Daily goal',

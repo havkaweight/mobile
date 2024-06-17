@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class HavkaProgressBarPainter extends CustomPainter {
   final double value;
@@ -19,7 +19,7 @@ class HavkaProgressBarPainter extends CustomPainter {
     final barStrokePaint = Paint()
       ..strokeWidth = 0.3
       ..style = PaintingStyle.stroke
-      ..color = HavkaColors.kcal;
+      ..color = HavkaColors.energy;
 
     final barFillPaint = Paint()
       ..style = PaintingStyle.fill
@@ -137,7 +137,8 @@ class _HavkaProgressBarState extends State<HavkaProgressBar> {
       double tempValue = oldWidget.value;
       const int milliseconds = 30;
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
-        if ((tempValue - widget.value).abs() < 0.01) {
+        if ((tempValue - widget.value).abs() < 0.01 ||
+            tempValue >= widget.maxValue) {
           timer.cancel();
         } else {
           tempValue = tempValue + (widget.value - tempValue) / milliseconds * 5;

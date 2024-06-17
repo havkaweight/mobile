@@ -1,28 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/constants/font_family.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/constants/font_family.dart';
 
 class ScreenHeader extends StatelessWidget {
   final String text;
   const ScreenHeader({
+    Key? key,
     required this.text,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(
-          vertical: 20.0,
-          horizontal: 10.0,
+          vertical: 5.0,
         ),
         child: Text(
           text,
           style: TextStyle(
             fontFamily: FontFamily.roboto,
             fontWeight: FontWeight.bold,
-            fontSize: 30,
+            fontSize: 26,
             color: HavkaColors.green,
           ),
         ),

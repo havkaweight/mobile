@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/model/user_device.dart';
+import 'package:havka/ui/screens/profile_screen.dart';
+import 'package:havka/ui/widgets/progress_indicator.dart';
+import 'package:havka/ui/widgets/rounded_button.dart';
+import 'package:havka/ui/widgets/screen_header.dart';
 
 class UserDevicesScreen extends StatefulWidget {
   @override

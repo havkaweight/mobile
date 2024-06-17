@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BarcodePopup extends StatefulWidget {
@@ -55,27 +56,36 @@ class _BarcodePopupState extends State<BarcodePopup>
           opacity: _fadeAnimation,
           child: SlideTransition(
             position: _slideAnimation,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(100.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(widget.barcode);
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  // border: Border.all(color: HavkaColors.bone[100]!),
+                ),
+                child: ListTile(
+                  leading: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      margin: EdgeInsets.all(5),
+                      child: Icon(
+                        CupertinoIcons.barcode,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    widget.barcode!,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context, widget.barcode);
                   },
-                  child: widget.barcode == null
-                      ? Container()
-                      : Text(
-                          widget.barcode!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
                 ),
               ),
             ),

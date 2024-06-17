@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class Holder extends StatelessWidget {
+
+  final double? height;
+  final double? width;
+
+  const Holder({
+    this.height,
+    this.width,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final double mWidth = MediaQuery.of(context).size.width;
-    final double mHeight = MediaQuery.of(context).size.height;
-    return SizedBox(
-      height: mHeight * 0.03,
-      child: Center(
-        child: InkWell(
-          onTap: () => Navigator.pop(context),
+    return InkWell(
+      onTap: () => Navigator.pop(context),
+      child: SizedBox(
+        height: height,
+        child: Center(
           child: Container(
-            width: mWidth * 0.1,
-            height: mHeight * 0.007,
+            width: MediaQuery.of(context).size.width * 0.12,
+            height: 7,
             decoration: BoxDecoration(
-              color: HavkaColors.bone[100],
-              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+              color: Colors.grey.withOpacity(0.3),
+              borderRadius: BorderRadius.all(
+                Radius.circular(10.0),
+              ),
             ),
           ),
         ),

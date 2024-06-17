@@ -1,193 +1,114 @@
 import 'dart:async';
 import 'package:async/async.dart';
+import 'package:flutter/cupertino.dart';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:havka/model/profile_data_model.dart';
+import 'package:havka/model/user_data_model.dart';
+import 'package:havka/model/weight_history.dart';
+import 'package:havka/ui/screens/daily_intake_screen.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/components/profile.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/model/product_amount.dart';
-import 'package:health_tracker/model/user.dart';
-import 'package:health_tracker/model/user_consumption_item.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/ui/screens/devices_screen.dart';
-import 'package:health_tracker/ui/screens/profile_edit_screen.dart';
-import 'package:health_tracker/ui/screens/scrolling_behavior.dart';
-import 'package:health_tracker/ui/screens/sign_in_screen.dart';
-import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
-import 'package:health_tracker/ui/widgets/bar_chart_timeline.dart';
-import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
-import 'package:health_tracker/ui/widgets/donut_chart.dart';
-import 'package:health_tracker/ui/widgets/progress_bar.dart';
-import 'package:health_tracker/ui/widgets/slider.dart';
-import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/line_chart.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/protein.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/utils/utils.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/model/data_items.dart';
+import 'package:havka/model/user.dart';
+import 'package:havka/model/user_fridge_item.dart';
+import 'package:havka/ui/screens/authorization.dart';
+import 'package:havka/ui/screens/profile_edit_screen.dart';
+import 'package:havka/ui/screens/scrolling_behavior.dart';
+import 'package:havka/ui/widgets/line_chart.dart';
+import 'package:havka/ui/widgets/progress_indicator.dart';
+import 'package:havka/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
-import '../widgets/stack_bar_chart.dart';
-
-final flutterReactiveBle = FlutterReactiveBle();
+import '../../constants/utils.dart';
+import '../../main.dart';
+import '../../model/user_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen>
     with WidgetsBindingObserver {
-  final ApiRoutes _apiRoutes = ApiRoutes();
-  late List<UserProduct> userProducts;
-  late List<PFCDataItem> nutritionData;
-  late int numberOfUserProducts;
-  late ValueNotifier<List<UserProduct>?> userProductsListener;
-  late ValueNotifier<List<PFCDataItem>?> nutritionFactsListener;
-  late ValueNotifier<User?> userListener;
-  late List<UserConsumptionItem> userConsumption;
-  late ValueNotifier<List<DataItem>?> userDailyKcalListener;
-  late ValueNotifier<double> progressBarValueNotifier;
-  late Future<void> _myFuture;
-  late CancelableOperation _cancelOperation;
-  late double userWeight;
-  late double userHeight;
-  late double userAge;
+  final ScrollController _profileScrollController = ScrollController();
+  late Offset _appBarOffset;
+  late double _appBarBlurRadius;
 
   @override
   void initState() {
     super.initState();
-    userWeight = 66.0;
-    userHeight = 175.0;
-    userAge = 29.0;
-    progressBarValueNotifier = ValueNotifier<double>(0.5);
-    userListener = ValueNotifier<User?>(null);
-    userProductsListener = ValueNotifier<List<UserProduct>?>(null);
-    nutritionFactsListener = ValueNotifier<List<PFCDataItem>?>(null);
-    userDailyKcalListener = ValueNotifier<List<DataItem>?>(null);
-    _myFuture = () async {
-      userListener.value = await _apiRoutes.getMe();
-      await fetchUserProducts();
-      await fetchUserConsumption();
-    }();
-    _cancelOperation =
-        CancelableOperation.fromFuture(_myFuture, onCancel: () {});
+    _appBarOffset = Offset.zero;
+    _appBarBlurRadius = 0.0;
+
+    _profileScrollController.addListener(() {
+      if (_profileScrollController.position.pixels <= 0.0) {
+        setState(() {
+          _appBarOffset = Offset.zero;
+          _appBarBlurRadius = 0.0;
+        });
+      } else if (_profileScrollController.position.pixels > 5.0) {
+        setState(() {
+          _appBarOffset = Offset(0.0, 2.0);
+          _appBarBlurRadius = 1.0;
+        });
+      } else {
+        setState(() {
+          _appBarOffset =
+              Offset(0.0, _profileScrollController.position.pixels / 2.5);
+          _appBarBlurRadius = _profileScrollController.position.pixels / 5.0;
+        });
+      }
+    });
+  }
+
+  Widget _showUsername(String username) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+          text: username,
+          style: TextStyle(
+            fontSize: 16,
+          )),
+    );
+    textPainter.layout();
+    return Text(
+      "@${textPainter.width > MediaQuery.of(context).size.width * 0.8 ? '' : username}",
+      style: TextStyle(
+        fontSize: 16,
+      ),
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
-    _cancelOperation.cancel();
-    userProductsListener.dispose();
-    userDailyKcalListener.dispose();
-    nutritionFactsListener.dispose();
-    userListener.dispose();
-    progressBarValueNotifier.dispose();
-    // WidgetsBinding.instance.removeObserver(this);
   }
 
-  // AppLifecycleState _notification;
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   setState(() { _notification = state; });
-  //   print(_notification);
-  // }
-
-  List<DataItem> extractDailyKcals(List<UserConsumptionItem> userConsumption) {
-    final DateTime currentDate = DateTime.now();
-    final DateTime maxDate =
-        DateTime(currentDate.year, currentDate.month, currentDate.day);
-    final DateTime minDate = maxDate.subtract(const Duration(days: 6));
-    final List<DateTime> datesPeriod = getDaysInBetween(minDate, maxDate);
-    final List<DataItem> data = [];
-    for (final DateTime date in datesPeriod) {
-      data.add(
-        DataItem(
-          userConsumption.fold(0, (previousValue, element) {
-            if ((element.consumedAt ?? element.createdAt)!
-                        .difference(date)
-                        .inDays ==
-                    0 &&
-                (element.consumedAt ?? element.createdAt)!.isAfter(date)) {
-              return previousValue +=
-                  element.product!.nutrition!.energy!.first.value;
-            }
-            return previousValue;
-          }),
-          DateFormat('MMM d').format(date),
-          Colors.amber[500]!,
-        ),
-      );
+  Future<void> _pickImage() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (returnedImage != null) {
+      setState(() {
+        final user = context.read<UserDataModel>();
+        // user.user!.profilePhoto = returnedImage.path;
+        user.updateData(user.user!);
+      });
     }
-    return data;
-  }
-
-  Future<void> fetchUserProducts() async {
-    const String fileName = "userProducts.json";
-    final dir = await getTemporaryDirectory();
-    final File file = File("${dir.path}/$fileName");
-    if (file.existsSync()) {
-      final jsonData = jsonDecode(file.readAsStringSync()) as List;
-      final List<UserProduct> newUserProducts = jsonData.map<UserProduct>(
-        (json) {
-          return UserProduct.fromJson(json as Map<String, dynamic>);
-        },
-      ).toList();
-      userProducts = newUserProducts;
-      nutritionFactsListener.value = extractNutritionFacts(userProducts);
-    }
-    userProducts = await _apiRoutes.getUserProductsList();
-    file.writeAsStringSync(
-      jsonEncode([for (UserProduct up in userProducts) up.toJson()]),
-      flush: true,
-    );
-    nutritionFactsListener.value = extractNutritionFacts(userProducts);
-  }
-
-  Future<void> fetchUserConsumption() async {
-    const String fileName = "userDailyKcals.json";
-    final dir = await getTemporaryDirectory();
-    final File file = File("${dir.path}/$fileName");
-    if (file.existsSync()) {
-      final jsonData = jsonDecode(file.readAsStringSync()) as List;
-      final List<DataItem> newDailyKcals = jsonData.map<DataItem>(
-        (json) {
-          return DataItem.fromJson(json as Map<String, dynamic>);
-        },
-      ).toList();
-      userDailyKcalListener.value = newDailyKcals;
-    }
-    userConsumption = await _apiRoutes.getUserConsumption();
-    userDailyKcalListener.value = extractDailyKcals(userConsumption);
-    file.writeAsStringSync(
-      jsonEncode(
-          [for (DataItem di in userDailyKcalListener.value!) di.toJson()]),
-      flush: true,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // flutterReactiveBle.statusStream.listen((status) {
-    //   setState(() {});
-    // });
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -195,227 +116,233 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: _buildProfileScreen(),
-    );
-  }
-
-  Widget _buildProfileScreen() {
-    final List<DataPoint> mockDataPoints = [DataPoint(0, 0)];
-    for (int i = 0; i < 30; i++) {
-      mockDataPoints.add(
-        DataPoint(
-          mockDataPoints.last.dx + 5,
-          mockDataPoints.last.dy + (Random().nextDouble() * 2 - 1) * 10,
-        ),
-      );
-    }
-    return ScrollConfiguration(
-      behavior: CustomBehavior(),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints viewportConstraints) {
-          final chartHeight = MediaQuery.of(context).size.height * 0.3;
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: viewportConstraints.maxHeight,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: HavkaColors.cream,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    offset: _appBarOffset,
+                    blurRadius: _appBarBlurRadius,
+                  ),
+                ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  ValueListenableBuilder(
-                    valueListenable: userListener,
-                    builder: (BuildContext context, User? user, _) {
-                      if (user == null) {
-                        return Container(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  color: HavkaColors.bone[100],
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          child: Container(
-                                            height: 20,
-                                            width: 150,
-                                            color: HavkaColors.bone[100],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 10.0,
-                                      ),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Row(
-                                            children: [
-                                              const FaIcon(
-                                                FontAwesomeIcons.rulerVertical,
-                                                color: Colors.black,
-                                                size: 20,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                  8,
-                                                  0,
-                                                  20,
-                                                  0,
-                                                ),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Container(
-                                                    height: 20,
-                                                    width: 50,
-                                                    color:
-                                                        HavkaColors.bone[100],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              const FaIcon(
-                                                FontAwesomeIcons.weightScale,
-                                                color: Colors.black,
-                                                size: 20,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                  8,
-                                                  0,
-                                                  0,
-                                                  0,
-                                                ),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Container(
-                                                    height: 20,
-                                                    width: 50,
-                                                    color:
-                                                        HavkaColors.bone[100],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Consumer<UserDataModel>(builder: (context, user, _) {
+                    return TextButton(
+                      onPressed: () => context.push(
+                          user.user!.email == "pasha@havka.com"
+                              ? "/profile/chats"
+                              : "/profile/chat",
+                          extra: user.user!.email == "pasha@havka.com"
+                              ? null
+                              : user.user!.id as String?),
+                      child: Text(
+                        user.user!.email == "pasha@havka.com"
+                            ? "Chats"
+                            : "Support",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            Colors.black.withOpacity(0.05)),
+                      ),
+                    );
+                  }),
+                  Consumer<UserDataModel>(builder: (context, user, _) {
+                    return Consumer<ProfileDataModel>(
+                        builder: (context, profile, _) {
+                      return TextButton(
+                        onPressed: () {
+                          if (user.user == null ||
+                              profile.userProfile == null) {
+                            return;
+                          }
+                          context.push(
+                            "/profile/edit",
+                            extra: {
+                              "user": user.user,
+                              "user_profile": profile.userProfile
+                            },
+                          );
+                        },
+                        child: Text(
+                          "Edit",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
                           ),
-                        );
-                      }
-                      return Container(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                'https://i.pinimg.com/originals/ff/fc/5f/fffc5f9280b03622281eba858c3f14e5.jpg',
-                                fit: BoxFit.cover,
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                loadingBuilder: (
-                                  BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress,
-                                ) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    children: [
-                                      Text(
-                                        showUsername(
-                                          '@${user.username!}',
-                                        ),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .displayLarge,
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll<Color>(
+                              Colors.black.withOpacity(0.05)),
+                        ),
+                      );
+                    });
+                  }),
+                ],
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).viewPadding.top -
+                  MediaQuery.of(context).viewPadding.bottom -
+                  60 - 36 -
+                  kBottomNavigationBarHeight,
+              child: Scrollbar(
+                controller: _profileScrollController,
+                child: SingleChildScrollView(
+                  controller: _profileScrollController,
+                  child: Consumer<UserDataModel>(builder: (context, user, _) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 10.0),
+                            child: Consumer<ProfileDataModel>(
+                                builder: (context, profile, _) {
+                              return profile.userProfile!.profileInfo.photo ==
+                                          null ||
+                                      !File(profile
+                                              .userProfile!.profileInfo.photo!)
+                                          .existsSync()
+                                  ? GestureDetector(
+                                      onTap: () async {
+                                        _pickImage();
+                                      },
+                                      onDoubleTap: () async {
+                                        HapticFeedback.lightImpact();
+                                        final String? token = await getToken();
+                                        await Clipboard.setData(
+                                            ClipboardData(text: token!));
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.black.withOpacity(0.05),
+                                            border: Border.all(
+                                                width: 4,
+                                                color: Colors.black
+                                                    .withOpacity(0.05)),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.3,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.3,
+                                          child: Center(
+                                              child: FaIcon(
+                                            FontAwesomeIcons.user,
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            size: 60,
+                                          ))),
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.file(
+                                        File(profile
+                                            .userProfile!.profileInfo.photo!),
+                                        fit: BoxFit.cover,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
                                       ),
-                                      IconButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProfileEditingScreen(
-                                                user: user,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        icon: Icon(
-                                          FontAwesomeIcons.userPen,
-                                          color: HavkaColors.grey[100],
+                                    );
+                            }),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                user.user == null
+                                    ? SizedBox.shrink()
+                                    : Text(
+                                        showLabel(
+                                          "@${user.user!.username}",
+                                          maxSymbols: 20,
                                         ),
-                                        iconSize: 15,
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
+                                Consumer<ProfileDataModel>(
+                                    builder: (context, profile, _) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
                                       vertical: 10.0,
                                     ),
                                     child: Row(
-                                      children: <Widget>[
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        profile.userProfile == null
+                                            ? SizedBox.shrink()
+                                            : Row(
+                                                children: [
+                                                  const FaIcon(
+                                                    FontAwesomeIcons
+                                                        .rulerVertical,
+                                                    color: Colors.black,
+                                                    size: 20,
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(
+                                                      8,
+                                                      0,
+                                                      20,
+                                                      0,
+                                                    ),
+                                                    child: Text(
+                                                      profile
+                                                                      .userProfile
+                                                                      ?.bodyStats
+                                                                      .height
+                                                                      ?.value !=
+                                                                  null &&
+                                                              profile
+                                                                      .userProfile
+                                                                      ?.bodyStats
+                                                                      .height!
+                                                                      .unit !=
+                                                                  null
+                                                          ? '${profile.userProfile?.bodyStats.height!.value!.toInt()} ${profile.userProfile?.bodyStats.height!.unit}'
+                                                          : '-',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .displayMedium,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                         Row(
-                                          children: [
-                                            const FaIcon(
-                                              FontAwesomeIcons.rulerVertical,
+                                          children: <Widget>[
+                                            const Icon(
+                                              FontAwesomeIcons.weightScale,
                                               color: Colors.black,
                                               size: 20,
                                             ),
@@ -427,19 +354,25 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 20,
                                                 0,
                                               ),
-                                              child: Text(
-                                                '${user.bodyStats!.height!.value!.toInt()} cm',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .displayMedium,
-                                              ),
+                                              child: Consumer<
+                                                      WeightHistoryDataModel>(
+                                                  builder: (context, value, _) {
+                                                return Text(
+                                                  value.data.isNotEmpty
+                                                      ? "${value.getLastWeight().dy.toStringAsFixed(1)} kg"
+                                                      : "-",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displayMedium,
+                                                );
+                                              }),
                                             ),
                                           ],
                                         ),
                                         Row(
-                                          children: <Widget>[
-                                            const FaIcon(
-                                              FontAwesomeIcons.weightScale,
+                                          children: [
+                                            const Icon(
+                                              Icons.man,
                                               color: Colors.black,
                                               size: 20,
                                             ),
@@ -452,7 +385,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 0,
                                               ),
                                               child: Text(
-                                                '${user.bodyStats!.weight!.value} kg',
+                                                profile.userProfile?.age == null
+                                                    ? "-"
+                                                    : "${profile.userProfile!.age} y.o.",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .displayMedium,
@@ -462,338 +397,566 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         ),
                                       ],
                                     ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                          Consumer<WeightHistoryDataModel>(
+                              builder: (context, value, _) {
+                            return Consumer<ProfileDataModel>(
+                                builder: (context, profileDataModel, _) {
+                              final double? weight = context
+                                  .read<WeightHistoryDataModel>()
+                                  .getLastWeight()
+                                  .dy;
+                              final profile = profileDataModel.userProfile;
+                              if (profile!.bodyStats.weight?.value != weight) {
+                                profile.bodyStats.weight =
+                                    Weight(unit: "kg", value: weight);
+                                profileDataModel.updateProfile(profile);
+                              }
+                              return Container(
+                                margin: EdgeInsets.symmetric(
+                                  vertical: 5.0,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 15.0,
+                                  vertical: 10.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Daily Intake Goal",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: HavkaColors.black,
+                                            fontWeight: FontWeight.bold,
+                                            decoration: TextDecoration.none,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () => context.push(
+                                              "/profile/calculator",
+                                              extra: value.getLastWeight().dy),
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStatePropertyAll(Colors
+                                                    .black
+                                                    .withOpacity(0.05)),
+                                          ),
+                                          icon: Icon(
+                                            FontAwesomeIcons.calculator,
+                                            size: 18,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 5.0),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.baseline,
+                                            textBaseline:
+                                                TextBaseline.alphabetic,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.only(
+                                                    right: 10.0),
+                                                child: Text(
+                                                  profileDataModel.userProfile
+                                                              ?.dailyIntake ==
+                                                          null
+                                                      ? "-"
+                                                      : "${profileDataModel.userProfile?.dailyIntake!.toInt()}",
+                                                  style: TextStyle(
+                                                    fontSize: 40,
+                                                    color: HavkaColors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration:
+                                                        TextDecoration.none,
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                "kcal / day",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: HavkaColors.black,
+                                                  fontWeight: FontWeight.normal,
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          child: Text(
+                                            "based on your gender, age, height and weight",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color:
+                                                  Colors.black.withOpacity(0.6),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                          }),
+                          Container(
+                            margin: EdgeInsets.symmetric(
+                              vertical: 5.0,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 15.0,
+                              vertical: 10.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Weight Dynamics",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Consumer<WeightHistoryDataModel>(
+                                            builder: (context, weightsData, _) {
+                                          return AnimatedSwitcher(
+                                              duration:
+                                                  Duration(milliseconds: 300),
+                                              child: weightsData.isSynced !=
+                                                          null &&
+                                                      weightsData.isSynced!
+                                                  ? SizedBox.shrink()
+                                                  : IconButton(
+                                                      icon: Icon(Icons.sync),
+                                                      color: Colors.black,
+                                                      onPressed: () async {
+                                                        await weightsData
+                                                            .requestAccess();
+                                                      },
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStatePropertyAll(
+                                                                Colors.black
+                                                                    .withOpacity(
+                                                                        0.05)),
+                                                      ),
+                                                    ));
+                                        }),
+                                        // Consumer<WeightHistoryDataModel>(
+                                        //     builder: (context, value, _) {
+                                        //   return IconButton(
+                                        //     onPressed: () async {
+                                        //       final UserWeightItem? weight =
+                                        //           await _buildWeightAddingModal(
+                                        //               value.getLastWeight().dy);
+                                        //       if (weight == null) {
+                                        //         return;
+                                        //       }
+                                        //       value.addWeight(DataPoint(
+                                        //           weight.createdAt, weight.value));
+                                        //       setState(() {
+                                        //         userWeight =
+                                        //             value.getLastWeight().dy;
+                                        //       });
+                                        //     },
+                                        //     style: ButtonStyle(
+                                        //       backgroundColor:
+                                        //           MaterialStatePropertyAll(Colors
+                                        //               .black
+                                        //               .withOpacity(0.05)),
+                                        //     ),
+                                        //     icon: Icon(
+                                        //       Icons.add,
+                                        //     ),
+                                        //   );
+                                        // }),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Consumer<WeightHistoryDataModel>(
+                                  builder: (BuildContext context,
+                                      WeightHistoryDataModel value,
+                                      Widget? child) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 5.0,
+                                        // horizontal: 5.0,
+                                      ),
+                                      height: 200,
+                                      child: Builder(builder: (context) {
+                                        if (!value.isLoaded) {
+                                          return Center(
+                                            child: HavkaProgressIndicator(),
+                                          );
+                                        }
+                                        if (value.data.isEmpty) {
+                                          return Center(
+                                            child: Text("No data"),
+                                          );
+                                        }
+                                        return HavkaLineChart(
+                                          initialData: value.data,
+                                          minTargetValue: 67,
+                                          maxTargetValue: 69,
+                                          showZeroAxis: false,
+                                          valuesFormat: (num _) =>
+                                              _.toStringAsFixed(1),
+                                        );
+                                      }),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<UserWeightItem?> _buildWeightAddingModal(double newWeight) async {
+    bool showDatePicker = false;
+    DateTime selectedDate = DateTime.now();
+    double maxChildSize = 0.3;
+    final List<int> weightIntegerList =
+        List.generate(21, (index) => (newWeight.toInt() - 11 + index));
+    final List<int> weightFloatingList = List.generate(10, (index) => index);
+    double pickerWeightInteger = weightIntegerList[11].toDouble();
+    double pickerWeightFloating =
+        double.parse((newWeight - newWeight.floor()).toStringAsFixed(1));
+    return await showModalBottomSheet(
+      useRootNavigator: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AnimatedSize(
+            duration: Duration(milliseconds: 200),
+            child: DraggableScrollableSheet(
+                expand: false,
+                initialChildSize: maxChildSize,
+                minChildSize: 0,
+                maxChildSize: maxChildSize,
+                builder: (context, scrollController) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      // Adjust the radius as needed
+                      topRight: Radius.circular(20.0),
+                    ),
+                    child: SafeArea(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 5.0),
+                              height: 50,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    child: Text("Cancel"),
+                                    onPressed: () => context.pop(),
+                                  ),
+                                  AnimatedSwitcher(
+                                    duration: Duration(milliseconds: 200),
+                                    child: !showDatePicker
+                                        ? TextButton(
+                                            child:
+                                                Text(formatDate(selectedDate)),
+                                            onPressed: () {
+                                              setState(() {
+                                                showDatePicker = true;
+                                                maxChildSize = 0.6;
+                                              });
+                                            },
+                                          )
+                                        : SizedBox.shrink(),
+                                  ),
+                                  TextButton(
+                                    child: Text("Add"),
+                                    onPressed: () {
+                                      final double pickerWeight =
+                                          pickerWeightInteger +
+                                              pickerWeightFloating;
+                                      final UserWeightItem uwi = UserWeightItem(
+                                        value: pickerWeight,
+                                        createdAt: selectedDate,
+                                      );
+                                      context.pop(uwi);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              transitionBuilder: (child, animation) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                              child: showDatePicker
+                                  ? Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                                  0.3 -
+                                              MediaQuery.of(context)
+                                                  .padding
+                                                  .bottom -
+                                              50,
+                                      child: CupertinoDatePicker(
+                                        use24hFormat: true,
+                                        initialDateTime: DateTime.now(),
+                                        minimumDate: DateTime.now()
+                                            .subtract(Duration(days: 30)),
+                                        maximumDate: DateTime.now(),
+                                        onDateTimeChanged: (value) {
+                                          selectedDate = value;
+                                        },
+                                      ),
+                                    )
+                                  : SizedBox.shrink(),
+                            ),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.3 -
+                                  MediaQuery.of(context).padding.bottom -
+                                  50,
+                              margin: EdgeInsets.symmetric(horizontal: 40.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      child: CupertinoPicker(
+                                        itemExtent: 30,
+                                        scrollController:
+                                            FixedExtentScrollController(
+                                          initialItem: 11,
+                                        ),
+                                        onSelectedItemChanged: (int value) {
+                                          pickerWeightInteger =
+                                              weightIntegerList[value]
+                                                  .toDouble();
+                                        },
+                                        children: List.generate(
+                                          weightIntegerList.length,
+                                          (index) => Container(
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            child: Text(
+                                              (weightIntegerList[index])
+                                                  .toString(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(left: 5.0, right: 40.0),
+                                    child: Text(
+                                      "kg",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      child: CupertinoPicker(
+                                        itemExtent: 30,
+                                        looping: true,
+                                        scrollController:
+                                            FixedExtentScrollController(
+                                          initialItem:
+                                              (pickerWeightFloating * 10)
+                                                  .toInt(),
+                                        ),
+                                        onSelectedItemChanged: (int value) {
+                                          pickerWeightFloating =
+                                              weightFloatingList[value] / 10.0;
+                                        },
+                                        children: List.generate(
+                                          weightFloatingList.length,
+                                          (index) => Container(
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            child: Text(
+                                              (weightFloatingList[index])
+                                                  .toString(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 5.0),
+                                    child: Text(
+                                      "g",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                    child: Container(
-                      height: 50,
-                      child: HavkaSlider(
-                        value: userWeight,
-                        onUpdate: (value) {
-                          setState(() {
-                            userWeight = value;
-                          });
-                        },
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                    child: Container(
-                      height: 50,
-                      child: HavkaSlider(
-                        value: userHeight,
-                        maxValue: 250,
-                        onUpdate: (value) {
-                          setState(() {
-                            userHeight = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          '${(662 - (9.53 * userAge) + 1.0 * (15.91 * userWeight + 5.396 * userHeight)).toStringAsFixed(0)}',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'kcal / day',
-                          style: TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Weekly progress',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Stack(
-                            //   alignment: AlignmentDirectional.center,
-                            //   children: [
-                            //     Container(
-                            //       margin: const EdgeInsets.only(top: 11.0),
-                            //       child: Text(
-                            //         '${DateTime.now().day}',
-                            //         style:
-                            //             const TextStyle(fontWeight: FontWeight.bold),
-                            //       ),
-                            //     ),
-                            //     IconButton(
-                            //       onPressed: _showCalendar,
-                            //       icon: const Icon(FontAwesomeIcons.calendar),
-                            //       iconSize: 33,
-                            //     ),
-                            //   ],
-                            // ),
-                            RoundedButton(
-                              text: 'Show history',
-                              onPressed: _buildWeightingsHistory,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: userDailyKcalListener,
-                    builder: (
-                      BuildContext context,
-                      List<DataItem>? value,
-                      _,
-                    ) {
-                      late List<DataItem> userDailyKcal;
-                      if (value == null) {
-                        return const Center(child: HavkaProgressIndicator());
-                      } else {
-                        userDailyKcal = value;
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                          vertical: 20.0,
-                        ),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          child: HavkaBarChart(
-                            initialData: userDailyKcal,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 20.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'PFC Split',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: nutritionFactsListener,
-                    builder: (
-                      BuildContext context,
-                      List<PFCDataItem>? value,
-                      _,
-                    ) {
-                      if (value == null) {
-                        return const Center(child: HavkaProgressIndicator());
-                      }
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40.0,
-                              vertical: 10.0,
-                            ),
-                            child: HavkaStackBarChart(
-                              initialData: value,
-                              onTapBar: (_) {},
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40.0,
-                              vertical: 20.0,
-                            ),
-                            child: SizedBox(
-                              height: chartHeight,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              child: HavkaDonutChart(
-                                initialData: value,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 20.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'Other',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 10.0,
-                    ),
-                    child: SizedBox(
-                      height: chartHeight,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: CustomPaint(
-                        painter: HavkaLineChart(mockDataPoints),
-                        child: Container(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  );
+                }),
           );
-        },
-      ),
-    );
-  }
-
-  Future _buildWeightingsHistory() {
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
-        ),
-      ),
-      context: context,
-      builder: (BuildContext builder) {
-        final double mHeight = MediaQuery.of(context).size.height;
-        return SizedBox(
-          height: mHeight * 0.85,
-          child: Column(
-            children: [
-              Holder(),
-              Center(
-                child: Column(
-                  children: [
-                    UserConsumptionScreen(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+        });
       },
     );
   }
 
-  Future _showCalendar() async {
-    return showModalBottomSheet(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
-        ),
-      ),
-      context: context,
-      builder: (BuildContext context) {
-        final double mHeight = MediaQuery.of(context).size.height;
-        return SafeArea(
-          child: SizedBox(
-            height: mHeight * 0.9,
-            child: Column(
-              children: [
-                Holder(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('This widget is not ready yet.'),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+// Future _buildWeightingsHistory() {
+//   return showModalBottomSheet(
+//     isScrollControlled: true,
+//     backgroundColor: Theme.of(context).colorScheme.background,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.only(
+//         topLeft: Radius.circular(15.0),
+//         topRight: Radius.circular(15.0),
+//       ),
+//     ),
+//     context: context,
+//     builder: (BuildContext builder) {
+//       final double mHeight = MediaQuery.of(context).size.height;
+//       return SizedBox(
+//         height: mHeight * 0.85,
+//         child: Column(
+//           children: [
+//             Holder(),
+//             Center(
+//               child: Column(
+//                 children: [
+//                   UserConsumptionScreen(),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       );
+//     },
+//   );
+// }
 
-  Future<dynamic> _buildScaleSearching(BuildContext context) async {
-    final List<DeviceService> servicesList =
-        await _apiRoutes.getDevicesServicesList();
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
-        ),
-      ),
-      context: context,
-      builder: (builder) {
-        final double mHeight = MediaQuery.of(context).size.height;
-        return ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0),
-          ),
-          child: SizedBox(
-            height: mHeight * 0.85,
-            child: Column(
-              children: [Holder(), Center(child: DevicesScreen(servicesList))],
-            ),
-          ),
-        );
-      },
-    );
-  }
+// Future _showCalendar() async {
+//   return showModalBottomSheet(
+//     backgroundColor: Theme.of(context).colorScheme.background,
+//     isScrollControlled: true,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.only(
+//         topLeft: Radius.circular(15.0),
+//         topRight: Radius.circular(15.0),
+//       ),
+//     ),
+//     context: context,
+//     builder: (BuildContext context) {
+//       final double mHeight = MediaQuery.of(context).size.height;
+//       return SafeArea(
+//         child: SizedBox(
+//           height: mHeight * 0.9,
+//           child: Column(
+//             children: [
+//               Holder(),
+//               Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: const [
+//                   Text('This widget is not ready yet.'),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
 
-  Future<void> isDeviceConnected(UserDevice userDevice) async {
-    flutterReactiveBle
-        .connectToDevice(id: userDevice.serialId!)
-        .listen((update) {
-      bool status = false;
-      if (update.connectionState == DeviceConnectionState.connected) {
-        status = true;
-      } else {
-        status = false;
-      }
-      // return status;
-    });
-  }
+// Future<dynamic> _buildScaleSearching(BuildContext context) async {
+//   final List<DeviceService> servicesList =
+//       await _apiRoutes.getDevicesServicesList();
+//   return showModalBottomSheet(
+//     isScrollControlled: true,
+//     backgroundColor: Theme.of(context).colorScheme.background,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.only(
+//         topLeft: Radius.circular(15.0),
+//         topRight: Radius.circular(15.0),
+//       ),
+//     ),
+//     context: context,
+//     builder: (builder) {
+//       final double mHeight = MediaQuery.of(context).size.height;
+//       return ClipRRect(
+//         borderRadius: const BorderRadius.only(
+//           topLeft: Radius.circular(15.0),
+//           topRight: Radius.circular(15.0),
+//         ),
+//         child: SizedBox(
+//           height: mHeight * 0.85,
+//           child: Column(
+//             children: [Holder(), Center(child: DevicesScreen(servicesList))],
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
 }

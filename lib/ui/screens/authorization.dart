@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
 
 const storage = FlutterSecureStorage();
 
@@ -17,6 +18,31 @@ Future<String?> getToken() async {
   return token;
 }
 
+Future<String?> getUserId(token) async {
+  final parts = token!.split(".");
+  final String? userId = _decodeBase64(parts[1])["user_id"];
+  return userId;
+}
+
+Map<String, dynamic> _decodeBase64(String str) {
+  String output = str.replaceAll('-', '+').replaceAll('_', '/');
+
+  switch (output.length % 4) {
+    case 0:
+      break;
+    case 2:
+      output += '==';
+      break;
+    case 3:
+      output += '=';
+      break;
+    default:
+      throw Exception('Illegal base64url string!"');
+  }
+
+  return jsonDecode(utf8.decode(base64Url.decode(output)));
+}
+
 Future<String?> getRefreshToken() async {
   final String? refreshToken = await storage.read(key: 'refresh_token');
   return refreshToken;
@@ -27,12 +53,7 @@ Future removeToken() async {
   await storage.delete(key: 'refresh_token');
 }
 
-// Future<bool> setScale(HavkaScale scale) async {
-//   await storage.write(key: scale.serviceUUID, value: scale);
-//   return storage.containsKey(key: 'jwt');
-// }
-
-// Future<String> getToken() async {
-//   String token = await storage.read(key: 'jwt');
-//   return token;
-// }
+Future<bool> isAuthorized() async {
+  return await storage.containsKey(key: "jwt") &&
+      await storage.containsKey(key: "refresh_token");
+}

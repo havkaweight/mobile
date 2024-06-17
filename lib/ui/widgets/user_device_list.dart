@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/ui/screens/devices_screen.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/screens/user_consumption_screen.dart';
-import 'package:health_tracker/ui/widgets/holder.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/model/device_service.dart';
+import 'package:havka/model/user_device.dart';
+import 'package:havka/ui/screens/devices_screen.dart';
+import 'package:havka/ui/screens/profile_screen.dart';
+import 'package:havka/ui/screens/user_consumption_screen.dart';
+import 'package:havka/ui/widgets/holder.dart';
+import 'package:havka/ui/widgets/progress_indicator.dart';
+import 'package:havka/ui/widgets/rounded_button.dart';
+import 'package:havka/ui/widgets/screen_header.dart';
 
 class UserDeviceList extends StatefulWidget {
   final String? labelText;

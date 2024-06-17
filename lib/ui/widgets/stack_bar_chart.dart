@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/user_product.dart';
+import 'package:havka/model/data_items.dart';
 
 class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
   final List<PFCDataItem> nutritionData;
   final Function(int)? onTapBar;
+
   HavkaStackBarChartPainter({
     required this.nutritionData,
     this.onTapBar,
@@ -19,11 +17,8 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (nutritionData.first.value == 0) {return;}
     bars = [];
-    final linePaint = Paint()
-      ..strokeWidth = 6
-      ..style = PaintingStyle.stroke
-      ..color = HavkaColors.cream;
 
     double left = 0.0;
     final double valuesSum = nutritionData
@@ -35,7 +30,7 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
         Rect.fromLTWH(
           left,
           (size.height - size.height * di.radius) / 2.0,
-          barWidth,
+          barWidth - size.width * 0.01,
           size.height * di.radius,
         ),
         topLeft:
@@ -53,13 +48,6 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
       canvas.drawRRect(rect, barPaint);
       bars.add(Path()..addRRect(rect));
       left += barWidth;
-      if (di != nutritionData.last) {
-        canvas.drawLine(
-          Offset(left, 0),
-          Offset(left, size.height),
-          linePaint,
-        );
-      }
     }
   }
 
@@ -138,9 +126,12 @@ class HavkaStackBarChartPainter extends CustomPainter with ChangeNotifier {
 class HavkaStackBarChart extends StatefulWidget {
   final List<PFCDataItem> initialData;
   final Function(int)? onTapBar;
+  final bool showLegend;
+
   const HavkaStackBarChart({
     required this.initialData,
     this.onTapBar,
+    this.showLegend = true,
   });
 
   @override
@@ -158,10 +149,11 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return nutritionData.length > 0 ?
+    Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        widget.showLegend ? SizedBox(
           height: 20,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -208,7 +200,8 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
               );
             },
           ),
-        ),
+        )
+        : SizedBox.shrink(),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: CustomPaint(
@@ -220,54 +213,51 @@ class _HavkaStackBarChartState extends State<HavkaStackBarChart> {
           ),
         )
       ],
-    );
+    ) :
+    SizedBox();
   }
 
   @override
   void didUpdateWidget(covariant HavkaStackBarChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialData != oldWidget.initialData) {
-      final double oldProteins = oldWidget.initialData[0].value;
-      final double oldFats = oldWidget.initialData[1].value;
-      final double oldCarbs = oldWidget.initialData[2].value;
+    if (widget.initialData != oldWidget.initialData && nutritionData.length > 0) {
 
-      final double newProteins = widget.initialData[0].value;
-      final double newFats = widget.initialData[1].value;
-      final double newCarbs = widget.initialData[2].value;
+      if(widget.initialData.length == 0) {
+        setState(() {
+          nutritionData = [
+            PFCDataItem(value: 1, icon: Icons.circle, label: "Fill up your fridge to see the stats", color: Colors.grey.withOpacity(0.5))
+          ];
+        });
+        return;
+      }
 
-      double tempProteins = oldProteins;
-      double tempFats = oldFats;
-      double tempCarbs = oldCarbs;
-      const int milliseconds = 50;
+      if(oldWidget.initialData.length == 0 && widget.initialData != 0) {
+        setState(() {
+          nutritionData = widget.initialData;
+        });
+        return;
+      }
+
+      final newNutritionData = widget.initialData.map((e) => e.value).toList();
+      final tempNutritionData =
+          oldWidget.initialData.map((e) => e.value).toList();
+
+      const int milliseconds = 35;
       Timer.periodic(const Duration(milliseconds: milliseconds), (timer) {
-        if ((newProteins - tempProteins).abs() < 0.01) {
+        if ((newNutritionData[0] - tempNutritionData[0]).abs() < 0.01) {
           timer.cancel();
+          for (int i=0; i<tempNutritionData.length; i++) {
+            nutritionData[i].value = newNutritionData[i];
+          }
         } else {
           setState(() {
-            tempProteins =
-                tempProteins + (newProteins - tempProteins) / milliseconds * 10;
-            tempFats = tempFats + (newFats - tempFats) / milliseconds * 10;
-            tempCarbs = tempCarbs + (newCarbs - tempCarbs) / milliseconds * 10;
-            nutritionData = [
-              PFCDataItem(
-                value: tempProteins,
-                label: "Protein",
-                color: HavkaColors.protein,
-                icon: FontAwesomeIcons.dna,
-              ),
-              PFCDataItem(
-                value: tempFats,
-                label: "Fat",
-                color: HavkaColors.fat,
-                icon: FontAwesomeIcons.droplet,
-              ),
-              PFCDataItem(
-                value: tempCarbs,
-                label: "Carbs",
-                color: HavkaColors.carbs,
-                icon: FontAwesomeIcons.wheatAwn,
-              ),
-            ];
+            for (int i=0; i<tempNutritionData.length; i++) {
+              tempNutritionData[i] +=
+                  (newNutritionData[i] - tempNutritionData[i]) /
+                      milliseconds *
+                      10;
+              nutritionData[i].value = tempNutritionData[i];
+            }
           });
         }
       });

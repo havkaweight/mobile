@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/screens/user_products_screen.dart';
+import 'package:havka/ui/screens/profile_screen.dart';
+import 'package:havka/ui/screens/stats_screen.dart';
+import 'package:havka/ui/screens/fridge_screen.dart';
 
 class ChildWidget extends StatelessWidget {
   final AvailableScreen screen;
@@ -12,10 +13,12 @@ class ChildWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget? widget;
-    if (screen == AvailableScreen.profile) {
+    if (screen == AvailableScreen.stats) {
+      widget = StatsScreen();
+    } else if (screen == AvailableScreen.profile) {
       widget = ProfileScreen();
     } else if (screen == AvailableScreen.fridge) {
-      widget = UserProductsScreen();
+      widget = FridgeScreen();
     }
 
     return SafeArea(
@@ -28,6 +31,7 @@ class ChildWidget extends StatelessWidget {
 }
 
 enum AvailableScreen {
+  stats,
   profile,
   fridge,
 }

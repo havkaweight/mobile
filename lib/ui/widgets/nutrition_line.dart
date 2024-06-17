@@ -1,34 +1,40 @@
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/product.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/constants/units.dart';
+import 'package:havka/model/data_items.dart';
+import 'package:havka/model/product.dart';
+import 'package:havka/model/product_energy.dart';
+
+import '../../constants/icons.dart';
+import '../../constants/utils.dart';
 
 Widget buildNutritionLine(ProductNutrition? nutritionData) {
+  final Energy? energy = nutritionData!.energy!;
   final List<PFCDataItem> nutritionDataList = [
     PFCDataItem(
-      value: nutritionData!.protein ?? 0,
+      value: (nutritionData.protein!.total ?? 0) / nutritionData.valuePerInBaseUnit! * 100.0,
       label: "Protein",
       color: HavkaColors.protein,
       icon: FontAwesomeIcons.dna,
     ),
     PFCDataItem(
-      value: nutritionData.fat ?? 0,
+      value: (nutritionData.fat!.total ?? 0) / nutritionData.valuePerInBaseUnit! * 100.0,
       label: "Fat",
       color: HavkaColors.fat,
       icon: FontAwesomeIcons.droplet,
     ),
     PFCDataItem(
-      value: nutritionData.carbs ?? 0,
+      value: (nutritionData.carbs!.total ?? 0) / nutritionData.valuePerInBaseUnit! * 100.0,
       label: "Carbs",
       color: HavkaColors.carbs,
       icon: FontAwesomeIcons.wheatAwn,
     ),
     PFCDataItem(
-      value: nutritionData.energy?.first.value ?? 0,
-      label: "Kcal",
-      color: HavkaColors.kcal,
-      icon: FontAwesomeIcons.utensils,
+      value: (energy?.kcal ?? 0) / nutritionData.valuePerInBaseUnit! * 100.0,
+      label: energy?.kcal == null ? EnergyUnits.kj : EnergyUnits.kcal,
+      color: HavkaColors.energy,
+      icon: HavkaIcons.energy,
     ),
   ];
   return ListView.builder(
@@ -50,7 +56,7 @@ Widget buildNutritionLine(ProductNutrition? nutritionData) {
                   ),
                 ),
                 Text(
-                  nutritionDataList[index].value.toInt().toString(),
+                  Utils().formatNumber(nutritionDataList[index].value)!,
                   style: TextStyle(
                     color: nutritionDataList[index].color,
                     fontWeight: FontWeight.bold,

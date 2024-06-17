@@ -1,22 +1,30 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/model/user_consumption_item.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/ui/screens/scale_screen.dart';
-import 'package:health_tracker/ui/widgets/circular_progress_bar.dart';
-import 'package:health_tracker/ui/widgets/nutrition_line.dart';
+import 'package:go_router/go_router.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/model/user_consumption_item.dart';
+import 'package:havka/model/user_fridge_item.dart';
+import 'package:havka/ui/screens/scale_screen.dart';
+import 'package:havka/ui/widgets/circular_progress_bar.dart';
+import 'package:havka/ui/widgets/nutrition_line.dart';
+import 'package:havka/utils/utils.dart';
+
+import '../../constants/icons.dart';
+import '../../main.dart';
 
 class FridgeItem extends StatefulWidget {
-  final UserProduct userProduct;
-  final List<UserConsumptionItem>? userConsumption;
-  final Function()? onPressed;
+  final UserFridgeItem userFridgeItem;
+  final Function()? onContextMenuDuplicate;
+  final Function()? onContextMenuEatWhole;
+  final Function()? onContextMenuDelete;
 
   const FridgeItem({
     super.key,
-    required this.userProduct,
-    this.userConsumption,
-    this.onPressed,
+    required this.userFridgeItem,
+    this.onContextMenuDuplicate,
+    this.onContextMenuEatWhole,
+    this.onContextMenuDelete,
   });
 
   @override
@@ -24,155 +32,167 @@ class FridgeItem extends StatefulWidget {
 }
 
 class _FridgeItemState extends State<FridgeItem> {
-  double dragDistance = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        setState(() {
-          dragDistance += details.delta.dx;
-          if (dragDistance < -50.0) {
-            dragDistance = -50.0;
-          }
-          if (dragDistance > 0) {
-            dragDistance = 0.0;
-          }
-        });
-      },
-      onHorizontalDragEnd: (details) {
-        setState(() {
-          if (dragDistance < -25) {
-            dragDistance = -50.0;
-          } else {
-            dragDistance = 0.0;
-          }
-        });
-      },
-      child: Stack(
-        children: [
-          Transform.translate(
-            offset: Offset(dragDistance, 0.0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 5.0,
-                horizontal: 10.0,
-              ),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: HavkaColors.bone[100]!),
-                ),
-                child: ListTile(
-                  tileColor: Colors.transparent,
-                  leading: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: Stack(
-                      children: <Widget>[
-                        if (widget.userProduct.product!.img != null)
-                          Container(
-                            width: 50,
-                            height: 50,
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xff7c94b6),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  widget.userProduct.product!.img!,
-                                ),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                            ),
-                          )
-                        else
-                          const Center(
-                            child: Icon(
-                              FontAwesomeIcons.bowlFood,
-                              color: HavkaColors.kcal,
-                            ),
-                          ),
-                        SizedBox(
+    return Container(
+      // color: Colors.transparent,
+      child: CupertinoContextMenu.builder(
+        actions: [
+          CupertinoContextMenuAction(
+            child: Text("Open"),
+            trailingIcon: FontAwesomeIcons.folderOpen,
+            onPressed: () {
+              context.pop();
+              context.push(
+                "/fridge/${widget.userFridgeItem.id}",
+                extra: widget.userFridgeItem,
+              );
+            },
+          ),
+          CupertinoContextMenuAction(
+            child: Text("Consume whole"),
+            trailingIcon: FontAwesomeIcons.cookieBite,
+            onPressed: () {
+              widget.onContextMenuEatWhole!();
+              context.pop();
+            }
+          ),
+          CupertinoContextMenuAction(
+            child: Text("Add the new one"),
+            trailingIcon: FontAwesomeIcons.clone,
+            onPressed: () {
+              widget.onContextMenuDuplicate!();
+              context.pop();
+            },
+          ),
+          Container(
+            height: 2,
+          ),
+          CupertinoContextMenuAction(
+            isDestructiveAction: true,
+            child: Text("Delete from fridge"),
+            trailingIcon: FontAwesomeIcons.trashCan,
+            onPressed: () {
+              widget.onContextMenuDelete!();
+              context.pop();
+            },
+          ),
+        ],
+        builder: (context, animation) {
+          return Container(
+            margin: const EdgeInsets.symmetric(
+              vertical: 5.0,
+              horizontal: 10.0,
+            ),
+            decoration: BoxDecoration(
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: HavkaColors.bone[100]!),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: ListTile(
+                tileColor: Colors.transparent,
+                leading: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Stack(
+                    children: <Widget>[
+                      if (widget.userFridgeItem.product?.images != null)
+                        Container(
                           width: 50,
                           height: 50,
-                          child: HavkaCircularProgressBar(
-                            value: widget.userProduct.amount != null &&
-                                    widget.userProduct.amount!.value > 0.01
-                                ? widget.userProduct.amount!.value
-                                : 0.01,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  title: Text(
-                    widget.userProduct.product?.name ?? 'NAME Placeholder',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (widget.userProduct.product?.nutrition != null)
-                        SizedBox(
-                          height: 20,
-                          width: 150,
-                          child: buildNutritionLine(
-                            widget.userProduct.product?.nutrition,
+                          margin: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xff7c94b6),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                widget.userFridgeItem.product!.images!
+                                    .original!,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(50.0),
                           ),
                         )
                       else
-                        const SizedBox(
-                          height: 20,
+                        const Center(
+                          child: Icon(
+                            HavkaIcons.bowl,
+                            color: HavkaColors.energy,
+                          ),
                         ),
-                      Text(
-                        widget.userProduct.amount != null ||
-                                widget.userProduct.amount!.value > 0.01
-                            ? '${widget.userProduct.amount!.value.toInt()} ${widget.userProduct.amount!.unit}'
-                            : '0 g',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScaleScreen(
-                          userProduct: widget.userProduct,
-                          userConsumption: widget.userConsumption,
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: HavkaCircularProgressBar(
+                          value: widget.userFridgeItem.amount != null &&
+                              widget.userFridgeItem.amount!.value! >
+                                  0.01
+                              ? widget.userFridgeItem.amount!.value! /
+                              widget.userFridgeItem.initialAmount!.value!
+                              : 0.01,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-          Transform.translate(
-            offset: Offset(
-              MediaQuery.of(context).size.width + dragDistance,
-              0.0,
-            ),
-            child: SizedBox(
-              width: 40,
-              height: 80,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Colors.grey,
+                    ],
                   ),
-                  splashColor: Colors.transparent,
-                  onPressed: widget.onPressed,
                 ),
+                title: Text(
+                  widget.userFridgeItem.product?.name ??
+                      "NAME Placeholder",
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
+                ),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (widget.userFridgeItem.product?.nutrition != null)
+                      SizedBox(
+                        height: 20,
+                        width: 200,
+                        child: buildNutritionLine(
+                          widget.userFridgeItem.product?.nutrition,
+                        ),
+                      )
+                    else
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    Text(
+                      widget.userFridgeItem.amount != null ||
+                          widget.userFridgeItem.amount!.value! > 0.01
+                          ? '${formattedNumber(widget.userFridgeItem.amount!.value!)} '
+                          '${widget.userFridgeItem.amount!
+                          .unit}'
+                          : "0 g",
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .labelSmall,
+                    )
+                  ],
+                ),
+                onTap: () {
+                  context.push(
+                    "/fridge/${widget.userFridgeItem.id}",
+                    extra: widget.userFridgeItem,
+                  );
+                },
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

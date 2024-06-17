@@ -1,42 +1,39 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/colors.dart';
-import 'package:health_tracker/constants/scale.dart';
-import 'package:health_tracker/constants/utils.dart';
-import 'package:health_tracker/model/data_items.dart';
-import 'package:health_tracker/model/product_amount.dart';
-import 'package:health_tracker/model/user_consumption_item.dart';
-import 'package:health_tracker/model/user_device.dart';
-import 'package:health_tracker/model/user_product.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
-import 'package:health_tracker/ui/screens/product_updating_screen.dart';
-import 'package:health_tracker/ui/widgets/progress_bar_popup.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
-import 'package:health_tracker/utils/utils.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/constants/utils.dart';
+import 'package:havka/model/user_consumption_item.dart';
+import 'package:havka/model/user_device.dart';
+import 'package:havka/model/user_fridge_item.dart';
+import 'package:havka/ui/screens/product_adjustment_screen.dart';
+import 'package:havka/ui/screens/stats_screen.dart';
+import 'package:havka/ui/widgets/progress_bar_popup.dart';
+import 'package:havka/ui/widgets/progress_indicator.dart';
+import 'package:havka/ui/widgets/rounded_button.dart';
+import 'package:havka/ui/widgets/rounded_textfield.dart';
+import 'package:havka/utils/utils.dart';
+import 'package:provider/provider.dart';
+
+import '../../constants/icons.dart';
+import '../../model/product.dart';
 
 OverlayEntry? _overlayEntry;
 
 class ScaleScreen extends StatefulWidget {
-  final UserProduct? userProduct;
-  final List<UserConsumptionItem>? userConsumption;
+  final UserFridgeItem? userProduct;
   final UserDevice? userDevice;
 
   const ScaleScreen({
     this.userProduct,
-    this.userConsumption,
     this.userDevice,
   });
 
@@ -48,6 +45,20 @@ class _ScaleScreenState extends State<ScaleScreen>
     with SingleTickerProviderStateMixin {
   final ApiRoutes _apiRoutes = ApiRoutes();
 
+  final ScrollController _scrollController = ScrollController();
+
+  late ButtonStyle buttonStyle;
+  late Widget addButtonContent;
+
+  int _currentIndex = 0;
+  late List<Serving> servingNutrition;
+
+  late Offset _topOffset;
+  late double _topBlurRadius;
+  late Offset _bottomOffset;
+  late double _bottomBlurRadius;
+
+  late double weightInServing;
   double? weight;
   double? protein;
   double? fats;
@@ -55,18 +66,87 @@ class _ScaleScreenState extends State<ScaleScreen>
   double? kcal;
   late DateTime selectedDateTime;
   late ValueNotifier<double> progressBarValueNotifier;
+  final GlobalKey<SliverAnimatedListState> _userConsumptionListKeyIOS =
+      GlobalKey<SliverAnimatedListState>();
+  final GlobalKey<AnimatedListState> _userConsumptionListKeyAndroid =
+      GlobalKey<AnimatedListState>();
+  late ValueNotifier<List<UserConsumptionItem>?> productConsumption;
 
   String prevText = '';
   final FocusNode _weightFocusNode = FocusNode();
   final TextEditingController weightController = TextEditingController();
   String? weightError;
-  late dynamic _subscription;
+  late List<Serving>? servingUnits;
+  late List<String> servingUnitNames;
+  late String selectedServingUnit;
   late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
 
+    _topOffset = Offset.zero;
+    _topBlurRadius = 0;
+    _bottomOffset = Offset.zero;
+    _bottomBlurRadius = 0;
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels <= _scrollController.position.minScrollExtent) {
+        setState(() {
+          _topOffset = Offset.zero;
+          _topBlurRadius = 0.0;
+        });
+      } else if (_scrollController.position.pixels > 5.0) {
+        setState(() {
+          _topOffset = Offset(0.0, 2.0);
+          _topBlurRadius = 1.0;
+        });
+      } else {
+        setState(() {
+          _topOffset = Offset(0.0, _scrollController.position.pixels / 2.5);
+          _topBlurRadius = _scrollController.position.pixels / 5.0;
+        });
+      }
+
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+        setState(() {
+          _bottomOffset = Offset.zero;
+          _bottomBlurRadius = 0.0;
+        });
+      } else if (_scrollController.position.pixels < _scrollController.position.maxScrollExtent * 0.95) {
+        setState(() {
+          _bottomOffset = Offset(0.0, -2.0);
+          _bottomBlurRadius = 1.0;
+        });
+      } else {
+        setState(() {
+          _bottomOffset = Offset(0.0, -2.0 + _scrollController.position.pixels / _scrollController.position.maxScrollExtent);
+          _bottomBlurRadius = 1.0 - _scrollController.position.pixels / _scrollController.position.maxScrollExtent;
+        });
+      }
+
+    });
+
+    buttonStyle = ButtonStyle(
+      backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+          side: BorderSide(
+            color: Colors.black.withOpacity(0.05), // your color here
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(30))),
+    );
+
+    addButtonContent = Text(
+      "Add",
+      style: TextStyle(
+        color: Colors.grey,
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+      ),
+    );
+
+    weightInServing = 0.0;
     weight = 0.0;
     protein = 0.0;
     fats = 0.0;
@@ -74,34 +154,28 @@ class _ScaleScreenState extends State<ScaleScreen>
     kcal = 0.0;
     selectedDateTime = DateTime.now();
     progressBarValueNotifier = ValueNotifier<double>(0);
+    productConsumption = ValueNotifier<List<UserConsumptionItem>?>(null);
     () async {
-      const String fileName = "userDailyKcals.json";
-      final dir = await getTemporaryDirectory();
-      final File file = File("${dir.path}/$fileName");
-      if (file.existsSync()) {
-        final jsonData = jsonDecode(file.readAsStringSync()) as List;
-        final List<DataItem> newDailyKcals = jsonData.map<DataItem>(
-          (json) {
-            return DataItem.fromJson(json as Map<String, dynamic>);
-          },
-        ).toList();
-        final double todayCalories = newDailyKcals
-            .where(
-              (element) =>
-                  element.label == DateFormat('MMM d').format(DateTime.now()),
-            )
-            .toList()
-            .first
-            .value;
-        progressBarValueNotifier.value = todayCalories;
-      }
+      productConsumption.value = await _apiRoutes
+          .getUserConsumptionByProduct(widget.userProduct!.product!);
     }();
+
+    servingNutrition = [
+      Serving(
+        name: widget.userProduct!.product!.baseUnit!,
+        valueInBaseUnit: 100,
+      )
+    ];
+    servingNutrition.addAll(widget.userProduct!.product!.serving.whereNot((el) => el.valueInBaseUnit == 1).sorted((a, b) => a.valueInBaseUnit.compareTo(b.valueInBaseUnit)));
+
+    servingUnits = widget.userProduct?.product!.serving.sorted((a, b) => a.valueInBaseUnit.compareTo(b.valueInBaseUnit));
+    servingUnitNames = servingUnits!.map((e) => e.name).toList();
+    selectedServingUnit = servingUnits!.firstWhere((element) => element.valueInBaseUnit > 1).name;
 
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-
     weightController.addListener(_changeNutritionValues);
     weightController.addListener(_onFocusWeight);
   }
@@ -110,7 +184,6 @@ class _ScaleScreenState extends State<ScaleScreen>
   void dispose() {
     weightController.dispose();
     super.dispose();
-    // _subscription.cancel();
   }
 
   void showProgressBarPopup() {
@@ -128,6 +201,9 @@ class _ScaleScreenState extends State<ScaleScreen>
     Future.delayed(const Duration(milliseconds: 600), () {
       progressBarValueNotifier.value += kcal!;
     });
+    // Timer.periodic(const Duration(seconds: 3), (timer) {
+    //   progressBarValueNotifier.value += 500;
+    // });
     Future.delayed(const Duration(seconds: 3), hideProgressBarPopup);
   }
 
@@ -145,62 +221,125 @@ class _ScaleScreenState extends State<ScaleScreen>
   }
 
   void _changeNutritionValues() {
-    if (weightController.text.isNotEmpty) {
-      if (prevText != weightController.text) {
-        String newText = weightController.text;
-        if (newText.contains(',')) {
-          newText = newText.replaceAll(',', '.');
-          weightController.text = weightController.text.replaceAll(',', '.');
-          weightController.selection = TextSelection.fromPosition(
-            TextPosition(offset: weightController.text.length),
-          );
-        }
-        prevText = newText;
-        weight = double.parse(newText);
+    if (prevText != weightController.text) {
+      String newText = weightController.text;
+      if (newText.contains(',')) {
+        newText = newText.replaceAll(',', '.');
+        weightController.text = weightController.text.replaceAll(',', '.');
+        weightController.selection = TextSelection.fromPosition(
+          TextPosition(offset: weightController.text.length),
+        );
       }
-    } else {
-      weight = 0.0;
+      prevText = newText;
+      weightInServing = newText.isEmpty ? 0.0 : double.parse(newText);
+      weight = weightInServing * widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit).valueInBaseUnit;
+      if (weight! < 0.0001) {
+        buttonStyle = ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              side: BorderSide(
+                color: Colors.black.withOpacity(0.05), // your color here
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(30))),
+        );
+      } else {
+        buttonStyle = ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(Colors.black.withOpacity(0.05)),
+        );
+      }
+      weightController.text = weight! > widget.userProduct!.amount!.value! ? Utils().formatNumber(widget.userProduct!.amount!.value! / widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit).valueInBaseUnit)! : newText;
     }
     setState(() {});
   }
 
+  Widget consumptionItem(context, list, index, animation) {
+    final UserConsumptionItem
+    userConsumptionItem =
+    list[index];
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset(0, -1),
+          end: Offset.zero,
+        ).animate(animation),
+        child: GestureDetector(
+          onDoubleTap: () {
+            _removeItem(
+                userConsumptionItem,
+                index,
+                context);
+          },
+          child: Padding(
+            padding: EdgeInsets
+                .symmetric(
+                vertical:
+                15.0),
+            child: Row(
+              mainAxisAlignment:
+              MainAxisAlignment
+                  .spaceBetween,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: Row(
+                    mainAxisAlignment:
+                    MainAxisAlignment
+                        .spaceBetween,
+                    children: [
+                      Text(
+                        '${formattedNumber(userConsumptionItem.consumedAmount!.value)} ${userConsumptionItem.consumedAmount!.serving.name}',
+                        style: Theme.of(
+                            context)
+                            .textTheme
+                            .displayLarge,
+                      ),
+                      Text(
+                          '= ${formattedNumber(userConsumptionItem.consumedAmount!.value * userConsumptionItem.consumedAmount!.serving.valueInBaseUnit)} ${userConsumptionItem.product!.baseUnit}',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          )
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  formatDate(
+                    userConsumptionItem.consumedAt
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    QualifiedCharacteristic scaleCharacteristic;
-    final Utils utils = Utils();
-
-    final Uuid scaleServiceUuid = Uuid.parse(Scale.scaleServiceUuid);
-    final Uuid scaleCharacteristicId = Uuid.parse(Scale.scaleCharacteristicId);
-
-    scaleCharacteristic = QualifiedCharacteristic(
-      serviceId: scaleServiceUuid,
-      characteristicId: scaleCharacteristicId,
-      deviceId: '7C:9E:BD:F4:5B:1A',
-    );
-
     protein = widget.userProduct!.product!.nutrition != null
-        ? widget.userProduct!.product!.nutrition!.protein! * weight! / 100
+        ? widget.userProduct!.product!.nutrition!.protein!.total!
+          / widget.userProduct!.product!.nutrition!.valuePerInBaseUnit!
+          * weight!
         : 0;
     fats = widget.userProduct!.product!.nutrition != null
-        ? widget.userProduct!.product!.nutrition!.fat! * weight! / 100
+        ? widget.userProduct!.product!.nutrition!.fat!.total!
+          / widget.userProduct!.product!.nutrition!.valuePerInBaseUnit!
+          * weight!
         : 0;
     carbs = widget.userProduct!.product!.nutrition != null
-        ? widget.userProduct!.product!.nutrition!.carbs! * weight! / 100
+        ? widget.userProduct!.product!.nutrition!.carbs!.total!
+          / widget.userProduct!.product!.nutrition!.valuePerInBaseUnit!
+          * weight!
         : 0;
     kcal = widget.userProduct!.product!.nutrition != null &&
-            widget.userProduct!.product!.nutrition!.energy != null
-        ? widget.userProduct!.product!.nutrition!.energy!.first.value *
-            weight! /
-            100
+            widget.userProduct!.product!.nutrition!.energy!.kcal != null
+        ? widget.userProduct!.product!.nutrition!.energy!.kcal!
+          / widget.userProduct!.product!.nutrition!.valuePerInBaseUnit!
+          * weight!
         : 0;
-
-    // _subscription = flutterReactiveBle
-    //     .readCharacteristic(scaleCharacteristic)
-    //     .then((valueList) {
-    //   final String valueString = utils.listIntToString(valueList);
-    //   weight = double.parse(valueString);
-    //   print(weight);
-    // }, onError: (Object error) {});
 
     return GestureDetector(
       onTap: () {
@@ -211,601 +350,951 @@ class _ScaleScreenState extends State<ScaleScreen>
         body: PhysicalModel(
           color: HavkaColors.cream,
           elevation: 20,
-          child: SingleChildScrollView(
-            child: SafeArea(
-              child: Align(
-                child:
-                    // StreamBuilder<List<int>>(
-                    //     stream: flutterReactiveBle
-                    //         .subscribeToCharacteristic(scaleCharacteristic),
-                    //     builder:
-                    //         (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-                    //       if (!snapshot.hasData) {
-                    //         print(weight);
-                    //       } else {
-                    //         final String valueString =
-                    //             utils.listIntToString(snapshot.data);
-                    //         weight = double.parse(valueString);
-                    //       }
-                    //       weightController.text = '$weight';
-                    //       final protein = widget.userProduct.protein * weight / 100;
-                    //       final fats = widget.userProduct.fat * weight / 100;
-                    //       final carbs = widget.userProduct.carbs * weight / 100;
-                    //       final kcal = widget.userProduct.kcal * weight / 100;
-                    Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 10.0,
-                      ),
-                      child: Row(
-                        children: [
-                          Column(
-                            children: [
-                              Hero(
-                                tag:
-                                    'userProductImage-${widget.userProduct!.id}',
-                                child: GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20.0),
-                                    child: widget.userProduct!.product!.img !=
-                                            null
-                                        ? Container(
-                                            width: 150,
-                                            height: 150,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xff7c94b6),
-                                              image: DecorationImage(
-                                                image: NetworkImage(
-                                                  widget.userProduct!.product!
-                                                      .img!,
-                                                ),
-                                                fit: BoxFit.cover,
-                                              ),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                Radius.circular(50.0),
-                                              ),
-                                              border: Border.all(
-                                                width: 4.0,
-                                                color: HavkaColors.kcal,
-                                              ),
-                                            ),
-                                          )
-                                        : Center(
-                                            child: Container(
-                                              width: 150,
-                                              height: 150,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                  Radius.circular(50.0),
-                                                ),
-                                                border: Border.all(
-                                                  width: 4.0,
-                                                  color: HavkaColors.kcal,
-                                                ),
-                                              ),
-                                              child: const Icon(
-                                                FontAwesomeIcons.bowlFood,
-                                                color: HavkaColors.kcal,
-                                                size: 60,
-                                              ),
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                child: const Text('Edit'),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductUpdatingScreen(
-                                        product: widget.userProduct!.product!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 15.0),
-                                child: Text(
-                                  showUsername(
-                                    widget.userProduct!.product!.name!,
-                                  ),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Table(
-                                defaultColumnWidth:
-                                    const IntrinsicColumnWidth(),
-                                children: [
-                                  TableRow(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 6.0),
-                                        child: Icon(
-                                          FontAwesomeIcons.dna,
-                                          size: 12,
-                                          color: HavkaColors.protein,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Protein ',
-                                        style: TextStyle(
-                                          color: HavkaColors.protein,
-                                        ),
-                                      ),
-                                      Text(
-                                        widget.userProduct!.product!
-                                                    .nutrition !=
-                                                null
-                                            ? widget.userProduct!.product!
-                                                .nutrition!.protein
-                                                .toString()
-                                            : '-',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: HavkaColors.protein,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                      Text(
-                                        widget.userProduct!.amount != null
-                                            ? ' ${widget.userProduct!.amount!.unit}'
-                                            : ' g',
-                                        style: const TextStyle(
-                                          color: HavkaColors.protein,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  TableRow(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 6.0),
-                                        child: Icon(
-                                          FontAwesomeIcons.droplet,
-                                          size: 12,
-                                          color: HavkaColors.fat,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Fat ',
-                                        style: TextStyle(
-                                          color: HavkaColors.fat,
-                                        ),
-                                      ),
-                                      Text(
-                                        widget.userProduct!.product!
-                                                    .nutrition !=
-                                                null
-                                            ? widget.userProduct!.product!
-                                                .nutrition!.fat
-                                                .toString()
-                                            : '-',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: HavkaColors.fat,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                      Text(
-                                        widget.userProduct!.amount != null
-                                            ? ' ${widget.userProduct!.amount!.unit}'
-                                            : ' g',
-                                        style: const TextStyle(
-                                          color: HavkaColors.fat,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  TableRow(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 6.0),
-                                        child: Icon(
-                                          FontAwesomeIcons.wheatAwn,
-                                          size: 12,
-                                          color: HavkaColors.carbs,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Carbs ',
-                                        style: TextStyle(
-                                          color: HavkaColors.carbs,
-                                        ),
-                                      ),
-                                      Text(
-                                        widget.userProduct!.product!
-                                                    .nutrition !=
-                                                null
-                                            ? widget.userProduct!.product!
-                                                .nutrition!.carbs
-                                                .toString()
-                                            : '-',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: HavkaColors.carbs,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                      Text(
-                                        widget.userProduct!.amount != null
-                                            ? ' ${widget.userProduct!.amount!.unit}'
-                                            : ' g',
-                                        style: const TextStyle(
-                                          color: HavkaColors.carbs,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  TableRow(
-                                    children: [
-                                      for (int i = 0; i < 4; i++)
-                                        Container(
-                                          height: 20,
-                                        )
-                                    ],
-                                  ),
-                                  TableRow(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 6.0),
-                                        child: Icon(
-                                          FontAwesomeIcons.utensils,
-                                          size: 12,
-                                          color: HavkaColors.kcal,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Calories ',
-                                        style: TextStyle(
-                                          color: HavkaColors.kcal,
-                                        ),
-                                      ),
-                                      Text(
-                                        widget.userProduct!.product!
-                                                    .nutrition !=
-                                                null
-                                            ? widget.userProduct!.product!
-                                                .nutrition!.energy!.first.value
-                                                .toString()
-                                            : '-',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: HavkaColors.kcal,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                      const Text(
-                                        ' kcal',
-                                        style: TextStyle(
-                                          color: HavkaColors.kcal,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+          child: SafeArea(
+            child: Container(
+              child:
+                  Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 235,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 15.0,
+                      // vertical: 10.0,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        color: HavkaColors.bone[100],
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.0,
-                            vertical: 8.0,
-                          ),
-                          child: Text(
-                            'Grab your portion here',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
+                    decoration: BoxDecoration(
+                      // color: Colors.black.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    SizedBox(
-                      width: 300,
-                      child: RoundedTextField(
-                        errorText: weightError,
-                        focusNode: _weightFocusNode,
-                        width: 100,
-                        controller: weightController,
-                        textAlign: TextAlign.center,
-                        suffixText: widget.userProduct!.amount != null
-                            ? widget.userProduct!.amount!.unit
-                            : 'g',
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^(\d+)?[\.\,]?\d{0,2}'),
-                          ),
-                          LengthLimitingTextInputFormatter(4),
-                        ],
-                      ),
-                    ),
-                    Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Icon(
-                                FontAwesomeIcons.dna,
-                                size: 12,
-                                color: HavkaColors.protein,
-                              ),
-                            ),
-                            Text(
-                              protein!.toStringAsFixed(1),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: HavkaColors.protein,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            Text(
-                              widget.userProduct!.amount != null
-                                  ? ' ${widget.userProduct!.amount!.unit}'
-                                  : ' g',
-                              style: const TextStyle(
-                                color: HavkaColors.protein,
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Icon(
-                                FontAwesomeIcons.droplet,
-                                size: 12,
-                                color: HavkaColors.fat,
-                              ),
-                            ),
-                            Text(
-                              fats!.toStringAsFixed(1),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: HavkaColors.fat,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            Text(
-                              widget.userProduct!.amount != null
-                                  ? ' ${widget.userProduct!.amount!.unit}'
-                                  : ' g',
-                              style: const TextStyle(
-                                color: HavkaColors.fat,
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Icon(
-                                FontAwesomeIcons.wheatAwn,
-                                size: 12,
-                                color: HavkaColors.carbs,
-                              ),
-                            ),
-                            Text(
-                              carbs!.toStringAsFixed(1),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: HavkaColors.carbs,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            Text(
-                              widget.userProduct!.amount != null
-                                  ? ' ${widget.userProduct!.amount!.unit}'
-                                  : ' g',
-                              style: const TextStyle(
-                                color: HavkaColors.carbs,
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Icon(
-                                FontAwesomeIcons.utensils,
-                                size: 12,
-                                color: HavkaColors.kcal,
-                              ),
-                            ),
-                            Text(
-                              kcal!.toStringAsFixed(1),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: HavkaColors.kcal,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            const Text(
-                              ' kcal',
-                              style: TextStyle(
-                                color: HavkaColors.kcal,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15.0),
-                              topRight: Radius.circular(15.0),
-                            ),
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 30.0,
+                            right: 30.0,
+                            top: 20.0,
                           ),
-                          context: context,
-                          builder: (context) {
-                            return FractionallySizedBox(
-                              heightFactor: 0.5,
-                              child: SafeArea(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CupertinoDatePicker(
-                                    use24hFormat: true,
-                                    initialDateTime: DateTime.now(),
-                                    minimumDate: DateTime.now()
-                                        .subtract(const Duration(days: 365)),
-                                    maximumDate: DateTime.now(),
-                                    onDateTimeChanged: (value) {
-                                      setState(() {
-                                        selectedDateTime = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: SizedBox(
-                        width: 180,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(right: 8.0),
-                                child: Icon(
-                                  CupertinoIcons.calendar,
-                                  // FontAwesomeIcons.calendar,
-                                  size: 22,
-                                ),
-                              ),
-                              Text(
-                                formatDate(selectedDateTime),
-                              ),
-                            ]),
-                      ),
-                    ),
-                    RoundedButton(
-                      text: 'Add',
-                      onPressed: () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        if (weightController.text.isEmpty) {
-                          setState(() {
-                            weightError = 'Empty weight';
-                          });
-                          return;
-                        }
-                        final UserConsumptionItem userConsumptionItem =
-                            UserConsumptionItem(
-                          userProduct: widget.userProduct,
-                          amount: ProductAmount(value: weight!, unit: 'g'),
-                          consumedAt: selectedDateTime,
-                        );
-                        _apiRoutes.addUserConsumptionItem(
-                            userConsumptionItem: userConsumptionItem);
-                        showProgressBarPopup();
-                        Navigator.pop(context);
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        color: HavkaColors.bone[100],
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.0,
-                            vertical: 8.0,
-                          ),
-                          child: Text(
-                            'Consumption History',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (widget.userConsumption!.isNotEmpty)
-                      SizedBox(
-                        height: 400,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: ListView.builder(
-                            itemCount: widget.userConsumption!.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final List<UserConsumptionItem> _userConsumption =
-                                  widget.userConsumption!;
-                              _userConsumption.sort(
-                                (prev, next) =>
-                                    (next.consumedAt ?? next.createdAt!)
-                                        .compareTo(
-                                  prev.consumedAt ?? prev.createdAt!,
+                          child: InkWell(
+                            onDoubleTap: () async {
+                              final Product? p = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ProductAdjustmentScreen(
+                                        product: widget.userProduct!.product!,
+                                      ),
                                 ),
                               );
-                              final UserConsumptionItem userConsumptionItem =
-                                  _userConsumption[index];
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 30.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                              if (p != null) {
+                                setState(() {
+                                  widget.userProduct!.product!.set(p);
+                                });
+                              }
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 20.0),
+                                  child: widget.userProduct!.product!
+                                      .images !=
+                                      null
+                                      ? Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.05),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          widget.userProduct!.product!
+                                              .images!.original!,
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(30.0),
+                                      ),
+                                    ),
+                                  )
+                                      : Center(
+                                    child: Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black
+                                            .withOpacity(0.05),
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            30.0),
+                                      ),
+                                      child: const Icon(
+                                        HavkaIcons.bowl,
+                                        color: HavkaColors.energy,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${userConsumptionItem.amount!.value} ${userConsumptionItem.amount!.unit}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .displayLarge,
+                                      showLabel(
+                                          widget.userProduct!.product!.name!,
+                                          maxSymbols: 20),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     Text(
-                                      formatDate(
-                                        userConsumptionItem.consumedAt ??
-                                            userConsumptionItem.createdAt!,
+                                      showLabel(
+                                          widget.userProduct!.product!.brand!.name,
+                                          maxSymbols: 30),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        // fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
+                              ],
+                            ),
                           ),
                         ),
-                      )
-                    else
-                      const Center(child: Text('No history found')),
-                  ],
-                ),
-                // })
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                            vertical: 10.0,
+                            horizontal: 20.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.05),
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _currentIndex = (_currentIndex + 1) % servingNutrition.length;
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 20.0,
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "per",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        servingNutrition[_currentIndex].valueInBaseUnit == 100
+                                          ? "${Utils().formatNumber(servingNutrition[_currentIndex].valueInBaseUnit)} ${widget.userProduct!.product!.baseUnit}"
+                                          : "1 ${servingNutrition[_currentIndex].name} (${Utils().formatNumber(servingNutrition[_currentIndex].valueInBaseUnit)} ${widget.userProduct!.product!.baseUnit})",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ],
+                                  ),
+                                  Divider(
+                                    height: 5,
+                                    color: Colors.black.withOpacity(0.1),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 6.0),
+                                            child: Icon(
+                                              FontAwesomeIcons.dna,
+                                              size: 12,
+                                              color: HavkaColors.protein,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Protein",
+                                            style: TextStyle(
+                                              color: HavkaColors.protein,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            Utils().formatNumber(widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .protein!
+                                                    .total!
+                                                    /
+                                                    widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .valuePerInBaseUnit!
+                                                    *
+                                                servingNutrition[_currentIndex]
+                                                        .valueInBaseUnit)
+                                            ?? "-",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: HavkaColors.protein,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.only(left: 2.0),
+                                            child: Text(
+                                              "g",
+                                              style: const TextStyle(
+                                                color: HavkaColors.protein,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 6.0),
+                                            child: Icon(
+                                              FontAwesomeIcons.droplet,
+                                              size: 12,
+                                              color: HavkaColors.fat,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Fat",
+                                            style: TextStyle(
+                                              color: HavkaColors.fat,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            Utils().formatNumber(widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .fat!
+                                                    .total!
+                                                /
+                                                widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .valuePerInBaseUnit!
+                                                *
+                                                servingNutrition[_currentIndex]
+                                                    .valueInBaseUnit
+                                            ) ?? "-",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: HavkaColors.fat,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.only(left: 2.0),
+                                            child: Text(
+                                              "g",
+                                              style: const TextStyle(
+                                                color: HavkaColors.fat,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 6.0),
+                                            child: Icon(
+                                              HavkaIcons.carbs,
+                                              size: 12,
+                                              color: HavkaColors.carbs,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Carbs",
+                                            style: TextStyle(
+                                              color: HavkaColors.carbs,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            Utils().formatNumber(widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .carbs!
+                                                    .total!
+                                                /
+                                                widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .valuePerInBaseUnit!
+                                                *
+                                                servingNutrition[_currentIndex]
+                                                    .valueInBaseUnit
+                                            ) ?? "-",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: HavkaColors.carbs,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.only(left: 2.0),
+                                            child: Text(
+                                              "g",
+                                              style: TextStyle(
+                                                color: HavkaColors.carbs,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 6.0),
+                                            child: Icon(
+                                              HavkaIcons.energy,
+                                              size: 12,
+                                              color: HavkaColors.energy,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Energy",
+                                            style: TextStyle(
+                                              color: HavkaColors.energy,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            Utils().formatNumber(widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .energy!
+                                                    .kcal!
+                                                /
+                                                widget
+                                                    .userProduct!
+                                                    .product!
+                                                    .nutrition!
+                                                    .valuePerInBaseUnit!
+                                                *
+                                                servingNutrition[_currentIndex]
+                                                    .valueInBaseUnit
+                                            ) ?? "-",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: HavkaColors.energy,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.only(left: 2.0),
+                                            child: Text(
+                                              "kcal",
+                                              style: TextStyle(
+                                                color: HavkaColors.energy,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom -
+                        MediaQuery.of(context).viewInsets.bottom -
+                        355,
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (_scrollController.position.pixels != _scrollController.position.minScrollExtent) {
+                              _scrollController.animateTo(
+                                _scrollController.position.minScrollExtent,
+                                duration: Duration(milliseconds: 100),
+                                curve: Curves.easeIn,
+                              );
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: HavkaColors.bone[100],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  offset: _topOffset,
+                                  blurRadius: _topBlurRadius,
+                                ),
+                              ],
+                            ),
+                            margin: EdgeInsets.only(top: 8.0),
+                            width: MediaQuery.of(context).size.width,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                                vertical: 8.0,
+                              ),
+                              child: Text(
+                                "Consumption History",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ValueListenableBuilder(
+                              valueListenable: productConsumption,
+                              builder: ((context, value, _) {
+                                if (value == null) {
+                                  return SizedBox(
+                                    // height: 250,
+                                    child: const Center(
+                                      child: HavkaProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                                if (value.isEmpty) {
+                                  return SizedBox(
+                                    // height: 250,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Icon(
+                                            Icons.scale_rounded,
+                                            color:
+                                                Colors.black.withOpacity(0.4),
+                                            size: 50,
+                                          ),
+                                        ),
+                                        Text("No history found",
+                                            style: TextStyle(
+                                              color: Colors.black
+                                                  .withOpacity(0.4),
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return Scrollbar(
+                                    controller: _scrollController,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Builder(builder: (context) {
+                                        final List<UserConsumptionItem>
+                                        _userConsumption = value;
+                                        _userConsumption.sort(
+                                              (prev, next) =>
+                                              next.consumedAt
+                                                  .compareTo(
+                                                prev.consumedAt
+                                              ),
+                                        );
+                                        if (Platform.isAndroid) {
+                                          return AnimatedList(
+                                            key:
+                                                _userConsumptionListKeyAndroid,
+                                            controller: _scrollController,
+                                            initialItemCount: value.length,
+                                            itemBuilder:
+                                                (BuildContext context,
+                                                    int index, animation) => consumptionItem(context, value, index, animation)
+                                          );
+                                        } else {
+                                          return CustomScrollView(
+                                            controller: _scrollController,
+                                            slivers: [
+                                              SliverAnimatedList(
+                                                key:
+                                                    _userConsumptionListKeyIOS,
+                                                initialItemCount:
+                                                    value.length,
+                                                itemBuilder: (context, index,
+                                                    animation) => consumptionItem(context, value, index, animation),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      }),
+                                    ),
+                                  );
+                                }
+                              })),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 120,
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: HavkaColors.cream,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                offset: _bottomOffset,
+                                blurRadius: _bottomBlurRadius,
+                              ),
+                            ],
+                          ),
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 10.0,
+                                      right: 5.0,
+                                    ),
+                                    child: Icon(
+                                      FontAwesomeIcons.dna,
+                                      size: 12,
+                                      color: HavkaColors.protein,
+                                    ),
+                                  ),
+                                  Text(
+                                    Utils().formatNumber(protein!) ?? "0",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: HavkaColors.protein,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 2.0),
+                                    child: Text(
+                                      "g",
+                                      style: TextStyle(
+                                        color: HavkaColors.protein,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 10.0,
+                                      right: 5.0,
+                                    ),
+                                    child: Icon(
+                                      FontAwesomeIcons.droplet,
+                                      size: 12,
+                                      color: HavkaColors.fat,
+                                    ),
+                                  ),
+                                  Text(
+                                    Utils().formatNumber(fats!) ?? "0",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: HavkaColors.fat,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 2.0),
+                                    child: Text(
+                                      "g",
+                                      style: TextStyle(
+                                        color: HavkaColors.fat,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 10.0,
+                                      right: 5.0,
+                                    ),
+                                    child: Icon(
+                                      FontAwesomeIcons.wheatAwn,
+                                      size: 12,
+                                      color: HavkaColors.carbs,
+                                    ),
+                                  ),
+                                  Text(
+                                    Utils().formatNumber(carbs!) ?? "0",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: HavkaColors.carbs,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 2.0),
+                                    child: Text(
+                                      "g",
+                                      style: TextStyle(
+                                        color: HavkaColors.carbs,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 5.0,
+                                    ),
+                                    child: Icon(
+                                      HavkaIcons.energy,
+                                      size: 12,
+                                      color: HavkaColors.energy,
+                                    ),
+                                  ),
+                                  Text(
+                                    Utils().formatNumber(kcal!) ?? "0",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: HavkaColors.energy,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 2.0),
+                                    child: Text(
+                                      "kcal",
+                                      style: TextStyle(
+                                        color: HavkaColors.energy,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Stack(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  children: [
+                                    RoundedTextField(
+                                      hintText: "Type...",
+                                      focusNode: _weightFocusNode,
+                                      controller: weightController,
+                                      enableClearButton: false,
+                                      keyboardType:
+                                          TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'^(\d+)?[\.\,]?\d{0,2}'),
+                                        ),
+                                        LengthLimitingTextInputFormatter(4),
+                                      ],
+                                      dropDownItemsList: servingUnitNames,
+                                      dropDownInitialValue: servingUnits!.firstWhere((element) => element.valueInBaseUnit > 1).name,
+                                      onSelectedDropDownItem: (value) => setState(() {
+                                        selectedServingUnit = value;
+                                        weightInServing = weightController.text.isEmpty ? 0 : double.parse(weightController.text);
+                                        weight = weightInServing * widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit).valueInBaseUnit;
+                                      }),
+                                      trailingText: weightController.text != '' && widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit).name != widget.userProduct!.product!.baseUnit
+                                          ? "= ${formattedNumber(double.parse(weightController.text) * widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit).valueInBaseUnit)} ${widget.userProduct!.product!.baseUnit}"
+                                          : null,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15.0),
+                                        topRight: Radius.circular(15.0),
+                                      ),
+                                    ),
+                                    context: context,
+                                    builder: (context) {
+                                      return FractionallySizedBox(
+                                        heightFactor: 0.5,
+                                        child: SafeArea(
+                                          child: Container(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CupertinoDatePicker(
+                                              use24hFormat: true,
+                                              initialDateTime: DateTime.now(),
+                                              minimumDate: DateTime.now()
+                                                  .subtract(
+                                                      Duration(days: 365)),
+                                              maximumDate: DateTime.now(),
+                                              onDateTimeChanged: (value) {
+                                                setState(() {
+                                                  selectedDateTime = value;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: SizedBox(
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        // Padding(
+                                        //   padding: EdgeInsets.only(right: 8.0),
+                                        //   child: Icon(
+                                        //     CupertinoIcons.calendar,
+                                        //     // FontAwesomeIcons.calendar,
+                                        //     size: 22,
+                                        //   ),
+                                        // ),
+                                        Text(
+                                          formatDate(selectedDateTime),
+                                        ),
+                                      ]),
+                                ),
+                              ),
+                              TextButton(
+                                child: addButtonContent,
+                                style: buttonStyle,
+                                onPressed: () async {
+                                  FocusManager.instance.primaryFocus
+                                      ?.unfocus();
+                                  if (weightController.text.isEmpty ||
+                                      weight! < 0.0001) {
+                                    return;
+                                  }
+                                  addButtonContent = HavkaProgressIndicator();
+                                  final Serving selectedServing = widget.userProduct!.product!.serving.firstWhere((element) => element.name == selectedServingUnit);
+                                  final UserConsumptionItem
+                                      userConsumptionItem =
+                                      UserConsumptionItem(
+                                    productId:
+                                        widget.userProduct!.productId,
+                                    product: widget.userProduct!.product!,
+                                    fridgeItemId: widget.userProduct!.id,
+                                    consumedAmount: ConsumedAmount(
+                                        serving: Serving(
+                                            name: selectedServing.name,
+                                            valueInBaseUnit: selectedServing.valueInBaseUnit),
+                                        value: weightInServing),
+                                    consumedAt: selectedDateTime,
+                                  );
+                                  await _insertItem(userConsumptionItem);
+                                  addButtonContent = Text(
+                                    "Add",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  );
+                                  weightController.clear();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+              // })
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _insertItem(UserConsumptionItem userConsumptionItem) async {
+    final UserConsumptionItem? newUCI = await _apiRoutes.addUserConsumptionItem(
+        userConsumptionItem: userConsumptionItem);
+    context.read<DailyProgressDataModel>().initData();
+    context.read<WeeklyProgressDataModel>().initData();
+    if (Platform.isIOS) {
+      _userConsumptionListKeyIOS.currentState?.insertItem(0);
+    } else if (Platform.isAndroid) {
+      _userConsumptionListKeyAndroid.currentState?.insertItem(0);
+    }
+    if (newUCI != null) {
+      setState(() {
+        productConsumption.value?.insert(0, newUCI);
+      });
+    }
+  }
+
+  void _removeItem(UserConsumptionItem userConsumptionItem, int index,
+      BuildContext context) async {
+    if (Platform.isIOS) {
+      await _apiRoutes.deleteUserConsumption(userConsumptionItem);
+      context.read<DailyProgressDataModel>().initData();
+      context.read<WeeklyProgressDataModel>().initData();
+      SliverAnimatedList.of(context).removeItem(index, (context, animation) {
+        return FadeTransition(
+          opacity: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(animation),
+          child: SizeTransition(
+            sizeFactor: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(0, -0.5),
+                end: Offset.zero,
+              ).animate(animation),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${formattedNumber(userConsumptionItem.consumedAmount!.value)} ${userConsumptionItem.consumedAmount!.serving.name}',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                    Text(
+                      formatDate(
+                        userConsumptionItem.consumedAt
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      });
+      setState(() {
+        productConsumption.value?.removeAt(index);
+      });
+    } else if (Platform.isAndroid) {
+      await _apiRoutes.deleteUserConsumption(userConsumptionItem);
+      AnimatedList.of(context).removeItem(
+        index,
+        (_, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SizeTransition(
+              sizeFactor: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, -0.5),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${formattedNumber(userConsumptionItem.consumedAmount!.value)} ${userConsumptionItem.consumedAmount!.serving.name}',
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ),
+                      Text(
+                        formatDate(
+                          userConsumptionItem.consumedAt,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+        duration: const Duration(milliseconds: 200),
+      );
+      setState(() {
+        productConsumption.value?.removeAt(index);
+      });
+    }
   }
 }

@@ -9,8 +9,7 @@ class SlideLeftRoute extends PageRouteBuilder {
             BuildContext context,
             Animation<double> animation,
             Animation<double> secondaryAnimation,
-          ) =>
-              widget,
+          ) => widget,
           transitionsBuilder: (
             BuildContext context,
             Animation<double> animation,

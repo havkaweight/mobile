@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/constants/scale.dart';
-import 'package:health_tracker/constants/utils.dart';
-import 'package:health_tracker/model/device_service.dart';
-import 'package:health_tracker/ui/screens/profile_screen.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/constants/scale.dart';
+import 'package:havka/constants/utils.dart';
+import 'package:havka/model/device_service.dart';
+import 'package:havka/ui/widgets/rounded_button.dart';
+
+FlutterReactiveBle flutterReactiveBle = FlutterReactiveBle();
 
 Stream? stream;
 QualifiedCharacteristic? characteristic;

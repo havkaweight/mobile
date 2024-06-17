@@ -1,79 +1,90 @@
-import 'dart:math';
-
-import 'package:health_tracker/model/product_amount.dart';
-import 'package:health_tracker/model/product.dart';
-import 'package:health_tracker/model/user_product.dart';
+import 'package:havka/model/product.dart';
+import 'package:havka/model/user_fridge_item.dart';
 import 'package:intl/intl.dart';
+
+class ConsumedAmount {
+  final Serving serving;
+  final double value;
+
+  const ConsumedAmount({
+    required this.serving,
+    required this.value,
+  });
+
+  ConsumedAmount.fromJson(Map<String, dynamic> json)
+      : serving = Serving.fromJson(json["serving"]),
+        value = json["value"];
+
+  Map<String, dynamic> toJson() => {
+    "serving": serving.toJson(),
+    "value": value,
+  };
+}
 
 class UserConsumptionItem {
   final String? id;
+  final String? productId;
   final Product? product;
-  final UserProduct? userProduct;
-  final String? userId;
-  final ProductAmount? amount;
-  final DateTime? createdAt;
-  final DateTime? consumedAt;
+  final String? fridgeItemId;
+  final UserFridgeItem? userFridgeItem;
+  final ConsumedAmount? consumedAmount;
+  final String? type;
+  final DateTime createdAt;
+  final DateTime consumedAt;
 
   UserConsumptionItem({
     this.id,
+    this.productId,
     this.product,
-    this.userProduct,
-    this.userId,
-    this.amount,
-    this.createdAt,
-    this.consumedAt,
-  });
+    this.fridgeItemId,
+    this.userFridgeItem,
+    this.consumedAmount,
+    this.type,
+    DateTime? createdAt,
+    required this.consumedAt,
+  }) : this.createdAt = createdAt ?? DateTime.now();
+
+  @override
+  toString() {
+    return toJson().toString();
+  }
 
   UserConsumptionItem.fromJson(Map<String, dynamic> json)
-      : id = json['_id'] as String?,
-        product = json['product'] == null
+      : id = json["_id"] as String?,
+        productId = json["product_id"],
+        product = json["product"] == null
+        ? null
+        : Product.fromJson(json["product"]),
+        fridgeItemId = json["fridge_item_id"],
+        userFridgeItem = json["fridge_item"] == null
+        ? null
+        : UserFridgeItem.fromJson(json["fridge_item"]),
+        consumedAmount = json["consumed_amount"] == null
             ? null
-            : Product.fromJson(json['product'] as Map<String, dynamic>),
-        userProduct = json['user_product'] == null
-            ? null
-            : UserProduct.fromJson(
-                json['user_product'] as Map<String, dynamic>),
-        userId = json['user_id'] as String?,
-        amount = json['amount'] == null
-            ? null
-            : ProductAmount.fromJson(json['amount'] as Map<String, dynamic>),
-        createdAt = json['created_at'] == null
-            ? null
-            : DateFormat('yyyy-MM-ddThh:mm:ss')
+            : ConsumedAmount.fromJson(json["consumed_amount"]),
+        type = json["type"],
+        createdAt = DateFormat("yyyy-MM-ddTHH:mm:ss")
                 .parse(
-                  json['created_at'] as String,
+                  json["created_at"] as String,
                   true,
                 )
                 .toLocal(),
-        consumedAt = json['consumed_at'] == null
-            ? null
-            : DateFormat('yyyy-MM-ddThh:mm:ss')
+        consumedAt = DateFormat("yyyy-MM-ddTHH:mm:ss")
                 .parse(
-                  json['consumed_at'] as String,
+                  json["consumed_at"] as String,
                   true,
                 )
                 .toLocal();
 
   Map<String, dynamic> toJson() => {
-        '_id': id,
-        'product': product == null ? null : product!.toJson(),
-        'user_product': userProduct == null ? null : userProduct!.toJson(),
-        'user_id': userId,
-        'amount': amount == null ? null : amount!.toJson(),
-        'created_at': createdAt == null
-            ? null
-            : DateFormat('yyyy-MM-ddTHH:mm:ss').format(createdAt!.toUtc()),
-        'consumed_at': consumedAt == null
-            ? null
-            : DateFormat('yyyy-MM-ddTHH:mm:ss').format(consumedAt!.toUtc()),
-      };
-
-  Map<String, dynamic> toJsonAdding() => {
-        'product_id': product?.id,
-        'user_product_id': userProduct?.id,
-        'amount': amount == null ? null : amount!.toJson(),
-        'consumed_at': consumedAt == null
-            ? null
-            : DateFormat('yyyy-MM-ddTHH:mm:ss').format(consumedAt!.toUtc()),
+        "_id": id,
+        "product_id": productId,
+        "product": product == null ? null : product!.toJson(),
+        "fridge_item_id": fridgeItemId,
+        "fridge_item": userFridgeItem == null ? null : userFridgeItem!.toJson(),
+        "consumed_amount": consumedAmount == null ? null : consumedAmount!.toJson(),
+        "type": type,
+        "created_at": DateFormat("yyyy-MM-ddTHH:mm:ss").format(createdAt.toUtc()),
+        "consumed_at": DateFormat("yyyy-MM-ddTHH:mm:ss").format(consumedAt.toUtc()),
       };
 }

@@ -11,6 +11,7 @@ class HavkaColors {
   static const Color fat = Color(0xFFf6b227);
   static const Color carbs = Color(0xFF09dcbf);
   static const Color kcal = Color.fromARGB(255, 167, 126, 5);
+  static const Color energy = Color.fromARGB(255, 167, 126, 5);
 
   static const Map<int, Color> bone = <int, Color>{
     50: Color(0x88EDE88E),

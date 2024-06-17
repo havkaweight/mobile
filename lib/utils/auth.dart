@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:health_tracker/api/methods.dart';
+import 'package:havka/api/methods.dart';
 
 const storage = FlutterSecureStorage();
 

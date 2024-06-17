@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:health_tracker/constants/colors.dart';
+import 'package:havka/constants/colors.dart';
 
 class BarChartModel {
   String? year;

@@ -1,15 +1,17 @@
 class ProductAmount {
-  final String unit;
-  final double value;
+  final String? unit;
+  double? value;
 
   ProductAmount({
-    required this.unit,
-    required this.value,
+    this.unit,
+    this.value,
   });
 
   ProductAmount.fromJson(Map<String, dynamic> json)
-      : unit = json['unit'] as String,
-        value = json['value'] as double;
+      : unit = json['unit'] as String?,
+        value = json['value'] == null
+        ? null
+        : json['value'].toDouble();
 
   Map<String, dynamic> toJson() => {
         'unit': unit,

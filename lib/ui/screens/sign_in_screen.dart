@@ -2,27 +2,43 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:health_tracker/api/constants.dart';
-import 'package:health_tracker/api/methods.dart';
-import 'package:health_tracker/routes/sharp_page_route.dart';
-import 'package:health_tracker/ui/screens/authorization.dart';
-import 'package:health_tracker/ui/screens/main_screen.dart';
-import 'package:health_tracker/ui/screens/story_screen.dart';
-import 'package:health_tracker/ui/widgets/barcode.dart';
-import 'package:health_tracker/ui/widgets/button.dart';
-import 'package:health_tracker/ui/widgets/progress_indicator.dart';
-import 'package:health_tracker/ui/widgets/rounded_button.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield.dart';
-import 'package:health_tracker/ui/widgets/rounded_textfield_obscure.dart';
-import 'package:health_tracker/ui/widgets/screen_header.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:havka/api/constants.dart';
+import 'package:havka/api/methods.dart';
+import 'package:havka/constants/colors.dart';
+import 'package:havka/constants/privacy_policy.dart';
+import 'package:havka/constants/terms_of_use.dart';
+import 'package:havka/routes/sharp_page_route.dart';
+import 'package:havka/ui/screens/authorization.dart';
+import 'package:havka/ui/screens/main_screen.dart';
+import 'package:havka/ui/screens/story_screen.dart';
+import 'package:havka/ui/widgets/barcode.dart';
+import 'package:havka/ui/widgets/button.dart';
+import 'package:havka/ui/widgets/progress_indicator.dart';
+import 'package:havka/ui/widgets/rounded_button.dart';
+import 'package:havka/ui/widgets/rounded_textfield.dart';
+import 'package:havka/ui/widgets/screen_header.dart';
 import 'package:http/http.dart' as http;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../../main.dart';
+import '../../model/fridge.dart';
+import '../widgets/holder.dart';
 
 enum SignInStatus {
   notLoggedIn,
   logging,
   loggedIn,
 }
+
+enum SignContent { TermsOfUse, PrivacyPolicy }
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -32,11 +48,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen>
     with TickerProviderStateMixin {
   bool _isSignIn = true;
+  bool _isPolicyAccepted = false;
   late SignInStatus signInStatus;
-  List<String> _signings = [
-    "Sign Up",
-    "Sign In",
-  ];
   late List<Function> _signingsFunctions;
 
   late final emailController = TextEditingController();
@@ -47,12 +60,6 @@ class _SignInScreenState extends State<SignInScreen>
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   late AnimationController _animationController;
   late AnimationController _animationButtonsController;
-  late Animation<Offset> _animationSlideOut;
-  late Animation<Offset> _animationSlideIn;
-  late Animation<double> _animationFadeOut;
-  late Animation<double> _animationFadeIn;
-  late Animation<double> _animationMethodsButtonsFadeInOut;
-  late Animation<Offset> _animationMethodsButtonsSlideInOut;
 
   String? emailErrorText;
   String? passwordErrorText;
@@ -82,92 +89,13 @@ class _SignInScreenState extends State<SignInScreen>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     )..forward();
-
-    _animationSlideOut = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0.0, -0.2),
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationSlideIn = Tween<Offset>(
-      begin: const Offset(0.0, 0.2),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationFadeOut = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationFadeIn = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationMethodsButtonsFadeInOut = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationButtonsController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _animationMethodsButtonsSlideInOut = Tween<Offset>(
-      begin: const Offset(0.0, -0.2),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationButtonsController,
-        curve: Curves.easeInOut,
-      ),
-    );
   }
 
   @override
   void dispose() {
+    _animationButtonsController.dispose();
     _animationController.dispose();
     super.dispose();
-  }
-
-  Future<dynamic> resetPassword(String email) async {
-    final Map<String, dynamic> body = {'email': email};
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json; charset=UTF-8'
-    };
-    final http.Response response = await http.post(
-      Uri.https(Api.host, '${Api.prefix}/auth/reset-password'),
-      headers: headers,
-      body: body,
-    );
-
-    final Map<String, dynamic> data =
-        jsonDecode(response.body) as Map<String, dynamic>;
-
-    if (response.statusCode == HttpStatus.ok) {
-      if (data.containsKey('access_token')) {
-        setToken(data['access_token'] as String);
-        return Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
-      } else {
-        return Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
-        );
-      }
-    } else {
-      throw Exception('Failed sign in');
-    }
   }
 
   void _onFocusEmail() {
@@ -183,22 +111,25 @@ class _SignInScreenState extends State<SignInScreen>
   }
 
   SignInStatus _validateEmail() {
+    if (!_isPolicyAccepted && !_isSignIn) {
+      return SignInStatus.notLoggedIn;
+    }
     if (emailController.text.isEmpty && passwordController.text.isEmpty) {
-      emailErrorText = 'Fill your email here';
-      passwordErrorText = 'Fill your password here';
+      emailErrorText = "Fill your email here";
+      passwordErrorText = "Fill your password here";
       return SignInStatus.notLoggedIn;
     }
     if (emailController.text.isEmpty) {
-      emailErrorText = 'Fill your email here';
+      emailErrorText = "Fill your email here";
       return SignInStatus.notLoggedIn;
     }
     if (passwordController.text.isEmpty) {
-      passwordErrorText = 'Fill your password here';
+      passwordErrorText = "Fill your password here";
       return SignInStatus.notLoggedIn;
     }
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
         .hasMatch(emailController.text)) {
-      emailErrorText = 'Use example@example.com';
+      emailErrorText = "Use example@example.com";
       return SignInStatus.notLoggedIn;
     }
     emailErrorText = null;
@@ -209,19 +140,15 @@ class _SignInScreenState extends State<SignInScreen>
   Future _signIn() async {
     try {
       futureSignIn = await _apiRoutes.signIn(
-        emailController.text,
-        passwordController.text,
+        email: emailController.text,
+        password: passwordController.text,
       );
       setState(() {
         if (futureSignIn) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            SharpPageRoute(builder: (context) => MainScreen()),
-            (r) => false,
-          );
+          GoRouter.of(context).go("/fridge");
         } else {
-          emailErrorText = 'Please check your email';
-          passwordErrorText = 'Please check your password';
+          emailErrorText = "Please check your email";
+          passwordErrorText = "Please check your password";
           signInStatus = SignInStatus.notLoggedIn;
         }
       });
@@ -240,11 +167,6 @@ class _SignInScreenState extends State<SignInScreen>
       );
       setState(() {
         if (futureSignIn) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-            (r) => false,
-          );
         } else {
           signInStatus = SignInStatus.notLoggedIn;
         }
@@ -255,86 +177,324 @@ class _SignInScreenState extends State<SignInScreen>
         signInStatus = SignInStatus.notLoggedIn;
       });
     }
+    final Fridge? fridge = await _apiRoutes.createFridge();
+    if (fridge != null) {
+      final UserFridge userFridge =
+          UserFridge(name: "Fridge", fridgeId: fridge.id!);
+      await _apiRoutes.createUserFridge(userFridge: userFridge);
+    }
   }
 
   Widget loginFormWidget(BuildContext context) {
-    final mHeight = MediaQuery.of(context).size.height;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 50.0),
-      child: Center(
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 40.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(
-              height: mHeight * 0.6,
+            Container(
+              height: (MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom) *
+                  0.5,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    height: 40,
-                    width: 80,
-                    child: CustomPaint(
-                      painter: HavkaBarcode(),
-                      child: Container(),
-                    ),
-                  ),
-                  Hero(
-                    tag: "to-signin",
-                    child: Stack(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Column(
                       children: [
-                        FadeTransition(
-                          opacity: _animationFadeOut,
-                          child: SlideTransition(
-                            position: _animationSlideOut,
-                            child: ScreenHeader(
-                              text: _signings.first,
-                            ),
+                        SizedBox(
+                          height: 40,
+                          width: 80,
+                          child: CustomPaint(
+                            painter: HavkaBarcode(),
+                            child: Container(),
                           ),
                         ),
-                        FadeTransition(
-                          opacity: _animationFadeIn,
-                          child: SlideTransition(
-                            position: _animationSlideIn,
-                            child: ScreenHeader(
-                              text: _signings.last,
-                            ),
-                          ),
+                        AnimatedSwitcher(
+                          duration: Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(0, -0.5),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: _isSignIn
+                              ? ScreenHeader(
+                                  text: "Sign In",
+                                  key: ValueKey<String>("SignIn"),
+                                )
+                              : ScreenHeader(
+                                  text: "Sign Up",
+                                  key: ValueKey<String>("SignUp"),
+                                ),
                         ),
                       ],
                     ),
                   ),
-                  RoundedTextField(
-                    errorText: emailErrorText,
-                    hintText: 'Email',
-                    controller: emailController,
-                    focusNode: _emailFocusNode,
-                    onSubmitted: (_) {
-                      setState(() => signInStatus = _validateEmail());
-                      if (signInStatus == SignInStatus.logging) {
-                        _signingsFunctions.first();
-                      }
-                      _passwordFocusNode.requestFocus();
-                    },
-                  ),
-                  RoundedTextFieldObscured(
-                    errorText: passwordErrorText,
-                    hintText: 'Password',
-                    controller: passwordController,
-                    focusNode: _passwordFocusNode,
-                    onSubmitted: (_) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      setState(() => signInStatus = _validateEmail());
-                      if (signInStatus == SignInStatus.logging) {
-                        _signingsFunctions.first();
-                      }
-                    },
+                  Container(
+                    child: Column(
+                      children: [
+                        RoundedTextField(
+                          hintText: "Email",
+                          controller: emailController,
+                          focusNode: _emailFocusNode,
+                          textCapitalization: TextCapitalization.none,
+                          descriptionText: Text(
+                            emailErrorText ?? "",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                          onSubmitted: (_) {
+                            setState(() => signInStatus = _validateEmail());
+                            if (signInStatus == SignInStatus.logging) {
+                              _signingsFunctions.first();
+                            }
+                            _passwordFocusNode.requestFocus();
+                          },
+                        ),
+                        RoundedTextField(
+                          hintText: "Password",
+                          controller: passwordController,
+                          focusNode: _passwordFocusNode,
+                          textCapitalization: TextCapitalization.none,
+                          descriptionText: Text(
+                            passwordErrorText ?? "",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                          obscureText: true,
+                          onSubmitted: (_) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            setState(() => signInStatus = _validateEmail());
+                            if (signInStatus == SignInStatus.logging) {
+                              _signingsFunctions.first();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            // if (futureSignIn) Container() else const Text("Wrong login or password"),
-            SizedBox(
-              height: mHeight * 0.4,
-              child: bottomSignInNavigation(),
+            Container(
+              height: (MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom) *
+                  0.5,
+              child: signInStatus != SignInStatus.notLoggedIn
+                  ? Center(child: HavkaProgressIndicator())
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _isSignIn
+                            ? SizedBox.shrink()
+                            : Container(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 40,
+                                          height: 20,
+                                          child: Checkbox(
+                                            value: _isPolicyAccepted,
+                                            checkColor: Colors.white,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _isPolicyAccepted = value!;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("I accept "),
+                                            InkWell(
+                                              onTap: () => _showSignContent(SignContent.TermsOfUse),
+                                              child: Text(
+                                                "Terms of Use",
+                                                overflow: TextOverflow.fade,
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                  TextDecoration.underline,
+                                                  decorationStyle:
+                                                  TextDecorationStyle.dashed,
+                                                  decorationColor: Colors.blue,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 40,
+                                        ),
+                                        Text("and "),
+                                        InkWell(
+                                          onTap: () => _showSignContent(SignContent.PrivacyPolicy),
+                                          child: Text(
+                                            "Privacy Policy",
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold,
+                                              decoration:
+                                              TextDecoration.underline,
+                                              decorationStyle:
+                                              TextDecorationStyle.dashed,
+                                              decorationColor: Colors.blue,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        Container(
+                          margin: EdgeInsets.only(top: 30.0),
+                          child: RoundedButton(
+                            text: _isSignIn ? "Sign In" : "Sign Up",
+                            color: _isSignIn
+                                ? HavkaColors.green
+                                : _isPolicyAccepted
+                                    ? HavkaColors.green
+                                    : Colors.black.withOpacity(0.2),
+                            onPressed: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              setState(() => signInStatus = _validateEmail());
+                              if (_isSignIn) {
+                                if (signInStatus == SignInStatus.logging) {
+                                  _signingsFunctions.first();
+                                }
+                              } else {
+                                if (_isPolicyAccepted) {
+                                  _signingsFunctions.first();
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Platform.isIOS
+                            ? Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: AnimatedSwitcher(
+                                duration: Duration(milliseconds: 300),
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(0, -0.5),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _isSignIn
+                                    ? AppleSignInButton(
+                                  onPressed: () async {
+                                    setState(() => signInStatus = SignInStatus.logging);
+                                    final bool? status = await _appleSignIn();
+                                    if (status == null) {
+                                      setState(() => signInStatus = SignInStatus.notLoggedIn);
+                                    }
+                                  },
+                                )
+                                    : SizedBox.shrink(),
+                              ),
+                            ) : SizedBox.shrink(),
+                            Container(
+                                margin: EdgeInsets.only(top: 10.0),
+                                child: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: Offset(0, -0.5),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: _isSignIn
+                                      ? GoogleSignInButton(
+                                          onPressed: () async {
+                                            setState(() {
+                                              signInStatus =
+                                                  SignInStatus.logging;
+                                            });
+                                            final bool? status = await _googleSignIn();
+                                            if (status == null) {
+                                              setState(() {
+                                                signInStatus =
+                                                    SignInStatus.notLoggedIn;
+                                              });
+                                            }
+                                          },
+                                        )
+                                      : SizedBox.shrink(),
+                                ),
+                            ),
+                            Hero(
+                              tag: "get-started",
+                              child: Container(
+                                margin: EdgeInsets.only(top: 20.0),
+                                child: HavkaButton(
+                                  fontSize: 18,
+                                  child: Align(child: Text("About Havka")),
+                                  onPressed: () {
+                                    context.go("/about");
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isSignIn = !_isSignIn;
+                                    _signingsFunctions =
+                                        _signingsFunctions.reversed.toList();
+                                    _animationController.reset();
+                                    _animationController.forward();
+                                    emailErrorText = null;
+                                    passwordErrorText = null;
+                                  });
+                                },
+                                child: HavkaText(
+                                    text: _isSignIn ? "Sign Up" : "Sign In"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
             )
           ],
         ),
@@ -342,90 +502,151 @@ class _SignInScreenState extends State<SignInScreen>
     );
   }
 
-  Widget bottomSignInNavigation() {
-    if (signInStatus == SignInStatus.notLoggedIn) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              RoundedButton(
-                text: _signings.last,
-                onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  setState(() => signInStatus = _validateEmail());
-                  if (_isSignIn) {
-                    if (signInStatus == SignInStatus.logging) {
-                      _signingsFunctions.first();
-                    }
-                  } else {
-                    _signingsFunctions.first();
-                  }
-                },
+  Future<void> _showSignContent(SignContent content) async {
+    return await showModalBottomSheet(
+      useRootNavigator: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          builder: (
+            BuildContext context,
+            ScrollController scrollController,
+          ) {
+            return ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0), // Adjust the radius as needed
+                topRight: Radius.circular(20.0),
               ),
-              if (_isSignIn)
-                FadeTransition(
-                  opacity: _animationMethodsButtonsFadeInOut,
-                  child: SlideTransition(
-                    position: _animationMethodsButtonsSlideInOut,
-                    child: Column(
-                      children: [
-                        GoogleSignInButton(),
-                      ],
-                    ),
+              child: SafeArea(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Holder(
+                        height: 30,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.9
+                              - 30
+                              - MediaQuery.of(context).padding.bottom,
+                          child: Scrollbar(
+                            controller: scrollController,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                              child: SingleChildScrollView(
+                                controller: scrollController,
+                                child: NotificationListener<
+                                    DraggableScrollableNotification>(
+                                  onNotification: (notification) {
+                                    return notification.extent > 0.5;
+                                  },
+                                  child: Builder(builder: (context) {
+                                    switch (content) {
+                                      case SignContent.TermsOfUse:
+                                        return TermsOfUse();
+                                      case SignContent.PrivacyPolicy:
+                                        return PrivacyPolicy();
+                                    }
+                                  }),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                )
-              else
-                Container(),
-            ],
-          ),
-          Hero(
-            tag: "get-started",
-            child: HavkaButton(
-              fontSize: 18,
-              child: const Align(child: Text('What is Havka?')),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  SharpPageRoute(builder: (context) => StoryPage()),
-                );
-              },
-            ),
-          ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isSignIn = !_isSignIn;
-                      _signingsFunctions = _signingsFunctions.reversed.toList();
-                      _signings = _signings.reversed.toList();
-                      _animationController.reset();
-                      _animationController.forward();
-                      if (_isSignIn) {
-                        _animationButtonsController.forward();
-                      } else {
-                        _animationButtonsController.reverse();
-                      }
-                      emailErrorText = null;
-                      passwordErrorText = null;
-                    });
-                  },
-                  child: HavkaText(text: _signings.first),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<bool?> _googleSignIn() async {
+    final GoogleSignIn googleSignIn =
+        GoogleSignIn(scopes: ['email', 'profile']);
+    final googleAccount = await googleSignIn.signIn();
+    if(googleAccount == null) {
+      return null;
+    }
+    final googleAuth = await googleAccount.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    if (googleAuth.accessToken != null && googleAuth.idToken != null) {
+      await authInstance.signInWithCredential(credential);
+      final bool isAuthSuccess =
+      await ApiRoutes().signInGoogle(googleAuth.idToken!);
+      if (isAuthSuccess) {
+        final List<UserFridge> fridgesList =
+        await ApiRoutes().getUserFridges();
+        if (fridgesList.isEmpty) {
+          final Fridge? fridge = await ApiRoutes().createFridge();
+          if (fridge != null) {
+            final UserFridge userFridge =
+            UserFridge(name: "Fridge", fridgeId: fridge.id!);
+            await ApiRoutes().createUserFridge(userFridge: userFridge);
+          }
+        }
+        context.go("/fridge");
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  Future<bool?> _appleSignIn() async {
+    try {
+      final AuthorizationCredentialAppleID appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
         ],
       );
-    } else {
-      return const Center(child: HavkaProgressIndicator());
+
+      final oAuthProvider = OAuthProvider("apple.com");
+      final credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final auth = await authInstance.signInWithCredential(credential);
+      final bool isAuthSuccess =
+      await _apiRoutes.signInApple(auth.user!.email!);
+      if (isAuthSuccess) {
+        final List<UserFridge> fridgesList =
+        await _apiRoutes.getUserFridges();
+        if (fridgesList.isEmpty) {
+          final Fridge? fridge = await _apiRoutes.createFridge();
+          if (fridge != null) {
+            final UserFridge userFridge =
+            UserFridge(name: "Fridge", fridgeId: fridge.id!);
+            await _apiRoutes.createUserFridge(userFridge: userFridge);
+          }
+        }
+        context.go("/fridge");
+        return true;
+      }
+    } catch (SignInWithAppleAuthorizationException) {
+      return null;
     }
+    return false;
   }
+
 
   @override
   Widget build(BuildContext context) {

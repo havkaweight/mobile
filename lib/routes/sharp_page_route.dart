@@ -14,6 +14,5 @@ class SharpPageRoute extends MaterialPageRoute {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      child;
+  ) => child;
 }
