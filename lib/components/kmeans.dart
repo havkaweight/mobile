@@ -3,7 +3,8 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 
-import '../model/data_items.dart';
+import '../data/models/data_point.dart';
+import '/data/models/pfc_data_item.dart';
 
 class MealGroup {
   String label;

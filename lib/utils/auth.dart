@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:havka/api/methods.dart';
 
 const storage = FlutterSecureStorage();
 
@@ -25,23 +24,23 @@ Future removeToken() async {
 //   return storage.containsKey(key: 'jwt');
 // }
 
-class AuthService {
-  final ApiRoutes _apiRoutes = ApiRoutes();
-
-  // Future<bool> isLoggedIn() async {
-  //   try {
-  //     final HttpStatus httpStatus = await _apiRoutes.getAvailability();
-
-  //     switch
-
-  //   } catch (error) {
-  //     debugPrint("Error: $error");
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
-  Future<bool> logOut() async {
-    return false;
-  }
-}
+// class AuthService {
+//   final ApiRoutes _apiRoutes = ApiRoutes();
+//
+//   Future<bool> isLoggedIn() async {
+//     try {
+//       final HttpStatus httpStatus = await _apiRoutes.getAvailability();
+//
+//       switch
+//
+//     } catch (error) {
+//       debugPrint("Error: $error");
+//       return false;
+//     }
+//     return true;
+//   }
+//
+//   Future<bool> logOut() async {
+//     return false;
+//   }
+// }

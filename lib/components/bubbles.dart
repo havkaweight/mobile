@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:havka/constants/colors.dart';
+import '/core/constants/colors.dart';
 
 class Bubbles extends StatefulWidget {
   @override
