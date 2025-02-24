@@ -1,3 +1,5 @@
+./third_party/
+
 # Miscellaneous
 *.class
 *.log
@@ -32,7 +34,6 @@
 /build/
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols
@@ -44,3 +45,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+android/app/google-services.json
+android/app/src/google-services.json
+
+ios/Runner/Info.plist
+ios/Runner/GoogleService-Info.plist
+
+ios/GoogleService-Info.plist
